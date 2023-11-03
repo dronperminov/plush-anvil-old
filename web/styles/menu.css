@@ -1,0 +1,192 @@
+:root {
+    --menu-background: #fff;
+    --menu-icon-color: #000;
+
+    --menu-item-text-color: #000;
+    --menu-item-text-hover-color: #333;
+    --menu-item-background-hover-color: #fff;
+}
+
+.header {
+    background-color: var(--menu-background);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 62px;
+    border-bottom: 1px solid #000;
+}
+
+.header ul {
+    list-style: none
+}
+
+.logo {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.logo svg {
+    fill: var(--menu-icon-color);
+}
+
+.nav {
+    background-color: var(--menu-background);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 62px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .5s ease-out;
+}
+
+.menu a {
+    color: var(--menu-item-text-color);
+    display: block;
+    padding: 20px 10px;
+    text-decoration: none;
+}
+
+.menu .profile a {
+    padding: 0 10px;
+    text-align: left;
+}
+
+.menu a:hover {
+    color: var(--menu-item-text-hover-color);
+    background-color: var(--menu-item-background-hover-color);
+}
+
+.menu .profile a {
+    display: table;
+}
+
+.menu .profile-img, .menu .profile-text {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.menu .profile-text {
+    padding-left: 10px;
+}
+
+.hamb {
+    cursor: pointer;
+    float: right;
+    padding: 30px 20px;
+}
+
+.hamb-line {
+    display: block;
+    height: 2px;
+    position: relative;
+    width: 24px;
+    background: #000;
+}
+
+.hamb-line:before, .hamb-line:after {
+    background: #000;
+    content: "";
+    display: block;
+    height: 100%;
+    position: absolute;
+    transition: all .2s ease-out;
+    width: 100%;
+}
+
+.hamb-line:before {
+    top: 5px;
+}
+
+.hamb-line:after {
+    top: -5px;
+}
+
+.side-menu {
+    display: none;
+}
+
+.side-menu:checked ~ nav {
+    max-height: 100%;
+}
+
+.side-menu:checked ~ .hamb .hamb-line {
+    background: transparent;
+}
+
+.side-menu:checked ~ .hamb .hamb-line::before {
+    transform: rotate(-45deg);
+    top: 0;
+}
+
+.side-menu:checked ~ .hamb .hamb-line::after {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+}
+
+@media (min-width: 768px) {
+    .nav {
+        max-height: none;
+        top: 0;
+        position: relative;
+        float: right;
+        width: calc(100vw - 82px);
+        background-color: transparent;
+    }
+
+    .menu {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .menu li {
+        display: table-cell;
+        white-space: nowrap;
+        text-align: center;
+        vertical-align: middle;
+        width: calc(33% - 20px);
+    }
+
+    .menu a {
+        padding: 20px 30px;
+    }
+
+    .menu .profile {
+        width: 82px;
+    }
+
+    .menu .profile-text {
+        display: none;
+    }
+
+    .menu .profile-img {
+        display: inline;
+    }
+
+    .menu .login {
+        width: 120px;
+    }
+
+    .menu .profile a {
+        display: inline;
+    }
+
+    .mena a:hover {
+        background-color: transparent;
+    }
+
+    .hamb {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+
+}

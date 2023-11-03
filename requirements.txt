@@ -1,0 +1,13 @@
+beautifulsoup4
+fastapi
+Jinja2
+Levenshtein
+passlib[bcrypt]
+pymongo
+pyjwt
+python-multipart
+opencv-python
+requests
+uvicorn[standard]
+wget
+yandex-music==2.1.0
