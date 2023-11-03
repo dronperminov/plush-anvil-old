@@ -1,5 +1,6 @@
 const SUCCESS_STATUS = "success"
 const ERROR_STATUS = "error"
+const TOKEN_NAME = "quiz_token"
 
 async function SendRequest(url, data = null) {
     try {

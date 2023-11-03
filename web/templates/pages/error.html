@@ -1,0 +1,15 @@
+{% include "header.html" %}
+<title>{{title}} | Плюшевая наковальня</title>
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>{{title}}</h1>
+        <p>{{message}}</p>
+        <p>Вы можете <a href="javascript:history.back()">вернуться назад</a> или <a href="/">перейти на главную страницу</a>.</p>
+    </div>
+
+    {% include "footer.html" %}
+</body>
+</html>

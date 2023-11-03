@@ -19,6 +19,18 @@
     fill: var(--form-row-icon-color);
 }
 
+.form-row-stroke-icon {
+    stroke: var(--form-row-icon-color);
+}
+
+.error-icon .form-row-fill-icon {
+    fill: var(--error-color);
+}
+
+.error-icon .form-row-stroke-icon {
+    stroke: var(--error-color);
+}
+
 .form-row-label {
     display: table-cell;
     font-weight: bold;

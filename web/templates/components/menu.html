@@ -16,7 +16,10 @@
             <li><a href="#">О нас</a></li>
             <li><a href="#">Тренировки</a></li>
             {% if user %}
-            <li class="profile"><a href="/profile"><img class="profile-img" src="/{{user.image_src}}" alt="аватар пользователя {{user.username}}" /><span class="profile-text"> Мой профиль</span></a></li>
+            {% if user.role == "admin" %}
+            <li><a href="/places">Места</a></li>
+            {% endif %}
+            <li class="profile"><a href="/profile"><img class="profile-img" src="{{user.image_src}}" alt="аватар пользователя {{user.username}}" /><span class="profile-text"> Мой профиль</span></a></li>
             {% else %}
             <li class="login"><a href="/login">Вход</a></li>
             {% endif %}

@@ -28,24 +28,12 @@ function SwitchForm(signUp) {
     }
 }
 
-function ClearError(inputId) {
-    let input = document.getElementById(inputId)
-    let icon = document.getElementById(`${inputId}-icon`)
-    let error = document.getElementById("error")
-
-    input.classList.remove("error-input")
-    icon.classList.remove("error-icon")
-    error.innerText = ""
-}
-
 function GetPassword() {
     let password = GetTextField("password", "Пароль не заполнен")
-
     if (password === null)
         return null
 
     let passwordCheck = GetTextField("password-check", "Подтверждение пароля не заполнено")
-
     if (passwordCheck === null)
         return null
 
@@ -68,58 +56,46 @@ function GetPassword() {
     return null
 }
 
-function TryAutoSignIn() {
-    let token = localStorage.getItem("quiz_token")
-
-    if (token === null)
-        return
-
-    document.cookie = `quiz_token=${token}`
-    location.reload()
-}
-
 function SignIn() {
     let username = GetTextField("username", "Имя пользователя не заполнено")
-
     if (username === null)
         return
 
     let password = GetTextField("password", "Пароль не заполнен")
-
     if (password === null)
         return
 
+    let error = document.getElementById("error")
+    error.innerText = ""
+
     SendRequest("/sign-in", {"username": username, "password": password}).then(response => {
-        if (response.status != "success") {
-            let error = document.getElementById("error")
+        if (response.status != SUCCESS_STATUS) {
             error.innerText = response.message
             return
         }
 
-        localStorage.setItem("quiz_token", response.token)
+        localStorage.setItem(TOKEN_NAME, response.token)
         window.location.href = "/"
     })
 }
 
 function SignUp() {
     let username = GetTextField("username", "Имя пользователя не заполнено")
-
     if (username === null)
         return
 
     let fullname = GetTextField("fullname", "Полное имя не заполнено")
-
     if (fullname === null)
         return
 
     let password = GetPassword()
-
     if (password === null)
         return
 
     let error = document.getElementById("error")
-    let response = grecaptcha.getResponse()
+    error.innerText = ""
 
+    let response = grecaptcha.getResponse()
     if (response.length == 0) {
         error.innerText = "Капча не пройдена"
         return
@@ -131,7 +107,7 @@ function SignUp() {
             return
         }
 
-        localStorage.setItem("quiz_token", response.token)
+        localStorage.setItem(TOKEN_NAME, response.token)
         window.location.href = "/"
     })
 }

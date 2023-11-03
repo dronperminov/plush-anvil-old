@@ -1,0 +1,7 @@
+<script>
+function Logout() {
+    localStorage.removeItem("quiz_token")
+    document.cookie = "quiz_token=; Max-Age=-99999999;"
+    location.href="/logout"
+}
+</script>

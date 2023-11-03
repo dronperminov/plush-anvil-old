@@ -1,9 +1,11 @@
 :root {
     /* basic */
-    --text-color: #000;
+    --text-color: #000000;
     --text-font: Roboto;
-    --border-color: #000;
-    --main-color: #000;
+    --border-color: #000000;
+    --main-color: #000000;
+    --link-color: #000000;
+    --content-border-color: #cccccc;
 
     /* status */
     --error-color: #f44336;
@@ -60,7 +62,7 @@
 
     --switch-button-selected-background-color: var(--main-color);
     --switch-button-selected-border-color: var(--border-color);
-    --switch-button-selected-text-color: #000000;
+    --switch-button-selected-text-color: #ffffff;
 }
 
 @font-face {
@@ -80,20 +82,46 @@ body {
     color: var(--text-color);
 }
 
-h1 {
+.content {
+    font-size: 16px;
+    padding: 10px;
+}
+
+.content h1 {
     text-align: center;
     font-size: 2em;
 }
 
-h1, h2 {
+.content h1, .content h2, .content p {
     margin-bottom: 10px;
 }
 
-.content {
-    padding: 10px;
+.content a {
+    color: var(--link-color);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--link-color);
+}
+
+.content a:hover {
+    border-bottom-style: solid;
 }
 
 .error:not(:empty) {
     margin-top: 10px;
     color: var(--error-color);
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (min-width: 768px) {
+    .content {
+        font-size: 20px;
+        width: 550px;
+        margin: 0 auto;
+        border-left: 1px solid var(--content-border-color);
+        border-right: 1px solid var(--content-border-color);
+        min-height: calc(100dvh - 62px);
+    }
 }

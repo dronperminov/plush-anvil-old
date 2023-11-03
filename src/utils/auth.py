@@ -11,8 +11,7 @@ from src.database import database
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 365
 ALGORITHM = "HS256"
 JWT_SECRET_KEY = "VERY_STRONG_AND_SECURE_JWT_SECRET_KEY"
-COOKIE_NAME = "Authorization"
-LOCAL_STORAGE_COOKIE_NAME = "quiz_token"
+COOKIE_NAME = "quiz_token"
 
 
 def get_password_hash(password: str) -> str:
@@ -42,8 +41,4 @@ async def token_to_user(token: str = Depends(OAuth2PasswordBearer(tokenUrl="/log
 
 async def get_current_user(request: Request) -> Optional[dict]:
     token = request.cookies.get(COOKIE_NAME)
-
-    if token is None:
-        token = request.cookies.get(LOCAL_STORAGE_COOKIE_NAME)
-
     return await token_to_user(token)
