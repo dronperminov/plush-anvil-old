@@ -1,3 +1,68 @@
+:root {
+    /* basic */
+    --text-color: #000;
+    --text-font: Roboto;
+    --border-color: #000;
+    --main-color: #000;
+
+    /* status */
+    --error-color: #f44336;
+    --disabled-color: #d0d0d0;
+
+    /* menu  */
+    --menu-background: #ffffff;
+    --menu-icon-color: #000000;
+
+    --menu-item-text-color: #000000;
+    --menu-item-text-hover-color: #333333;
+    --menu-item-background-hover-color: #ffffff;
+
+    /* form */
+    --form-row-background: #f0f0f0;
+    --form-row-text-color: var(--text-color);
+    --form-row-icon-color: var(--text-color);
+
+    /* input elements */
+    --placeholder-color: #999999;
+
+    /* input */
+    --input-font-family: Roboto;
+    --input-disabled-color: var(--disabled-color);
+    --input-text-color: var(--text-color);
+    --input-border-color: var(--border-color);
+    --input-focus-border-color: var(--main-color);
+
+    /* button */
+    --button-font-family: Roboto;
+
+    --button-background-color: #ffffff;
+    --button-border-color: var(--text-color);
+    --button-text-color: var(--text-color);
+
+    --button-disabled-background-color: var(--disabled-color);
+    --button-disabled-border-color: var(--disabled-color);
+    --button-disabled-text-color: #888888;
+
+    --button-hover-background-color: #f0f0f0;
+    --button-hover-border-color: #000000;
+    --button-hover-text-color: #333333;
+
+    --button-active-background-color: #eeeeee;
+    --button-active-border-color: #333333;
+    --button-active-text-color: #333333;
+
+    /* switch button */
+    --switch-button-font-family: Roboto;
+
+    --switch-button-background-color: transparent;
+    --switch-button-border-color: var(--border-color);
+    --switch-button-text-color: #000000;
+
+    --switch-button-selected-background-color: var(--main-color);
+    --switch-button-selected-border-color: var(--border-color);
+    --switch-button-selected-text-color: #000000;
+}
+
 @font-face {
     font-family: Roboto;
     src: url("/fonts/Roboto-Regular.ttf");
@@ -11,10 +76,24 @@
 
 body {
     font-size: 20px;
-    font-family: Roboto;
+    font-family: var(--text-font);
+    color: var(--text-color);
 }
 
 h1 {
     text-align: center;
     font-size: 2em;
+}
+
+h1, h2 {
+    margin-bottom: 10px;
+}
+
+.content {
+    padding: 10px;
+}
+
+.error:not(:empty) {
+    margin-top: 10px;
+    color: var(--error-color);
 }

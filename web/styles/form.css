@@ -1,0 +1,38 @@
+.form-row {
+    background-color: var(--form-row-background);
+    border-radius: 10px;
+    color: var(--form-row-text-color);
+    display: table;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.form-row-icon {
+    display: table-cell;
+    text-align: left;
+    vertical-align: middle;
+    width: 30px;
+}
+
+.form-row-fill-icon {
+    fill: var(--form-row-icon-color);
+}
+
+.form-row-label {
+    display: table-cell;
+    font-weight: bold;
+    padding-right: 10px;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: 0;
+}
+
+.form-row-input {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.error-label {
+    color: var(--error-color) !important;
+}

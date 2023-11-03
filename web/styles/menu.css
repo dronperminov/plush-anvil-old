@@ -1,12 +1,3 @@
-:root {
-    --menu-background: #fff;
-    --menu-icon-color: #000;
-
-    --menu-item-text-color: #000;
-    --menu-item-text-hover-color: #333;
-    --menu-item-background-hover-color: #fff;
-}
-
 .header {
     background-color: var(--menu-background);
     position: sticky;

@@ -1,0 +1,18 @@
+.places {
+    margin-top: 10px;
+}
+
+.place {
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.place .name {
+    margin-bottom: 8px;
+}
+
+.place .address {
+    font-size: 0.8em;
+}

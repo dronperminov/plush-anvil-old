@@ -10,6 +10,7 @@ class MongoManager:
     places = None
     quizzes = None
     photos = None
+    metro_stations = None
 
     def connect(self) -> None:
         self.client = MongoClient(constants.MONGO_URL)
@@ -20,8 +21,11 @@ class MongoManager:
         self.places = database[constants.MONGO_PLACES_COLLECTION]
         self.quizzes = database[constants.MONGO_QUIZZES_COLLECTION]
         self.photos = database[constants.MONGO_PHOTOS_COLLECTION]
+        self.metro_stations = database[constants.MONGO_METRO_STATIONS_COLLECTION]
 
         self.users.create_index([("username", ASCENDING)], unique=True)
+        self.places.create_index([("name", ASCENDING)], unique=True)
+        self.metro_stations.create_index([("name", ASCENDING)])
 
     def close(self) -> None:
         self.client.close()
