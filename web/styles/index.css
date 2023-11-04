@@ -1,0 +1,84 @@
+.schedule-month {
+    text-align: center;
+}
+
+.schedule {
+    display: table;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.schedule-row {
+    display: table-row;
+}
+
+.schedule-cell {
+    display: table-cell;
+    vertical-align: top;
+    border: 1px solid var(--border-color);
+    position: relative;
+    min-height: 80px;
+    width: 150px;
+    min-width: 150px;
+}
+
+.schedule-cell-today {
+    background: #eee;
+    background-clip: padding-box;
+}
+
+.schedule-day {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    font-size: 0.7em;
+}
+
+.schedule-quizzes {
+    display: grid;
+    height: 100%;
+}
+
+.schedule-quiz {
+    display: grid;
+    grid-template-rows: 20px 1fr 20px;
+    grid-template-columns: 20px 1fr 40px;
+    grid-template-areas: 
+        ". place place"
+        "name name name"
+        "cost cost cost";
+    height: fit-content;
+    border-bottom: 1px solid #000;
+}
+
+.schedule-quiz:last-child {
+    border-bottom: none;
+}
+
+.schedule-quiz-place-time {
+    grid-area: place;
+    text-align: right;
+    padding-top: 2px;
+    padding-right: 2px;
+    font-size: 0.7em;
+}
+
+.schedule-quiz-name {
+    grid-area: name;
+    align-self: center;
+    justify-self: center;
+    text-align: center;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.schedule-quiz-cost {
+    grid-area: cost;
+    text-align: center;
+    font-size: 0.7em;
+}
+
+.content {
+    width: unset;
+}

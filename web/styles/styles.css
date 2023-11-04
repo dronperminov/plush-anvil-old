@@ -115,10 +115,14 @@ body {
     display: none !important;
 }
 
+.scrollable {
+    overflow-x: auto;
+}
+
 @media (min-width: 768px) {
     .content {
         font-size: 20px;
-        width: 550px;
+        width: 650px;
         margin: 0 auto;
         border-left: 1px solid var(--content-border-color);
         border-right: 1px solid var(--content-border-color);

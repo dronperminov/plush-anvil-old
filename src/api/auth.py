@@ -4,6 +4,7 @@ from typing import Optional
 from fastapi import APIRouter, Body, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
+from src import constants
 from src.api import templates
 from src.database import database
 from src.dataclasses.user import User
@@ -50,7 +51,7 @@ def sign_up(username: str = Body(..., embed=True), password: str = Body(..., emb
 
     access_token = auth.create_access_token(username)
     response = JSONResponse(content={"status": "success", "token": access_token})
-    response.set_cookie(key=auth.COOKIE_NAME, value=access_token, httponly=True)
+    response.set_cookie(key=auth.COOKIE_NAME, value=access_token, httponly=True, samesite="strict")
     return response
 
 
@@ -59,3 +60,8 @@ def logout() -> Response:
     response = RedirectResponse("/login", status_code=302)
     response.delete_cookie(auth.COOKIE_NAME)
     return response
+
+
+@router.post("/validate")
+def validate(user: Optional[dict] = Depends(auth.get_current_user)) -> JSONResponse:
+    return JSONResponse({"status": constants.SUCCESS, "valid": user is not None})

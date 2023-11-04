@@ -1,5 +1,6 @@
 {% include "header.html" %}
 <title>Плюшевая наковальня</title>
+<link rel="stylesheet" type="text/css" href="/styles/index.css?v={{version}}">
 </head>
 <body>
     {% include "components/menu.html" %}
@@ -7,9 +8,32 @@
     <div class="content">
         <h1>Здрасьте!</h1>
 
-        <div class="schedule">
-            <div class="schedule-row">
-                <div class="schedule-day"></div>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi, sapiente quae, dolores sed delectus, dolore, ipsum repudiandae ut voluptas rerum porro. Sapiente enim earum saepe eveniet, commodi accusamus tempora sed.</p>
+
+        <h2 class="schedule-month">{{schedule.month}}</h2>
+        <div class="scrollable">
+            <div class="schedule">
+                {% for schedule_row in schedule.calendar %}
+                <div class="schedule-row">
+                    {% for schedule_cell in schedule_row %}
+                    <div class="schedule-cell{% if schedule_cell.today %} schedule-cell-today{% endif %}">
+                        {% if schedule_cell.current %}
+                        <div class="schedule-day">{{schedule_cell.day}}</div>
+
+                        <div class="schedule-quizzes">
+                            {% for quiz in schedule_cell.quizzes %}
+                            <div class="schedule-quiz">
+                                <div class="schedule-quiz-place-time">{{quiz.place}}, {{quiz.time}}</div>
+                                <div class="schedule-quiz-name" style="background: {{place2color[quiz.place]}}">{{quiz.name}}</div>
+                                <div class="schedule-quiz-cost">{{quiz.cost}}₽</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
