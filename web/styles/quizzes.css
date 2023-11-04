@@ -1,0 +1,39 @@
+.quizzes {
+    margin-top: 10px;
+}
+
+.quiz {
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.quiz-data {
+    display: table;
+    width: 100%;
+}
+
+.quiz-fields {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.quiz-icons {
+    display: table-cell;
+    vertical-align: top;
+    width: 30px;
+    text-align: right;
+}
+
+.quiz-icons .interactive-fill-icon {
+    margin-bottom: 10px;
+}
+
+h2 {
+    text-align: center;
+}
+
+.basic-textarea {
+    resize: none;
+}

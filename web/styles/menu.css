@@ -129,7 +129,7 @@
         top: 0;
         position: relative;
         float: right;
-        width: calc(100vw - 82px);
+        width: calc(100% - 82px);
         background-color: transparent;
     }
 

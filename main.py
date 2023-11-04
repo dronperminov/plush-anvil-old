@@ -11,6 +11,7 @@ from uvicorn.config import LOGGING_CONFIG
 from src.api.api import router as api_router
 from src.api.auth import router as auth_router
 from src.api.places import router as places_router
+from src.api.quizzes import router as quizzes_router
 from src.database import database
 
 
@@ -28,6 +29,7 @@ def main() -> None:
     app.include_router(api_router)
     app.include_router(auth_router)
     app.include_router(places_router)
+    app.include_router(quizzes_router)
 
     app.add_middleware(GZipMiddleware, minimum_size=500)
 

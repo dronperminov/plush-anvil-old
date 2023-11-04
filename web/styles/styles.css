@@ -34,6 +34,12 @@
     --input-border-color: var(--border-color);
     --input-focus-border-color: var(--main-color);
 
+    /* textarea */
+    --textarea-font-family: Roboto;
+    --textarea-border-color: #aaaaaa;
+    --textarea-text-color: var(--text-color);
+    --textarea-hover-border-color: var(--main-color);
+
     /* button */
     --button-font-family: Roboto;
 
@@ -110,6 +116,7 @@ body {
     margin-top: 10px;
     font-size: 0.9em;
     color: var(--error-color);
+    text-align: center;
 }
 
 .hidden {
@@ -122,6 +129,7 @@ body {
 
 .interactive-fill-icon {
     display: inline-block;
+    cursor: pointer;
 }
 
 .interactive-fill-icon a, .interactive-fill-icon a:hover {

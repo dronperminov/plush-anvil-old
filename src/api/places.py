@@ -1,4 +1,5 @@
-from typing import Optional
+from dataclasses import dataclass
+from typing import List, Optional
 
 from fastapi import APIRouter, Body, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
@@ -7,11 +8,19 @@ from src import constants
 from src.api import make_error, templates
 from src.database import database
 from src.dataclasses.place import Place
-from src.forms.place import PlaceForm
 from src.utils.auth import get_current_user
 from src.utils.common import get_static_hash
 
 router = APIRouter()
+
+
+@dataclass
+class PlaceForm:
+    name: str = Body(..., embed=True)
+    metro_station: str = Body(..., embed=True)
+    address: str = Body(..., embed=True)
+    color: str = Body(..., embed=True)
+    photos: List[str] = Body(..., embed=True)
 
 
 @router.get("/places")

@@ -143,3 +143,34 @@
 .default-input::placeholder, .default-button::placeholder, .default-textarea::placeholder {
     color: var(--placeholder-color);
 }
+
+.basic-textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 2px;
+    resize: vertical;
+    background: transparent;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    font-family: var(--textarea-font-family);
+    font-size: 0.95em;
+    min-height: 80px;
+}
+
+.basic-textarea:focus, .basic-textarea:hover {
+    outline: none;
+}
+
+.default-textarea {
+    border-color: var(--textarea-border-color);
+    color: var(--textarea-text-color);
+}
+
+.default-textarea:focus, .default-textarea:hover {
+    border-color: var(--textarea-hover-border-color);
+}
+
+.one-line-textarea {
+    white-space: nowrap;
+}
