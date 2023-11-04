@@ -68,6 +68,8 @@ def get_schedule() -> dict:
     rows = (num_days + start_weekday + 6) // 7
     calendar_cells = []
 
+    weekdays = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"]
+
     for row in range(rows):
         cells = []
 
@@ -77,6 +79,7 @@ def get_schedule() -> dict:
                 "year": date.year,
                 "month": date.month,
                 "day": date.day,
+                "weekday": weekdays[date.weekday()],
                 "current": date.month == today.month,
                 "today": date.day == today.day,
                 "quizzes": date_quizzes.get(date, [])

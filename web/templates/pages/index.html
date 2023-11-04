@@ -14,11 +14,11 @@
         <div class="schedule-places">
             {% for place in schedule.places %}
             <div class="schedule-place">
-                <span class="schedule-place-color" style="background: {{place2color[place]}}"></span> {{place}}
+                <span class="schedule-place-color" style="background: {{places[place].color}}"></span> {{place}} (м. {{places[place].metro_station}})
             </div>
             {% endfor %}
         </div>
-        <div class="scrollable">
+        <div class="scrollable" id="scrollable">
             <div class="schedule">
                 <div class="schedule-cell schedule-weekday">Пн</div>
                 <div class="schedule-cell schedule-weekday">Вт</div>
@@ -42,9 +42,9 @@
 
                     <div class="schedule-quizzes">
                         {% for quiz in schedule_cell.quizzes %}
-                        <div class="schedule-quiz" style="background: {{place2color[quiz.place]}}">
+                        <div class="schedule-quiz" style="background: {{places[quiz.place].color}}">
                             <div class="schedule-quiz-time">{{quiz.time}}</div>
-                            <div class="schedule-quiz-name" onclick="Details('{{schedule_cell.day}}-{{loop.index}}')">{{quiz.name}}</div>
+                            <div class="schedule-quiz-name" onclick="ShowDetails('{{schedule_cell.day}}-{{loop.index}}')"><span>{{quiz.name}}</span></div>
                             <div class="schedule-quiz-cost">{{quiz.cost}}₽</div>
                         </div>
                         {% endfor %}
@@ -53,10 +53,28 @@
                 </div>
                 {% endfor %}
                 {% endfor %}
+
+                {% for schedule_row in schedule.calendar %}
+                {% for schedule_cell in schedule_row %}
+                {% for quiz in schedule_cell.quizzes %}
+                <div class="quiz-details hidden" id="{{schedule_cell.day}}-{{loop.index}}">
+                    <div class="quiz-details-content">
+                        <div class="quiz-details-content-close" onclick="CloseDetails('{{schedule_cell.day}}-{{loop.index}}')"></div>
+                        <div class="quiz-details-name">{{quiz.name}}</div>
+                        <div class="quiz-details-cost"><b>Сколько?</b> {{quiz.cost}}₽</div>
+                        <div class="quiz-details-datetime"><b>Когда?</b> {{"%02d" % quiz.date.day}}.{{"%02d" % quiz.date.month}}.{{quiz.date.year}} {{schedule_cell.weekday}} в {{quiz.time}}</div>
+                        <div class="quiz-details-place"><b>Где?</b> {{quiz.place}} (м. {{places[quiz.place].metro_station}})</div>
+                        <div class="quiz-details-description"><b>Что ожидается?</b><br>{{quiz.description}}</div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endfor %}
+                {% endfor %}
             </div>
         </div>
     </div>
 
+    <script src="/js/index.js?v={{version}}"></script>
     {% include "footer.html" %}
 </body>
 </html>

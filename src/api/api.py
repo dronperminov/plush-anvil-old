@@ -15,7 +15,7 @@ router = APIRouter()
 def index(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
     template = templates.get_template("pages/index.html")
     schedule = get_schedule()
-    place2color = {place["name"]: place["color"] for place in database.places.find({})}
+    places = {place["name"]: place for place in database.places.find({})}
 
-    content = template.render(user=user, page="index", version=get_static_hash(), schedule=schedule, place2color=place2color)
+    content = template.render(user=user, page="index", version=get_static_hash(), schedule=schedule, places=places)
     return HTMLResponse(content=content)
