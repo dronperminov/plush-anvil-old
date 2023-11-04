@@ -22,9 +22,9 @@
 
                         <div class="schedule-quizzes">
                             {% for quiz in schedule_cell.quizzes %}
-                            <div class="schedule-quiz">
+                            <div class="schedule-quiz" style="background: {{place2color[quiz.place]}}">
                                 <div class="schedule-quiz-place-time">{{quiz.place}}, {{quiz.time}}</div>
-                                <div class="schedule-quiz-name" style="background: {{place2color[quiz.place]}}">{{quiz.name}}</div>
+                                <div class="schedule-quiz-name">{{quiz.name}}</div>
                                 <div class="schedule-quiz-cost">{{quiz.cost}}₽</div>
                             </div>
                             {% endfor %}

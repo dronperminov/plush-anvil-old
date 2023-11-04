@@ -16,3 +16,17 @@
 .place .address {
     font-size: 0.8em;
 }
+
+.place-top {
+    display: table;
+    width: 100%;
+}
+
+.place-info {
+    display: table-cell;
+}
+
+.place-icon {
+    display: table-cell;
+    width: 0;
+}

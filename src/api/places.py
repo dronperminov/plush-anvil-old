@@ -53,8 +53,8 @@ def add_place(user: Optional[dict] = Depends(get_current_user), place_params: Pl
     return JSONResponse({"status": constants.SUCCESS})
 
 
-@router.post("/remove-place")
-def remove_place(user: Optional[dict] = Depends(get_current_user), name: str = Body(..., embed=True)) -> JSONResponse:
+@router.post("/delete-place")
+def delete_place(user: Optional[dict] = Depends(get_current_user), name: str = Body(..., embed=True)) -> JSONResponse:
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
@@ -64,5 +64,23 @@ def remove_place(user: Optional[dict] = Depends(get_current_user), name: str = B
     if not database.places.find_one({"name": name}):
         return JSONResponse({"status": constants.ERROR, "message": f'Места с названием "{name}" не существует'})
 
+    if database.quizzes.find_one({"place": name}):
+        return JSONResponse({"status": constants.ERROR, "message": f'Место с названием "{name}" используется в квизах'})
+
     database.places.delete_one({"name": name})
+    return JSONResponse({"status": constants.SUCCESS})
+
+
+@router.post("/change-place-color")
+def change_place_color(user: Optional[dict] = Depends(get_current_user), name: str = Body(..., embed=True), color: str = Body(..., embed=True)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    if user["role"] != "admin":
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
+
+    if not database.places.find_one({"name": name}):
+        return JSONResponse({"status": constants.ERROR, "message": f'Места с названием "{name}" не существует'})
+
+    database.places.update_one({"name": name}, {"$set": {"color": color}})
     return JSONResponse({"status": constants.SUCCESS})

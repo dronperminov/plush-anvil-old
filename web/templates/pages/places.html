@@ -69,8 +69,19 @@
             <h2>Добавленные ранее места</h2>
             {% for place in places %}
             <div class="place">
-                <div class="name"><b>{{place.name}}</b> (м. {{place.metro_station}})</div>
-                <div class="address">{{place.address}}</div>
+                <div class="place-top">
+                    <div class="place-info">
+                        <div class="name"><input type="color" value="{{place.color}}" onchange="ChangeColor(this, '{{place.name}}')"> <b>{{place.name}}</b> (м. {{place.metro_station}})</div>
+                        <div class="address">{{place.address}}</div>
+                    </div>
+                    <div class="place-icon">
+                        <svg class="" width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" onclick="DeletePlace(this, '{{place.name}}')">
+                            <path d="M12 4h3c.6 0 1 .4 1 1v1H3V5c0-.6.5-1 1-1h3c.2-1.1 1.3-2 2.5-2s2.3.9 2.5 2zM8 4h3c-.2-.6-.9-1-1.5-1S8.2 3.4 8 4zM4 7h11l-.9 10.1c0 .5-.5.9-1 .9H5.9c-.5 0-.9-.4-1-.9L4 7z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="error"></div>
                 {% if place.photos %}
                 <div class="photos">
                     {% for photo in place.photos %}

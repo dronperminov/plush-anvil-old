@@ -108,6 +108,7 @@ body {
 
 .error:not(:empty) {
     margin-top: 10px;
+    font-size: 0.9em;
     color: var(--error-color);
 }
 

@@ -54,6 +54,13 @@ function InputError(inputId, errorMessage = "") {
     }
 }
 
+function GetBlock(block, className) {
+    while (!block.classList.contains(className))
+        block = block.parentNode
+
+    return block
+}
+
 function GetTextField(inputId, errorMessage = "") {
     let input = document.getElementById(inputId)
     let value = input.value.trim()
