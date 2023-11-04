@@ -63,6 +63,7 @@ def get_schedule() -> dict:
     end_date = datetime(today.year, today.month, num_days)
 
     date_quizzes = get_quizzes(start_date, end_date)
+    places = sorted({quiz["place"] for quizzes in date_quizzes.values() for quiz in quizzes})
 
     rows = (num_days + start_weekday + 6) // 7
     calendar_cells = []
@@ -73,6 +74,8 @@ def get_schedule() -> dict:
         for day in range(7):
             date = start_date + timedelta(days=day - start_weekday + 7 * row)
             cells.append({
+                "year": date.year,
+                "month": date.month,
                 "day": date.day,
                 "current": date.month == today.month,
                 "today": date.day == today.day,
@@ -83,5 +86,6 @@ def get_schedule() -> dict:
 
     return {
         "month": constants.MONTH_TO_RUS[today.month],
-        "calendar": calendar_cells
+        "calendar": calendar_cells,
+        "places": places
     }

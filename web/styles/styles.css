@@ -120,6 +120,22 @@ body {
     overflow-x: auto;
 }
 
+.interactive-fill-icon {
+    display: inline-block;
+}
+
+.interactive-fill-icon a, .interactive-fill-icon a:hover {
+    border: none;
+}
+
+.interactive-fill-icon svg {
+    fill: #000;
+}
+
+.interactive-fill-icon:hover svg {
+    fill: #333;
+}
+
 @media (min-width: 768px) {
     .content {
         font-size: 20px;

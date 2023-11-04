@@ -11,28 +11,47 @@
         <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi, sapiente quae, dolores sed delectus, dolore, ipsum repudiandae ut voluptas rerum porro. Sapiente enim earum saepe eveniet, commodi accusamus tempora sed.</p>
 
         <h2 class="schedule-month">{{schedule.month}}</h2>
+        <div class="schedule-places">
+            {% for place in schedule.places %}
+            <div class="schedule-place">
+                <span class="schedule-place-color" style="background: {{place2color[place]}}"></span> {{place}}
+            </div>
+            {% endfor %}
+        </div>
         <div class="scrollable">
             <div class="schedule">
-                {% for schedule_row in schedule.calendar %}
-                <div class="schedule-row">
-                    {% for schedule_cell in schedule_row %}
-                    <div class="schedule-cell{% if schedule_cell.today %} schedule-cell-today{% endif %}">
-                        {% if schedule_cell.current %}
-                        <div class="schedule-day">{{schedule_cell.day}}</div>
+                <div class="schedule-cell schedule-weekday">Пн</div>
+                <div class="schedule-cell schedule-weekday">Вт</div>
+                <div class="schedule-cell schedule-weekday">Ср</div>
+                <div class="schedule-cell schedule-weekday">Чт</div>
+                <div class="schedule-cell schedule-weekday">Пт</div>
+                <div class="schedule-cell schedule-weekday">Сб</div>
+                <div class="schedule-cell schedule-weekday">Вс</div>
 
-                        <div class="schedule-quizzes">
-                            {% for quiz in schedule_cell.quizzes %}
-                            <div class="schedule-quiz" style="background: {{place2color[quiz.place]}}">
-                                <div class="schedule-quiz-place-time">{{quiz.place}}, {{quiz.time}}</div>
-                                <div class="schedule-quiz-name">{{quiz.name}}</div>
-                                <div class="schedule-quiz-cost">{{quiz.cost}}₽</div>
-                            </div>
-                            {% endfor %}
-                        </div>
+                {% for schedule_row in schedule.calendar %}
+                {% for schedule_cell in schedule_row %}
+                <div class="schedule-cell">
+                    {% if schedule_cell.current %}
+                    <div class="schedule-day">
+                        {% if user.role == "admin" %}
+                        <a href="/quizzes/{{schedule_cell.year}}-{{schedule_cell.month}}-{{schedule_cell.day}}">{{schedule_cell.day}}</a>
+                        {% else %}
+                        {{schedule_cell.day}}
                         {% endif %}
                     </div>
-                    {% endfor %}
+
+                    <div class="schedule-quizzes">
+                        {% for quiz in schedule_cell.quizzes %}
+                        <div class="schedule-quiz" style="background: {{place2color[quiz.place]}}">
+                            <div class="schedule-quiz-time">{{quiz.time}}</div>
+                            <div class="schedule-quiz-name" onclick="Details('{{schedule_cell.day}}-{{loop.index}}')">{{quiz.name}}</div>
+                            <div class="schedule-quiz-cost">{{quiz.cost}}₽</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
+                {% endfor %}
                 {% endfor %}
             </div>
         </div>
