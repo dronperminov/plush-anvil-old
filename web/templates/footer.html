@@ -74,7 +74,9 @@ function UpdateCookieToken() {
     {% endif %}
 }
 
+{% if page != "login" %}
 UpdateCookieToken()
 window.addEventListener("beforeunload", UpdateCookieToken)
 window.addEventListener("unload", UpdateCookieToken)
+{% endif %}
 </script>

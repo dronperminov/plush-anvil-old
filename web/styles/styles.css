@@ -19,6 +19,11 @@
     --menu-item-text-hover-color: #333333;
     --menu-item-background-hover-color: #ffffff;
 
+    --submenu-background: #eeeeee;
+    --submenu-item-text-color: #000000;
+    --submenu-item-text-hover-color: #333333;
+    --submenu-item-background-hover-color: #dddddd;
+
     /* form */
     --form-row-background: #f0f0f0;
     --form-row-text-color: var(--text-color);
