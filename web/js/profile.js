@@ -44,6 +44,9 @@ function SaveProfileImage() {
         let menuImage = document.getElementById("menu-profile-image")
         menuImage.src = response.src
 
+        let range = document.getElementById("profile-image-scale")
+        ranse.value = 100
+
         input.value = null
     })
 }
@@ -54,4 +57,12 @@ function CancelProfileImage() {
 
     let popup = document.getElementById("profile-image-settings")
     popup.classList.add("hidden")
+
+    let range = document.getElementById("profile-image-scale")
+    ranse.value = 100
+}
+
+function ChangeCropperSize() {
+    let range = document.getElementById("profile-image-scale")
+    cropper.SetScale(+range.value / 100)
 }
