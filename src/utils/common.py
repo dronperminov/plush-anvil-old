@@ -1,9 +1,14 @@
 import calendar
 import hashlib
 import os
+import shutil
+import tempfile
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
+
+import cv2
+from fastapi import UploadFile
 
 from src import constants
 from src.database import database
@@ -35,6 +40,33 @@ def get_static_hash() -> str:
     hash_md5.update(statis_hash.encode("utf-8"))
 
     return hash_md5.hexdigest()
+
+
+def crop_image(path: str) -> None:
+    image = cv2.imread(path)
+    height, width = image.shape[:2]
+    size = min(height, width)
+    x, y = (width - size) // 2, (height - size) // 2
+    image = image[y:y + size, x:x + size]
+    image = cv2.resize(image, (constants.CROP_IMAGE_SIZE, constants.CROP_IMAGE_SIZE), interpolation=cv2.INTER_AREA)
+    cv2.imwrite(path, image)
+
+
+def save_image(image: UploadFile, path: str) -> str:
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        file_name = image.filename.split("/")[-1]
+        file_path = os.path.join(tmp_dir, file_name)
+
+        try:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+        finally:
+            image.file.close()
+
+        crop_image(file_path)
+        shutil.move(file_path, path)
+
+    return path
 
 
 def parse_time(time: str) -> Tuple[int, int]:

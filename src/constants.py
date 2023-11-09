@@ -10,6 +10,8 @@ MONGO_METRO_STATIONS_COLLECTION = "metro_stations"
 ERROR = "error"
 SUCCESS = "success"
 
+CROP_IMAGE_SIZE = 200
+
 MONTH_TO_RUS = {
     1: "Январь",
     2: "Февраль",

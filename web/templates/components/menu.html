@@ -53,7 +53,7 @@
                 </div>
             </li>
             {% endif %}
-            <li class="profile"><a href="/profile"><img class="profile-img" src="{{user.image_src}}" alt="аватар пользователя {{user.username}}" /><span class="profile-text"> Мой профиль</span></a></li>
+            <li class="menu-profile"><a href="/profile"><img class="menu-profile-img" id="menu-profile-image" src="{{user.image_src}}" alt="аватар пользователя {{user.username}}" /><span class="menu-profile-text"> Мой профиль</span></a></li>
             {% else %}
             <li class="login"><a href="/login">Вход</a></li>
             {% endif %}
