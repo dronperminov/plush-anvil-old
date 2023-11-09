@@ -42,17 +42,19 @@ def get_static_hash() -> str:
     return hash_md5.hexdigest()
 
 
-def crop_image(path: str) -> None:
+def crop_image(path: str, x: float, y: float, size: float) -> None:
     image = cv2.imread(path)
     height, width = image.shape[:2]
-    size = min(height, width)
-    x, y = (width - size) // 2, (height - size) // 2
+    size = int(size * min(height, width))
+    x = int(x * min(height, width))
+    y = int(y * min(height, width))
+
     image = image[y:y + size, x:x + size]
     image = cv2.resize(image, (constants.CROP_IMAGE_SIZE, constants.CROP_IMAGE_SIZE), interpolation=cv2.INTER_AREA)
     cv2.imwrite(path, image)
 
 
-def save_image(image: UploadFile, path: str) -> str:
+def save_image(image: UploadFile, x: float, y: float, size: float, path: str) -> str:
     with tempfile.TemporaryDirectory() as tmp_dir:
         file_name = image.filename.split("/")[-1]
         file_path = os.path.join(tmp_dir, file_name)
@@ -63,7 +65,7 @@ def save_image(image: UploadFile, path: str) -> str:
         finally:
             image.file.close()
 
-        crop_image(file_path)
+        crop_image(file_path, x, y, size)
         shutil.move(file_path, path)
 
     return path

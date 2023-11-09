@@ -19,6 +19,20 @@
             </div>
             <div class="username">@{{user.username}}</div>
             <div class="error"></div>
+            <div class="profile-image-settings hidden" id="profile-image-settings">
+                <div>
+                    <div class="profile-image-cropper" id="cropper">
+                        <img id="profile-image-preview" src="" onload="ShowProfileImagePopup()">
+                        <svg>
+                            <path class="cropper-path" d="M-10 -1 H30 V12 H-10z M 5 5 m -5, 0 a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="profile-image-actions">
+                    <a href="#" onclick="CancelProfileImage()">Отменить</a>&nbsp;&nbsp;&nbsp;
+                    <a href="#" onclick="SaveProfileImage()">Сохранить</a>
+                </div>
+            </div>
         </div>
 
         <div class="form-row" title="Полное имя">
@@ -38,7 +52,11 @@
 
     <script src="/js/fetch.js?v={{version}}"></script>
     <script src="/js/utils.js?v={{version}}"></script>
+    <script src="/js/image_cropper.js?v={{version}}"></script>
     <script src="/js/profile.js?v={{version}}"></script>
+    <script>
+        let cropper = new ImageCropper("cropper")
+    </script>
     {% include "footer.html" %}
 </body>
 </html>

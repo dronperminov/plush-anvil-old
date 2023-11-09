@@ -1,9 +1,8 @@
 import os
-import shutil
-import tempfile
+from dataclasses import dataclass
 from typing import Optional
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import HTMLResponse
 from starlette.responses import JSONResponse
 
@@ -16,6 +15,14 @@ from src.utils.common import get_hash, get_static_hash, save_image
 router = APIRouter()
 
 
+@dataclass
+class AvatarForm:
+    x: float = Form(...)
+    y: float = Form(...)
+    size: float = Form(...)
+    image: UploadFile = File(...)
+
+
 @router.get("/profile")
 def profile(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
     template = templates.get_template("pages/profile.html")
@@ -24,11 +31,11 @@ def profile(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
 
 
 @router.post("/update-avatar")
-async def update_avatar(image: UploadFile = File(...), user: Optional[dict] = Depends(get_current_user)) -> JSONResponse:
+async def update_avatar(params: AvatarForm = Depends(), user: Optional[dict] = Depends(get_current_user)) -> JSONResponse:
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не залогинен"})
 
-    image_path = save_image(image, os.path.join("web", "images", "profiles", f'{user["username"]}.jpg'))
+    image_path = save_image(params.image, params.x, params.y, params.size, os.path.join("web", "images", "profiles", f'{user["username"]}.jpg'))
     image_hash = get_hash(image_path)
     image_src = f'/images/profiles/{user["username"]}.jpg?v={image_hash}'
 

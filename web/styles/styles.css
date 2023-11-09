@@ -156,6 +156,6 @@ body {
         margin: 0 auto;
         border-left: 1px solid var(--content-border-color);
         border-right: 1px solid var(--content-border-color);
-        min-height: calc(100dvh - 62px);
+        min-height: calc(100dvh - 65px);
     }
 }

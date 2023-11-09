@@ -50,6 +50,43 @@
     transition: margin-top 100ms linear;
 }
 
+.profile-image-settings {
+    position: absolute;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    height: calc(100dvh - 65px);
+    background: #ffffffaa;
+    z-index: 4;
+    display: grid;
+    grid-template-rows: 1fr 50px;
+    grid-auto-flow: row;
+    align-items: center;
+    padding: 10px;
+}
+
+.profile-image-cropper {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-image-cropper img {
+    max-height: calc(100dvh - 140px);
+    max-width: 100%;
+}
+
+.profile-image-cropper svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    bottom: 0;
+}
+
+.cropper-path {
+    fill: #000000bb;
+}
+
 .username {
     text-align: center;
     font-size: 0.9em;
