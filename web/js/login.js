@@ -75,7 +75,7 @@ function SignIn() {
         }
 
         localStorage.setItem(TOKEN_NAME, response.token)
-        window.location.href = "/"
+        location.reload()
     })
 }
 
@@ -108,7 +108,7 @@ function SignUp() {
         }
 
         localStorage.setItem(TOKEN_NAME, response.token)
-        window.location.href = "/"
+        location.reload()
     })
 }
 

@@ -41,7 +41,7 @@ class QuizUpdateForm(QuizAddForm):
 @router.get("/quizzes/{date}")
 def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> Response:
     if not user:
-        return RedirectResponse(url="/logout")
+        return RedirectResponse(url=f"/login?back_url=/quizzes/{date}")
 
     if user["role"] != "admin":
         return make_error(message="Эта страница доступна только администраторам.", user=user)

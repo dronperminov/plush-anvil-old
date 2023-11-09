@@ -1,7 +1,7 @@
 from dataclasses import asdict
 from typing import Optional
 
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, Query
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import constants
@@ -15,9 +15,9 @@ router = APIRouter()
 
 
 @router.get("/login")
-def login(user: Optional[dict] = Depends(auth.get_current_user)) -> Response:
+def login(user: Optional[dict] = Depends(auth.get_current_user), back_url: str = Query("/")) -> Response:
     if user:
-        return RedirectResponse(url="/", status_code=302)
+        return RedirectResponse(url=back_url, status_code=302)
 
     template = templates.get_template("pages/login.html")
     return HTMLResponse(content=template.render(page="login", version=get_static_hash()))

@@ -26,7 +26,7 @@ class PlaceForm:
 @router.get("/places")
 def get_places(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if not user:
-        return RedirectResponse(url="/logout")
+        return RedirectResponse(url="/login?back_url=/places")
 
     if user["role"] != "admin":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
