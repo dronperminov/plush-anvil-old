@@ -45,7 +45,7 @@ function SaveProfileImage() {
         menuImage.src = response.src
 
         let range = document.getElementById("profile-image-scale")
-        ranse.value = 100
+        range.value = 100
 
         input.value = null
     })
@@ -59,7 +59,7 @@ function CancelProfileImage() {
     popup.classList.add("hidden")
 
     let range = document.getElementById("profile-image-scale")
-    ranse.value = 100
+    range.value = 100
 }
 
 function ChangeCropperSize() {
