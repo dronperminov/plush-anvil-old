@@ -37,7 +37,7 @@ async def update_avatar(params: AvatarForm = Depends(), user: Optional[dict] = D
 
     image_path = save_image(params.image, params.x, params.y, params.size, os.path.join("web", "images", "profiles", f'{user["username"]}.jpg'))
     image_hash = get_hash(image_path)
-    image_src = f'/images/profiles/{user["username"]}.jpg?v={image_hash}'
+    image_src = f'/profile-images/{user["username"]}.jpg?v={image_hash}'
 
     database.users.update_one({"username": user["username"]}, {"$set": {"image_src": image_src}}, upsert=True)
     return JSONResponse({"status": constants.SUCCESS, "src": image_src})
