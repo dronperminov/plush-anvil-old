@@ -26,6 +26,7 @@ class MongoManager:
         self.metro_stations = database[constants.MONGO_METRO_STATIONS_COLLECTION]
 
         self.users.create_index([("username", ASCENDING)], unique=True)
+        self.quizzes.create_index([("date", ASCENDING), ("name", ASCENDING), ("place", ASCENDING)], unique=True)
         self.places.create_index([("name", ASCENDING)], unique=True)
         self.organizers.create_index([("name", ASCENDING)], unique=True)
         self.metro_stations.create_index([("name", ASCENDING)])

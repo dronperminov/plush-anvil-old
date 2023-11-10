@@ -68,14 +68,14 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
     if user["role"] != "admin":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
-    if database.quizzes.find_one({"name": quiz_params.name, "place": quiz_params.place}):
-        return JSONResponse({"status": constants.ERROR, "message": "Квиз с таким названием уже имеется"})
+    if database.quizzes.find_one({"date": quiz_params.date, "name": quiz_params.name, "place": quiz_params.place}):
+        return JSONResponse({"status": constants.ERROR, "message": f'Квиз с названием "{quiz_params.name}" в {quiz_params.place} уже имеется'})
 
     if not database.places.find_one({"name": quiz_params.place}):
         return JSONResponse({"status": constants.ERROR, "message": f'Места проведения квиза с названием "{quiz_params.place}" не существует'})
 
     if not database.organizers.find_one({"name": quiz_params.organizer}):
-        return JSONResponse({"status": constants.ERROR, "message": f'Места проведения квиза с названием "{quiz_params.place}" не существует'})
+        return JSONResponse({"status": constants.ERROR, "message": f'Организатора квизов с названием "{quiz_params.place}" не существует'})
 
     quiz = Quiz.from_dict({
         "name": quiz_params.name,
@@ -99,11 +99,11 @@ def delete_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
     if user["role"] != "admin":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
-    if not database.quizzes.find_one({"date": quiz_params.date, "name": quiz_params.name}):
+    if not database.quizzes.find_one({"date": quiz_params.date, "name": quiz_params.name, "place": quiz_params.place}):
         return JSONResponse({"status": constants.ERROR, "message": f'Квиза с названием "{quiz_params.name}" в {quiz_params.place} не существует'})
 
     # TODO: возможно, нужно будет удалять что-то ещё, например, фотки?
-    database.quizzes.delete_one({"name": quiz_params.name, "place": quiz_params.place})
+    database.quizzes.delete_one({"date": quiz_params.date, "name": quiz_params.name, "place": quiz_params.place})
     return JSONResponse({"status": constants.SUCCESS})
 
 
@@ -131,5 +131,5 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
         "cost": quiz_params.cost
     })
 
-    database.quizzes.update_one({"name": quiz_params.original_name, "place": quiz_params.original_place}, {"$set": quiz.to_dict()})
+    database.quizzes.update_one({"date": quiz_params.date, "name": quiz_params.original_name, "place": quiz_params.original_place}, {"$set": quiz.to_dict()})
     return JSONResponse({"status": constants.SUCCESS})
