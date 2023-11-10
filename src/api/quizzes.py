@@ -10,7 +10,7 @@ from src.api import make_error, templates
 from src.database import database
 from src.dataclasses.quiz import Quiz
 from src.utils.auth import get_current_user
-from src.utils.common import get_static_hash
+from src.utils.common import get_static_hash, parse_date
 
 router = APIRouter()
 
@@ -47,8 +47,7 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
     if user["role"] != "admin":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
-    year, month, day = [int(part) for part in date.split("-")]
-    date = datetime(year, month, day)
+    date = parse_date(date)
     weekday = constants.WEEKDAY_TO_RUS[date.weekday()]
 
     template = templates.get_template("pages/quizzes.html")

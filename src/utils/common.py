@@ -1,6 +1,7 @@
 import calendar
 import hashlib
 import os
+import re
 import shutil
 import tempfile
 from collections import defaultdict
@@ -71,6 +72,20 @@ def save_image(image: UploadFile, x: float, y: float, size: float, path: str) ->
     return path
 
 
+def parse_date(date: str) -> datetime:
+    if match := re.fullmatch(r"(?P<year>\d\d\d\d)-(?P<month>\d\d?)-(?P<day>\d\d?)", date):
+        return datetime(int(match.group("year")), int(match.group("month")), int(match.group("day")))
+
+    if match := re.fullmatch(r"(?P<month>\d\d?)-(?P<year>\d\d\d\d)", date):
+        return datetime(int(match.group("year")), int(match.group("month")), 1)
+
+    if match := re.fullmatch(fr'(?P<month>({"|".join(constants.MONTH_TO_RUS.values())}))-(?P<year>\d\d\d\d)', date):
+        rus2month = {month_rus: month for month, month_rus in constants.MONTH_TO_RUS.items()}
+        return datetime(int(match.group("year")), rus2month[match.group("month")], 1)
+
+    return datetime.now()
+
+
 def parse_time(time: str) -> Tuple[int, int]:
     hour, minute = time.split(":")
     return int(hour), int(minute)
@@ -89,12 +104,12 @@ def get_quizzes(start_date: datetime, end_date: datetime) -> Dict[datetime, List
     return date2quizzes
 
 
-def get_schedule() -> dict:
-    today = datetime.now()
-
-    start_weekday, num_days = calendar.monthrange(today.year, today.month)
-    start_date = datetime(today.year, today.month, 1)
-    end_date = datetime(today.year, today.month, num_days)
+def get_schedule(schedule_date: datetime) -> dict:
+    start_weekday, num_days = calendar.monthrange(schedule_date.year, schedule_date.month)
+    start_date = datetime(schedule_date.year, schedule_date.month, 1)
+    end_date = datetime(schedule_date.year, schedule_date.month, num_days)
+    prev_date = start_date + timedelta(days=-1)
+    next_date = end_date + timedelta(days=1)
 
     date_quizzes = get_quizzes(start_date, end_date)
     places = sorted({quiz["place"] for quizzes in date_quizzes.values() for quiz in quizzes})
@@ -114,15 +129,17 @@ def get_schedule() -> dict:
                 "month": date.month,
                 "day": date.day,
                 "weekday": weekdays[date.weekday()],
-                "current": date.month == today.month,
-                "today": date.day == today.day,
+                "current": date.month == schedule_date.month,
                 "quizzes": date_quizzes.get(date, [])
             })
 
         calendar_cells.append(cells)
 
     return {
-        "month": constants.MONTH_TO_RUS[today.month],
+        "prev_date": f"{constants.MONTH_TO_RUS[prev_date.month]}-{prev_date.year}",
+        "next_date": f"{constants.MONTH_TO_RUS[next_date.month]}-{next_date.year}",
+        "month": constants.MONTH_TO_RUS[schedule_date.month],
+        "year": schedule_date.year,
         "calendar": calendar_cells,
         "places": places
     }

@@ -10,7 +10,12 @@
 
         <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sequi, sapiente quae, dolores sed delectus, dolore, ipsum repudiandae ut voluptas rerum porro. Sapiente enim earum saepe eveniet, commodi accusamus tempora sed.</p>
 
-        <h2 class="schedule-month">{{schedule.month}}</h2>
+        <h2 class="schedule-month">{{schedule.month | title}} {{schedule.year}}</h2>
+        <div class="schedule-controls">
+            <span class="schedule-control"><a href="/?date={{schedule.prev_date}}">прошлый месяц</a></span>
+            <span class="schedule-control"><a href="/?date={{schedule.next_date}}">следующий месяц</a></span>
+        </div>
+
         <div class="schedule-places">
             {% for place in schedule.places %}
             <div class="schedule-place">
@@ -34,7 +39,7 @@
                     {% if schedule_cell.current %}
                     <div class="schedule-day">
                         {% if user.role == "admin" %}
-                        <a href="/quizzes/{{schedule_cell.year}}-{{schedule_cell.month}}-{{schedule_cell.day}}">{{schedule_cell.day}}</a>
+                        <a href="/quizzes/{{schedule_cell.year}}-{{'%02d' % schedule_cell.month}}-{{'%02d' % schedule_cell.day}}">{{schedule_cell.day}}</a>
                         {% else %}
                         {{schedule_cell.day}}
                         {% endif %}
@@ -76,6 +81,7 @@
     </div>
 
     <script src="/js/fetch.js?v={{version}}"></script>
+    <script src="/js/utils.js?v={{version}}"></script>
     <script src="/js/index.js?v={{version}}"></script>
     {% include "footer.html" %}
 </body>

@@ -1,3 +1,24 @@
+.schedule-controls {
+    display: table;
+    table-layout: fixed;
+    margin: 0 auto 10px auto;
+}
+
+.schedule-control {
+    display: table-cell;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.schedule-control span {
+    border-bottom: 1px dashed var(--text-color);
+    cursor: pointer;
+}
+
+.schedule-control span:hover {
+    border-bottom-style: solid;
+}
+
 .schedule-month {
     text-align: center;
 }
@@ -35,11 +56,13 @@
     border-right: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
     position: relative;
+    min-height: 70px;
 }
 
 .schedule-weekday {
     text-align: center;
     font-size: 0.9em;
+    min-height: 0;
 }
 
 .schedule-day {
