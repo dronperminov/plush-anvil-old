@@ -8,12 +8,13 @@ class Quiz:
     date: datetime
     time: str
     place: str
+    organizer: str
     description: str
     cost: int
 
     @classmethod
     def from_dict(cls: "Quiz", data: dict) -> "Quiz":
-        return Quiz(data["name"], data["date"], data["time"], data["place"], data["description"], data["cost"])
+        return Quiz(data["name"], data["date"], data["time"], data["place"], data["organizer"], data["description"], data["cost"])
 
     def to_dict(self) -> dict:
         return {
@@ -21,6 +22,7 @@ class Quiz:
             "date": self.date,
             "time": self.time,
             "place": self.place,
+            "organizer": self.organizer,
             "description": self.description,
             "cost": self.cost
         }

@@ -8,6 +8,10 @@
     margin-bottom: 10px;
 }
 
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
 .form-row-icon {
     display: table-cell;
     text-align: left;
@@ -43,6 +47,12 @@
 .form-row-input {
     display: table-cell;
     vertical-align: middle;
+}
+
+.form-row-top .form-row-icon,
+.form-row-top .form-row-label,
+.form-row-top .form-row-input {
+    vertical-align: top;
 }
 
 .error-label {

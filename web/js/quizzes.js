@@ -9,6 +9,10 @@ function ParseQuiz(date, quizId = "") {
     if (quizData.place === null)
         return null
 
+    quizData.organizer = GetDatalistTextField(`organizer${quizId}`, "organizers", "Организатор квиза не выбран", "Необходимо выбрать организатора из имеющихся")
+    if (quizData.organizer === null)
+        return null
+
     quizData.time = GetFormatTextField(`time${quizId}`, /^\d\d?:\d\d$/g, "Время квиза не указано", "Время квиза указано внекорректном формате")
     if (quizData.time == null)
         return null
@@ -66,16 +70,15 @@ function DeleteQuiz(icon, date) {
     })
 }
 
-function UpdateQuiz(button, date, name, place, quizId) {
+function UpdateQuiz(button, date, quizId) {
     let quizData = ParseQuiz(date, quizId)
 
     if (quizData == null)
         return
 
-    quizData.original_name = name
-    quizData.original_place = place
-
     let quizBlock = GetBlock(button, "quiz")
+    quizData.original_name = quizBlock.getAttribute("data-name")
+    quizData.original_place = quizBlock.getAttribute("data-place")
 
     let error = GetChildBlock(quizBlock, "error")
     error.innerText = ""

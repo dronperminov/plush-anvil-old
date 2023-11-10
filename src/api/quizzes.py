@@ -21,6 +21,7 @@ class QuizAddForm:
     date: datetime = Body(..., embed=True)
     time: str = Body(..., embed=True)
     place: str = Body(..., embed=True)
+    organizer: str = Body(..., embed=True)
     description: str = Body(..., embed=True)
     cost: int = Body(..., embed=True)
 
@@ -52,9 +53,10 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
 
     template = templates.get_template("pages/quizzes.html")
     places = [place["name"] for place in database.places.find({})]
+    organizers = [organizer["name"] for organizer in database.organizers.find({})]
     quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"date": date})]
 
-    content = template.render(user=user, page="places", version=get_static_hash(), quizzes=quizzes, places=places, date=date, weekday=weekday)
+    content = template.render(user=user, page="places", version=get_static_hash(), quizzes=quizzes, places=places, organizers=organizers, date=date, weekday=weekday)
     return HTMLResponse(content=content)
 
 
@@ -69,7 +71,10 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
     if database.quizzes.find_one({"name": quiz_params.name, "place": quiz_params.place}):
         return JSONResponse({"status": constants.ERROR, "message": "Квиз с таким названием уже имеется"})
 
-    if not database.places.find_one({"name": quiz_params.place, "place": quiz_params.place}):
+    if not database.places.find_one({"name": quiz_params.place}):
+        return JSONResponse({"status": constants.ERROR, "message": f'Места проведения квиза с названием "{quiz_params.place}" не существует'})
+
+    if not database.organizers.find_one({"name": quiz_params.organizer}):
         return JSONResponse({"status": constants.ERROR, "message": f'Места проведения квиза с названием "{quiz_params.place}" не существует'})
 
     quiz = Quiz.from_dict({
@@ -77,6 +82,7 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
         "date": quiz_params.date,
         "time": quiz_params.time,
         "place": quiz_params.place,
+        "organizer": quiz_params.organizer,
         "description": quiz_params.description,
         "cost": quiz_params.cost
     })
@@ -120,6 +126,7 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
         "date": quiz_params.date,
         "time": quiz_params.time,
         "place": quiz_params.place,
+        "organizer": quiz_params.organizer,
         "description": quiz_params.description,
         "cost": quiz_params.cost
     })

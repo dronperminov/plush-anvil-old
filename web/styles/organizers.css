@@ -1,0 +1,42 @@
+h2 {
+    text-align: center;
+}
+
+.organizers {
+    margin-top: 10px;
+}
+
+.organizer {
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.organizer .name {
+    margin-bottom: 8px;
+}
+
+.organizer .address {
+    font-size: 0.8em;
+}
+
+.organizer-top {
+    display: table;
+    width: 100%;
+}
+
+.organizer-info {
+    display: table-cell;
+}
+
+.organizer-icon {
+    display: table-cell;
+    width: 30px;
+    vertical-align: top;
+    text-align: center;
+}
+
+.organizer-icon .interactive-fill-icon {
+    margin-bottom: 10px;
+}

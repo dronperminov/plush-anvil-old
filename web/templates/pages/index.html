@@ -64,6 +64,7 @@
                         <div class="quiz-details-cost"><b>Сколько?</b> {{quiz.cost}}₽</div>
                         <div class="quiz-details-datetime"><b>Когда?</b> {{"%02d" % quiz.date.day}}.{{"%02d" % quiz.date.month}}.{{quiz.date.year}} {{schedule_cell.weekday}} в {{quiz.time}}</div>
                         <div class="quiz-details-place"><b>Где?</b> {{quiz.place}} (м. {{places[quiz.place].metro_station}})</div>
+                        <div class="quiz-details-organizer"><b>От кого?</b> {{quiz.organizer}}</div>
                         <div class="quiz-details-description"><b>Что ожидается?</b><br>{{quiz.description}}</div>
                     </div>
                 </div>
