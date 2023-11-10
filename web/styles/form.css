@@ -58,3 +58,28 @@
 .error-label {
     color: var(--error-color) !important;
 }
+
+
+@media (max-width: 767px) {
+    .form-row {
+        display: grid;
+        grid-template-areas: 
+            "icon label"
+            "input input";
+        grid-template-columns: 30px 1fr;
+        align-items: center;
+    }
+
+    .form-row-icon {
+        grid-area: icon;
+    }
+
+    .form-row-label {
+        grid-area: label;
+        text-align: left;
+    }
+
+    .form-row-input {
+        grid-area: input;
+    }
+}

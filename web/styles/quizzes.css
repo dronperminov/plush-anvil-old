@@ -37,3 +37,27 @@ h2 {
 .basic-textarea {
     resize: none;
 }
+
+@media (max-width: 767px) {
+    .quiz-data {
+        display: grid;
+        grid-template-areas: 
+            "icons"
+            "fields";
+        align-items: center;
+    }
+
+    .quiz-fields {
+        grid-area: fields;
+    }
+
+    .quiz-icons {
+        grid-area: icons;
+        text-align: right;
+        width: 100%;
+    }
+
+    .quiz-icons .interactive-fill-icon {
+       margin-bottom: 0;
+    }
+}

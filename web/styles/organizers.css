@@ -40,3 +40,27 @@ h2 {
 .organizer-icon .interactive-fill-icon {
     margin-bottom: 10px;
 }
+
+@media (max-width: 767px) {
+    .organizer-top {
+        display: grid;
+        grid-template-areas: 
+            "icons"
+            "info";
+        align-items: center;
+    }
+
+    .organizer-top {
+        grid-area: info;
+    }
+
+    .organizer-icon {
+        grid-area: icons;
+        text-align: right;
+        width: 100%;
+    }
+
+    .organizer-icon .interactive-fill-icon {
+        margin-bottom: 0;
+    }
+}
