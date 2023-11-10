@@ -18,7 +18,7 @@ function AddParsedQuiz(line, parsed) {
     MakeFormRow(quizFields, `time-${index}`, ORGANIZER_ICON, "Время", "basic-input default-input", {tag: "input", type: "text", value: parsed.time, placeholder: "во сколько начнётся квиз?", list: "times"})
     MakeFormRow(quizFields, `description-${index}`, DESCRIPTION_ICON, "Описание", "basic-textarea default-textarea", {tag: "textarea", innerText: parsed.description, placeholder: "что это за квиз вообще?", rows: 5})
     MakeFormRow(quizFields, `cost-${index}`, COST_ICON, "Стоимость", "basic-input default-input", {tag: "input", type: "text", value: parsed.cost, placeholder: "сколько стоит квиз?", list: "costs", inputmode: "numeric"})
-    
+
     let quizIcons = MakeElement("quiz-icons", quizData)
     let deleteBlock = MakeElement("interactive-fill-icon", quizIcons, {innerHTML: DELETE_ICON})
     let saveBlock = MakeElement("interactive-fill-icon save-button", quizIcons, {innerHTML: SAVE_ICON})

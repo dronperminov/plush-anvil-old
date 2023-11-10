@@ -1,7 +1,7 @@
 .schedule-controls {
     display: table;
     table-layout: fixed;
-    margin: 0 auto 10px auto;
+    margin: 0 auto 20px auto;
 }
 
 .schedule-control {
@@ -26,6 +26,7 @@
 .schedule-places {
     text-align: center;
     overflow-x: auto;
+    margin-bottom: 10px;
 }
 
 .schedule-place {
