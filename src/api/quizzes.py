@@ -55,7 +55,23 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
     organizers = [organizer["name"] for organizer in database.organizers.find({})]
     quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"date": date})]
 
-    content = template.render(user=user, page="places", version=get_static_hash(), quizzes=quizzes, places=places, organizers=organizers, date=date, weekday=weekday)
+    content = template.render(user=user, page="quizzes", version=get_static_hash(), quizzes=quizzes, places=places, organizers=organizers, date=date, weekday=weekday)
+    return HTMLResponse(content=content)
+
+
+@router.get("/parse-quizzes")
+def parse_quizzes(user: Optional[dict] = Depends(get_current_user)) -> Response:
+    if not user:
+        return RedirectResponse(url="/login?back_url=/parse-quizzes")
+
+    if user["role"] != "admin":
+        return make_error(message="Эта страница доступна только администраторам.", user=user)
+
+    places = [place["name"] for place in database.places.find({})]
+    organizers = [organizer["name"] for organizer in database.organizers.find({})]
+
+    template = templates.get_template("pages/parse_quizzes.html")
+    content = template.render(user=user, page="parse_quizzes", version=get_static_hash(), places=places, organizers=organizers, year=datetime.now().year)
     return HTMLResponse(content=content)
 
 

@@ -26,7 +26,7 @@ class AvatarForm:
 @router.get("/profile")
 def profile(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
     template = templates.get_template("pages/profile.html")
-    content = template.render(user=user, page="index", version=get_static_hash())
+    content = template.render(user=user, page="profile", version=get_static_hash())
     return HTMLResponse(content=content)
 
 

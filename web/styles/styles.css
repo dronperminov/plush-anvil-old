@@ -132,6 +132,10 @@ body {
     overflow-x: auto;
 }
 
+.margin-bottom {
+    margin-bottom: 10px;
+}
+
 .interactive-fill-icon {
     display: inline-block;
     cursor: pointer;

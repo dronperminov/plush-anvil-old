@@ -44,12 +44,14 @@
 .schedule {
     display: grid;
     max-width: 1050px;
-    min-width: 840px;
+    min-width: 1050px;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     margin: 0 auto;
     border-left: 1px solid var(--border-color);
     border-top: 1px solid var(--border-color);
     position: relative;
+    grid-template-rows: 25px;
+    grid-auto-rows: 1fr
 }
 
 .schedule-cell {
@@ -63,6 +65,8 @@
     text-align: center;
     font-size: 0.9em;
     min-height: 0;
+    display: grid;
+    align-items: center;
 }
 
 .schedule-day {

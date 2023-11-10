@@ -31,10 +31,22 @@ def get_static_hash() -> str:
     js_dir = os.path.join(os.path.dirname(__file__), "..", "..", "web", "js")
 
     for filename in os.listdir(styles_dir):
-        hashes.append(get_hash(os.path.join(styles_dir, filename)))
+        path = os.path.join(styles_dir, filename)
+
+        if os.path.isdir(path):
+            for sub_filename in os.listdir(path):
+                hashes.append(get_hash(os.path.join(path, sub_filename)))
+        else:
+            hashes.append(get_hash(path))
 
     for filename in os.listdir(js_dir):
-        hashes.append(get_hash(os.path.join(js_dir, filename)))
+        path = os.path.join(js_dir, filename)
+
+        if os.path.isdir(path):
+            for sub_filename in os.listdir(path):
+                hashes.append(get_hash(os.path.join(path, sub_filename)))
+        else:
+            hashes.append(get_hash(path))
 
     statis_hash = "_".join(hashes)
     hash_md5 = hashlib.md5()

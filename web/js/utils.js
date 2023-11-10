@@ -25,6 +25,20 @@ function MakeElement(className, parent = null, attributes = null) {
     return element
 }
 
+function MakeFormRow(parent, id, icon, labelText, inputClass, inputAttributes) {
+    let row = MakeElement("form-row" + (inputAttributes.tag === "textarea" ? " form-row-top" : ""), parent)
+
+    MakeElement("form-row-icon", row, {id: `${id}-icon`, innerHTML: icon})
+
+    let labelBlock = MakeElement("form-row-label", row)
+    MakeElement("", labelBlock, {"for": id, id: `${id}-label`, innerText: labelText})
+
+    let nameBlock = MakeElement("form-row-input", row)
+    let name = MakeElement(inputClass, nameBlock, inputAttributes)
+    name.setAttribute("id", id)
+    name.addEventListener("input", () => ChangeInput(id))
+}
+
 function InputError(inputId, errorMessage = "") {
     let input = document.getElementById(inputId)
     let label = document.getElementById(`${inputId}-label`)
