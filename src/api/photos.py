@@ -18,7 +18,7 @@ router = APIRouter()
 
 @router.get("/photos")
 def get_photos(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
-    albums = list(database.photo_albums.find({}).sort("datetime", -1))
+    albums = list(database.photo_albums.find({"deactivated": {"$ne": True}}).sort("datetime", -1))
     template = templates.get_template("pages/photos.html")
     content = template.render(user=user, page="photos", version=get_static_hash(), albums=albums)
     return HTMLResponse(content=content)
@@ -30,6 +30,9 @@ def get_album(album_id: int, title: str, user: Optional[dict] = Depends(get_curr
 
     if not album:
         return make_error(message="Запрашиваемый альбом не найден.", user=user)
+
+    if album.get("deactivated"):
+        return make_error(message="Запрашиваемый альбом был удалён.", user=user)
 
     template = templates.get_template("pages/album.html")
     content = template.render(user=user, page="album", version=get_static_hash(), album=album)
@@ -78,6 +81,21 @@ def add_quiz_album(quiz_id: str, user: Optional[dict] = Depends(get_current_user
 
     database.photo_albums.insert_one(album.to_dict())
     return RedirectResponse(album.url)
+
+
+@router.post("/remove-album")
+def remove_album(user: Optional[dict] = Depends(get_current_user), album_id: int = Body(..., embed=True)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    if user["role"] != "admin":
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
+
+    if not database.photo_albums.find_one({"album_id": album_id}):
+        return JSONResponse({"status": constants.ERROR, "message": "Фотоальбом не найден"})
+
+    database.photo_albums.update_one({"album_id": album_id}, {"$set": {"deactivated": True}})
+    return JSONResponse({"status": constants.SUCCESS})
 
 
 @router.post("/upload-photo")

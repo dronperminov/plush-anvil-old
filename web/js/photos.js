@@ -34,3 +34,21 @@ function CreateAlbum() {
         location.href = response.url
     })
 }
+
+function DeleteAlbum(icon, albumId) {
+    if (!confirm("Вы уверены, что хотите удалить этот альбом?"))
+        return
+
+    let block = GetBlock(icon, "photo-album")
+    let error = GetChildBlock(block, "error")
+    error.innerText = ""
+
+    SendRequest("/remove-album", {album_id: albumId}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            error.innerText = response.message
+            return
+        }
+
+        block.remove()
+    })
+}

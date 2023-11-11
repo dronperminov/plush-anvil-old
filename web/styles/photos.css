@@ -54,14 +54,25 @@ h1 {
     grid-gap: 10px;
 }
 
-.photo-album {
-    position: relative;
+.photo-album-main {
     min-height: 160px;
+    position: relative;
 }
 
 .photo-album-preview img {
     width: 100%;
     height: auto;
+}
+
+.photo-album a, .photo-album a:hover {
+    border: none;
+}
+
+.photo-album-remove {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px;
 }
 
 .photo-album-caption {
@@ -76,6 +87,11 @@ h1 {
     padding: 5px;
     font-size: 0.8em;
     transition: background-color 100ms ease-in;
+}
+
+.photo-album .error {
+    margin-top: 0;
+    font-size: 0.8em;
 }
 
 .photo-album:hover .photo-album-caption {
