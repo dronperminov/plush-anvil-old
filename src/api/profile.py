@@ -3,14 +3,13 @@ from dataclasses import dataclass
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile
-from fastapi.responses import HTMLResponse
-from starlette.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 from src import constants
 from src.api import templates
 from src.database import database
 from src.utils.auth import get_current_user
-from src.utils.common import get_hash, get_static_hash, save_image
+from src.utils.common import crop_image, get_hash, get_static_hash, save_image
 
 router = APIRouter()
 
@@ -35,7 +34,8 @@ async def update_avatar(params: AvatarForm = Depends(), user: Optional[dict] = D
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не залогинен"})
 
-    image_path = save_image(params.image, params.x, params.y, params.size, os.path.join("web", "images", "profiles", f'{user["username"]}.jpg'))
+    image_path = save_image(params.image, os.path.join("web", "images", "profiles", f'{user["username"]}.jpg'))
+    crop_image(image_path, params.x, params.y, params.size)
     image_hash = get_hash(image_path)
     image_src = f'/profile-images/{user["username"]}.jpg?v={image_hash}'
 

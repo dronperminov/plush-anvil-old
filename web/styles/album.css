@@ -1,0 +1,40 @@
+.content {
+    position: relative;
+}
+
+h1 {
+    width: calc(100% - 35px);
+}
+
+.add-photos {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+.photos {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.photo a, .photo a:hover {
+    border: none;
+}
+
+.photo img {
+    width: 100%;
+    height: auto;
+}
+
+@media (max-width: 767px) {
+    .photos {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .photos {
+        grid-template-columns: 1fr;
+    }
+}

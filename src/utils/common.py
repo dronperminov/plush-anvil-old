@@ -67,7 +67,14 @@ def crop_image(path: str, x: float, y: float, size: float) -> None:
     cv2.imwrite(path, image)
 
 
-def save_image(image: UploadFile, x: float, y: float, size: float, path: str) -> str:
+def preview_image(original_path: str, preview_path: str, preview_width: int = 500) -> None:
+    image = cv2.imread(original_path)
+    height, width = image.shape[:2]
+    image = cv2.resize(image, (preview_width, int(preview_width / width * height)), interpolation=cv2.INTER_AREA)
+    cv2.imwrite(preview_path, image)
+
+
+def save_image(image: UploadFile, path: str) -> str:
     with tempfile.TemporaryDirectory() as tmp_dir:
         file_name = image.filename.split("/")[-1]
         file_path = os.path.join(tmp_dir, file_name)
@@ -78,10 +85,18 @@ def save_image(image: UploadFile, x: float, y: float, size: float, path: str) ->
         finally:
             image.file.close()
 
-        crop_image(file_path, x, y, size)
+        if os.path.isdir(path):
+            path = os.path.join(path, f"{get_hash(file_path)}.jpg")
+
         shutil.move(file_path, path)
 
     return path
+
+
+def is_landscape_image(path: str) -> bool:
+    image = cv2.imread(path)
+    height, width = image.shape[:2]
+    return width > height * 1.2
 
 
 def parse_date(date: str) -> datetime:

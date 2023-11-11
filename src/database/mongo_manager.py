@@ -1,4 +1,4 @@
-from pymongo import ASCENDING, MongoClient
+from pymongo import ASCENDING, DESCENDING, MongoClient
 
 from src import constants
 
@@ -10,6 +10,7 @@ class MongoManager:
     places = None
     organizers = None
     quizzes = None
+    photo_albums = None
     photos = None
     metro_stations = None
 
@@ -22,6 +23,7 @@ class MongoManager:
         self.places = database[constants.MONGO_PLACES_COLLECTION]
         self.organizers = database[constants.MONGO_ORGANIZERS_COLLECTION]
         self.quizzes = database[constants.MONGO_QUIZZES_COLLECTION]
+        self.photo_albums = database[constants.MONGO_PHOTO_ALBUMS_COLLECTION]
         self.photos = database[constants.MONGO_PHOTOS_COLLECTION]
         self.metro_stations = database[constants.MONGO_METRO_STATIONS_COLLECTION]
 
@@ -29,6 +31,8 @@ class MongoManager:
         self.quizzes.create_index([("date", ASCENDING), ("name", ASCENDING), ("place", ASCENDING)], unique=True)
         self.places.create_index([("name", ASCENDING)], unique=True)
         self.organizers.create_index([("name", ASCENDING)], unique=True)
+        self.photo_albums.create_index([("name", ASCENDING)])
+        self.photo_albums.create_index([("album_id", DESCENDING)])
         self.metro_stations.create_index([("name", ASCENDING)])
 
     def close(self) -> None:

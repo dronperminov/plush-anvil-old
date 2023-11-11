@@ -97,10 +97,17 @@
     align-content: middle;
     border-bottom: 1px solid #000;
     text-align: center;
+    position: relative;
 }
 
 .schedule-quiz:last-child {
     border-bottom: none;
+}
+
+.schedule-quiz-album {
+    position: absolute;
+    top: 0;
+    right: 2px;
 }
 
 .schedule-quiz-time {

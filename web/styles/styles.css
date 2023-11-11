@@ -132,6 +132,10 @@ body {
     overflow-x: auto;
 }
 
+.no-overflow {
+    overflow: hidden;
+}
+
 .margin-bottom {
     margin-bottom: 10px;
 }

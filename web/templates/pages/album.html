@@ -1,0 +1,43 @@
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/album.css?v={{version}}">
+<title>Фотоальбом "{{album.title}}" | Плюшевая наковальня</title>
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>{{album.title}}</h1>
+
+        {% if user and user.role == "admin" %}
+        <div class="interactive-fill-icon add-photos" onclick="SelectImages()">
+            <svg width="32px" height="32px" viewBox="0 0 562.927 562.927" xmlns="http://www.w3.org/2000/svg">
+                <path d="M562.927,462.019V138.88c0-12.677-10.275-22.95-22.95-22.95H263.864l-34.024-31.788c-4.25-3.975-9.85-6.184-15.67-6.184
+                        H22.95C10.275,77.958,0,88.231,0,100.909v361.11c0,12.678,10.275,22.949,22.95,22.949h517.024
+                        C552.651,484.968,562.927,474.693,562.927,462.019z M517.026,439.07H353.647v-78.756c0-5.07,4.109-9.18,9.18-9.18h52.567
+                        c5.07,0,6.273-2.908,2.69-6.49l-130.13-130.127c-3.586-3.586-9.397-3.586-12.983,0L144.845,344.644
+                        c-3.586,3.586-2.381,6.49,2.689,6.49h52.568c5.07,0,9.18,4.109,9.18,9.18v78.756H45.903V123.858h159.215l34.021,31.791
+                        c4.25,3.975,9.851,6.184,15.67,6.184h262.217V439.07z"/>
+            </svg>
+        </div>
+        <input type="file" class="hidden" id="images-input" multiple accept="image/png, image/gif, image/jpeg" onchange="UploadImages(event)">
+        <div class="error" id="error"></div>
+        {% endif %}
+
+        <div class="photos" id="photos" data-album-id="{{album.album_id}}">
+            {% for photo in album.photos %}
+            <div class="photo">
+                <a href="{{photo.url}}" target="_blank"><img src="{{photo.preview_url}}" alt="Превью к фотоальбому {{album.title}}" loading="lazy"></a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <p id="no-photos" {% if album.photos %}class="hidden"{% endif %}>Пока нет ни одного изображения</p>
+    </div>
+
+    <script src="/js/fetch.js?v={{version}}"></script>
+    <script src="/js/utils.js?v={{version}}"></script>
+    <script src="/js/album.js?v={{version}}"></script>
+
+    {% include "footer.html" %}
+</body>
+</html>

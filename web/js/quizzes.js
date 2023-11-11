@@ -61,6 +61,7 @@ function DeleteQuiz(icon, date) {
     SendRequest("/delete-quiz", {name: name, place: place, date: date}).then(response => {
         if (response.status != SUCCESS_STATUS) {
             error.innerText = response.message
+            error.scrollIntoView({behavior: "smooth"})
 
             setTimeout(() => error.innerText = "", 1500)
             return
@@ -86,6 +87,7 @@ function UpdateQuiz(button, date, quizId) {
     SendRequest("/update-quiz", quizData).then(response => {
         if (response.status != SUCCESS_STATUS) {
             error.innerText = response.message
+            error.scrollIntoView({behavior: "smooth"})
             return
         }
 

@@ -16,6 +16,13 @@ router = APIRouter()
 
 
 @dataclass
+class QuizForm:
+    name: str = Body(..., embed=True)
+    date: datetime = Body(..., embed=True)
+    place: str = Body(..., embed=True)
+
+
+@dataclass
 class QuizAddForm:
     name: str = Body(..., embed=True)
     date: datetime = Body(..., embed=True)
@@ -24,13 +31,6 @@ class QuizAddForm:
     organizer: str = Body(..., embed=True)
     description: str = Body(..., embed=True)
     cost: int = Body(..., embed=True)
-
-
-@dataclass
-class QuizDeleteForm:
-    name: str = Body(..., embed=True)
-    date: datetime = Body(..., embed=True)
-    place: str = Body(..., embed=True)
 
 
 @dataclass
@@ -53,7 +53,7 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
     template = templates.get_template("pages/quizzes.html")
     places = [place["name"] for place in database.places.find({})]
     organizers = [organizer["name"] for organizer in database.organizers.find({})]
-    quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"date": date})]
+    quizzes = list(database.quizzes.find({"date": date}))
 
     content = template.render(user=user, page="quizzes", version=get_static_hash(), quizzes=quizzes, places=places, organizers=organizers, date=date, weekday=weekday)
     return HTMLResponse(content=content)
@@ -107,7 +107,7 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
 
 
 @router.post("/delete-quiz")
-def delete_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: QuizDeleteForm = Depends()) -> JSONResponse:
+def delete_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: QuizForm = Depends()) -> JSONResponse:
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
