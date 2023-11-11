@@ -4,7 +4,7 @@
     top: 0;
     width: 100%;
     height: 65px;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid var(--menu-border-color);
     z-index: 3;
 }
 
@@ -74,11 +74,11 @@
     height: 2px;
     position: relative;
     width: 24px;
-    background: #000;
+    background: var(--menu-icon-color);
 }
 
 .hamb-line:before, .hamb-line:after {
-    background: #000;
+    background: var(--menu-icon-color);
     content: "";
     display: block;
     height: 100%;
@@ -128,6 +128,7 @@
 
 .subnavbtn {
     padding: 20px 10px;
+    color: var(--menu-item-text-color);
 }
 
 .subnav:hover .subnav-content {
@@ -219,7 +220,9 @@
     .subnav-content {
         background-color: var(--menu-background);
         padding: 0;
-        border: 1px solid var(--border-color);
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
     }
 
     .subnav-content a {

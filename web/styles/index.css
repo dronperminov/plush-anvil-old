@@ -1,3 +1,7 @@
+.content {
+    background-color: var(--background-color);
+}
+
 .schedule-controls {
     display: table;
     table-layout: fixed;
@@ -46,6 +50,7 @@
     display: grid;
     max-width: 1050px;
     min-width: 1050px;
+    background: #fff4d7;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     margin: 0 auto;
     border-left: 1px solid var(--border-color);
@@ -95,7 +100,7 @@
     align-content: center;
     height: 100%;
     align-content: middle;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid var(--border-color);
     text-align: center;
     position: relative;
 }

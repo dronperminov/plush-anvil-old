@@ -1,28 +1,36 @@
 :root {
     /* basic */
-    --text-color: #000000;
+    --background-color: #a8d0e6;
+    --text-color: #585858;
     --text-font: Roboto;
-    --border-color: #000000;
-    --main-color: #000000;
-    --link-color: #000000;
-    --content-border-color: #cccccc;
+    --border-color: #585858;
+    --main-color: #a8d0e6;
+    --link-color: #585858;
+
+    --content-background-color: #ffffff;
+    --content-border-color: #888888;
 
     /* status */
     --error-color: #f44336;
     --disabled-color: #d0d0d0;
 
+    /* icons  */
+    --interactive-icon-color: #585858;
+    --interactive-icon-hover-color: #888888;
+
     /* menu  */
-    --menu-background: #ffffff;
-    --menu-icon-color: #000000;
+    --menu-background: #a8d0e6;
+    --menu-icon-color: #585858;
+    --menu-border-color: #585858;
 
-    --menu-item-text-color: #000000;
+    --menu-item-text-color: #585858;
     --menu-item-text-hover-color: #333333;
-    --menu-item-background-hover-color: #ffffff;
+    --menu-item-background-hover-color: #cfe6f3;
 
-    --submenu-background: #eeeeee;
-    --submenu-item-text-color: #000000;
+    --submenu-background: #a8d0e6;
+    --submenu-item-text-color: #585858;
     --submenu-item-text-hover-color: #333333;
-    --submenu-item-background-hover-color: #dddddd;
+    --submenu-item-background-hover-color: #cfe6f3;
 
     /* form */
     --form-row-background: #f0f0f0;
@@ -87,13 +95,15 @@
     box-sizing: border-box;
 }
 
-body {
+html {
     font-size: 20px;
     font-family: var(--text-font);
     color: var(--text-color);
+    background-color: var(--background-color);
 }
 
 .content {
+    background-color: var(--content-background-color);
     font-size: 16px;
     padding: 10px;
 }
@@ -150,11 +160,11 @@ body {
 }
 
 .interactive-fill-icon svg {
-    fill: #000;
+    fill: var(--interactive-icon-color);
 }
 
 .interactive-fill-icon:hover svg {
-    fill: #333;
+    fill: var(--interactive-icon-hover-color);
 }
 
 @media (min-width: 768px) {
