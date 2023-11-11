@@ -44,3 +44,26 @@ function UploadImages() {
 
     Promise.all(fetches)
 }
+
+function DeletePhoto(icon, albumId, photoUrl) {
+    if (!confirm("Вы уверены, что хотите удалить это фото?"))
+        return
+
+    let block = GetBlock(icon, "photo")
+    let photosBlock = block.parentNode
+    let noPhotos = document.getElementById("no-photos")
+    let error = GetChildBlock(block, "error")
+    error.innerText = ""
+
+    SendRequest("/remove-photo", {album_id: albumId, photo_url: photoUrl}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            error.innerText = response.message
+            return
+        }
+
+        block.remove()
+
+        if (photosBlock.children.length == 0)
+            noPhotos.classList.remove("hidden")
+    })
+}

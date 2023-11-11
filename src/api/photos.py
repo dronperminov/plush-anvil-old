@@ -130,3 +130,29 @@ def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
         database.photo_albums.update_one({"album_id": album_id}, {"$set": {"preview_url": photo_preview_src}})
 
     return JSONResponse({"status": constants.SUCCESS, "added": True, "src": photo_src, "preview_src": photo_preview_src})
+
+
+@router.post("/remove-photo")
+def remove_photo(user: Optional[dict] = Depends(get_current_user), album_id: int = Body(..., embed=True), photo_url: str = Body(..., embed=True)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    if user["role"] != "admin":
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
+
+    album = database.photo_albums.find_one({"album_id": album_id})
+    if not album:
+        return JSONResponse({"status": constants.ERROR, "message": "Фотоальбом не найден"})
+
+    album_path = os.path.join("web", "images", "albums", f"{album_id}")
+    filename = os.path.basename(photo_url)
+
+    if not os.path.exists(os.path.join(album_path, filename)):
+        return JSONResponse({"status": constants.ERROR, "message": "Изображение не найдено, возможно оно было удалено"})
+
+    os.remove(os.path.join(album_path, filename))
+    os.remove(os.path.join(album_path, f"preview_{filename}"))
+
+    photos = [photo for photo in album["photos"] if photo["url"] != photo_url]
+    database.photo_albums.update_one({"album_id": album_id}, {"$set": {"photos": photos}})
+    return JSONResponse({"status": constants.SUCCESS})
