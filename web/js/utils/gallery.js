@@ -22,14 +22,18 @@ const GALLERY_LOADER_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="62px
     <animateTransform xmlns="http://www.w3.org/2000/svg" attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="0.9s" repeatCount="indefinite"/>
 </svg>`
 
+const GALLERY_TRANSITION = "transform 150ms"
+
 function Gallery(popupId) {
     this.popup = document.getElementById(popupId)
     this.body = document.getElementsByTagName("body")[0]
     this.downloadLink = this.MakeElement("", null, {download: ""}, "a")
     this.open = false
+    this.offset = 0
 
     this.BuildControls()
     this.BuildPhotos()
+    this.InitEvents()
 }
 
 Gallery.prototype.BuildControls = function() {
@@ -75,6 +79,14 @@ Gallery.prototype.BuildPhotos = function() {
     this.photoIndex = 0
 }
 
+Gallery.prototype.InitEvents = function() {
+    this.gallery.addEventListener("touchstart", (e) => this.TouchStart(e))
+    this.gallery.addEventListener("touchmove", (e) => this.TouchMove(e))
+    this.gallery.addEventListener("touchend", (e) => this.TouchEnd(e))
+    this.gallery.addEventListener("touchleave", (e) => this.TouchEnd(e))
+    this.gallery.addEventListener("transitionend", () => this.TransitionEnd())
+}
+
 Gallery.prototype.SetAttributes = function(element, attributes) {
     if (attributes === null)
         return
@@ -102,8 +114,13 @@ Gallery.prototype.MakeElement = function(className, parent = null, attributes = 
 }
 
 Gallery.prototype.Show = function() {
-    this.photos[this.photoIndex].image.setAttribute("src", this.photos[this.photoIndex].original)
-    this.gallery.style.transform = `translateX(-${this.photoIndex * 100}%)`
+    for (let delta of [0, -1, 1]) {
+        let index = this.GetIndex(delta)
+        let photo = this.photos[index]
+        photo.image.setAttribute("src", photo.original)
+    }
+
+    this.gallery.style.transform = `translateX(${(-this.photoIndex + this.offset) * 100}%)`
     this.positionSpan.innerText = `${this.photoIndex + 1} / ${this.photos.length}`
 }
 
@@ -130,13 +147,19 @@ Gallery.prototype.Close = function() {
     this.open = false
 }
 
+Gallery.prototype.GetIndex = function(delta = 0) {
+    return (this.photoIndex + delta + this.photos.length) % this.photos.length
+}
+
 Gallery.prototype.Next = function() {
-    this.photoIndex = (this.photoIndex + 1) % this.photos.length
+    this.gallery.style.transition = GALLERY_TRANSITION
+    this.photoIndex = this.GetIndex(1)
     this.Show()
 }
 
 Gallery.prototype.Prev = function() {
-    this.photoIndex = (this.photoIndex - 1 + this.photos.length) % this.photos.length
+    this.gallery.style.transition = GALLERY_TRANSITION
+    this.photoIndex = this.GetIndex(-1)
     this.Show()
 }
 
@@ -165,4 +188,51 @@ Gallery.prototype.KeyDown = function(e) {
         e.preventDefault()
         this.Download()
     }
+}
+
+Gallery.prototype.GetPosition = function(e) {
+    return e.touches[0].clientX / this.popup.clientWidth
+}
+
+Gallery.prototype.TouchStart = function(e) {
+    this.isPressed = true
+    this.position = this.GetPosition(e)
+    this.gallery.style.transition = null
+    e.preventDefault()
+}
+
+Gallery.prototype.TouchMove = function(e) {
+    if (!this.isPressed)
+        return
+
+    e.preventDefault()
+
+    let position = this.GetPosition(e)
+    this.offset += position - this.position
+    this.position = position
+    this.Show()
+}
+
+Gallery.prototype.TouchEnd = function(e) {
+    if (!this.isPressed)
+        return
+
+    e.preventDefault()
+
+    if (this.offset < -0.2) {
+        this.photoIndex = this.GetIndex(1)
+    }
+    else if (this.offset > 0.2) {
+        this.photoIndex = this.GetIndex(-1)
+    }
+
+    this.offset = 0
+    this.isPressed = false
+    this.gallery.style.transition = GALLERY_TRANSITION
+
+    this.Show()
+}
+
+Gallery.prototype.TransitionEnd = function() {
+    this.gallery.style.transition = null
 }

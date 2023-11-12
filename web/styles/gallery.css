@@ -86,9 +86,7 @@
 .gallery-photos {
     display: grid;
     grid-auto-flow: column;
-    transition: transform 150ms ease-in;
     user-select: none;
-    pointer-events: none;
 }
 
 .gallery-photo {
