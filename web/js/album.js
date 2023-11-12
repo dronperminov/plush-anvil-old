@@ -116,3 +116,21 @@ function SaveAlbum(albumId) {
         CancelEdit()
     })
 }
+
+function SetPreview(icon, albumId, previewUrl) {
+    let block = GetBlock(icon, "photo")
+    let error = GetChildBlock(block, "error")
+    error.innerText = ""
+
+    SendRequest("/set-album-preview", {album_id: albumId, preview_url: previewUrl}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            error.innerText = response.message
+            return
+        }
+
+        for (let photo of document.getElementsByClassName("photo-preview"))
+            photo.classList.remove("photo-album-preview")
+
+        icon.classList.add("photo-album-preview")
+    })
+}

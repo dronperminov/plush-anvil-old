@@ -112,6 +112,21 @@ def rename_album(user: Optional[dict] = Depends(get_current_user), album_id: int
     return JSONResponse({"status": constants.SUCCESS})
 
 
+@router.post("/set-album-preview")
+def set_album_preview(user: Optional[dict] = Depends(get_current_user), album_id: int = Body(..., embed=True), preview_url: str = Body(..., embed=True)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    if user["role"] != "admin":
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
+
+    if not database.photo_albums.find_one({"album_id": album_id}):
+        return JSONResponse({"status": constants.ERROR, "message": "Фотоальбом не найден"})
+
+    database.photo_albums.update_one({"album_id": album_id}, {"$set": {"preview_url": preview_url}})
+    return JSONResponse({"status": constants.SUCCESS})
+
+
 @router.post("/upload-photo")
 def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int = Form(...), image: UploadFile = File(...)) -> JSONResponse:
     if not user:
@@ -168,5 +183,10 @@ def remove_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
     os.remove(os.path.join(album_path, f"preview_{filename}"))
 
     photos = [photo for photo in album["photos"] if photo["url"] != photo_url]
-    database.photo_albums.update_one({"album_id": album_id}, {"$set": {"photos": photos}})
+    update_data = {"photos": photos}
+
+    if f"preview_{filename}" == os.path.basename(album["preview_url"]) and photos:
+        update_data["preview_url"] = photos[0]["preview_url"]
+
+    database.photo_albums.update_one({"album_id": album_id}, {"$set": update_data})
     return JSONResponse({"status": constants.SUCCESS})

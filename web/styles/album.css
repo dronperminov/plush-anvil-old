@@ -25,28 +25,50 @@
     position: relative;
 }
 
-.photo-remove {
+.photo-remove, .photo-preview {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    padding: 5px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
     opacity: 0;
     border-radius: 5px;
     background-color: #00000080;
     transition: opacity 100ms ease-in;
+    display: grid;
+    align-items: center;
+    justify-items: center;
 }
 
-.photo-remove svg {
-    fill: #eeeeee;
+.photo-remove {
+    top: 5px;
+    right: 5px;
 }
 
-.photo-remove:hover svg {
+.photo-preview {
+    bottom: 5px;
+    right: 0;
+}
+
+.photo-remove svg, .photo-preview svg {
+    fill: #cccccc;
+}
+
+.photo-remove:hover svg, .photo-preview:hover svg {
     fill: #ffffff;
 }
 
-.photo:hover .photo-remove {
+.photo:hover .photo-remove, .photo:hover .photo-preview {
     opacity: 1;
     transition: opacity 100ms ease-in;
+}
+
+.photo-album-preview {
+    opacity: 1;
+    cursor: default;
+}
+
+.photo-album-preview svg {
+    fill: #ffffff;
 }
 
 .photo a, .photo a:hover {
