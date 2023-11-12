@@ -4,7 +4,7 @@ const GALLERY_CLOSE_ICON = `<svg class="gallery-stroke-icon" width="30px" height
 </svg>`
 
 const GALLERY_DOWNLOAD_ICON = `<svg class="gallery-stroke-icon" width="30px" height="30px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 15V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18L4 15M8 11L12 15M12 15L16 11M12 15V3" stroke-width="1.5" />
+    <path d="M20 15V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18L4 15M8 11L12 15M12 15L16 11M12 15V3" stroke-width="1.5" fill="none" />
 </svg>`
 
 const GALLERY_LEFT_ICON = `<svg width="30px" height="30px" viewBox="100 -100 1024 1024" xmlns="http://www.w3.org/2000/svg">
@@ -23,6 +23,8 @@ const GALLERY_LOADER_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="62px
 </svg>`
 
 const GALLERY_TRANSITION = "transform 150ms"
+const GALLERY_SWIPE_MODE = "swipe"
+const GALLERY_SCALE_MODE = "scale"
 
 function Gallery(popupId) {
     this.popup = document.getElementById(popupId)
@@ -121,6 +123,7 @@ Gallery.prototype.Show = function() {
     }
 
     this.gallery.style.transform = `translateX(${(-this.photoIndex + this.offset) * 100}%)`
+    this.photos[this.photoIndex].image.style.transform = null
     this.positionSpan.innerText = `${this.photoIndex + 1} / ${this.photos.length}`
 }
 
@@ -191,12 +194,22 @@ Gallery.prototype.KeyDown = function(e) {
 }
 
 Gallery.prototype.GetPosition = function(e) {
-    return e.touches[0].clientX / this.popup.clientWidth
+    if (e.touches.length != 2)
+        return e.touches[0].clientX / this.popup.clientWidth
+
+    return {
+        p1: {x: e.touches[0].clientX, y: e.touches[0].clientY}, 
+        p2: {x: e.touches[1].clientX, y: e.touches[1].clientY}
+    }
 }
 
 Gallery.prototype.TouchStart = function(e) {
+    if (this.offset != 0 && e.touches.length == 2)
+        return
+
     this.isPressed = true
     this.position = this.GetPosition(e)
+    this.mode = e.touches.length == 1 ? GALLERY_SWIPE_MODE : GALLERY_SCALE_MODE
     this.gallery.style.transition = null
     e.preventDefault()
 }
@@ -207,10 +220,12 @@ Gallery.prototype.TouchMove = function(e) {
 
     e.preventDefault()
 
-    let position = this.GetPosition(e)
-    this.offset += position - this.position
-    this.position = position
-    this.Show()
+    if (this.mode == GALLERY_SWIPE_MODE) {
+        this.SwipeMove(e)
+    }
+    else if (this.mode == GALLERY_SCALE_MODE) {
+        this.ScaleMove(e)
+    }
 }
 
 Gallery.prototype.TouchEnd = function(e) {
@@ -219,6 +234,22 @@ Gallery.prototype.TouchEnd = function(e) {
 
     e.preventDefault()
 
+    if (this.mode == GALLERY_SWIPE_MODE) {
+        this.SwipeEnd()
+    }
+    else if (this.mode == GALLERY_SCALE_MODE) {
+        this.ScaleEnd()
+    }
+}
+
+Gallery.prototype.SwipeMove = function(e) {
+    let position = this.GetPosition(e)
+    this.offset += position - this.position
+    this.position = position
+    this.Show()
+}
+
+Gallery.prototype.SwipeEnd = function() {
     if (this.offset < -0.2) {
         this.photoIndex = this.GetIndex(1)
     }
@@ -229,8 +260,27 @@ Gallery.prototype.TouchEnd = function(e) {
     this.offset = 0
     this.isPressed = false
     this.gallery.style.transition = GALLERY_TRANSITION
-
     this.Show()
+}
+
+Gallery.prototype.GetDistance = function(p1, p2) {
+    let dx = p2.x - p1.x
+    let dy = p2.y - p1.y
+    return Math.sqrt(dx * dx + dy * dy)
+}
+
+Gallery.prototype.ScaleMove = function(e) {
+    let image = this.photos[this.photoIndex].image
+
+    let position = this.GetPosition(e)
+    let prevSize = this.GetDistance(this.position.p1, this.position.p2)
+    let currSize = this.GetDistance(position.p1, position.p2)
+    let scale = currSize / prevSize
+
+    let x = (this.position.p1.x + this.position.p2.x) / 2 - (image.offsetLeft + image.clientWidth / 2)
+    let y = (this.position.p1.y + this.position.p2.y) / 2 - (image.offsetTop + image.clientHeight / 2)
+
+    image.style.transform = `translate(${x}px, ${y}px) scale(${Math.max(1, scale)}) translate(${-x}px, ${-y}px)`
 }
 
 Gallery.prototype.TransitionEnd = function() {
