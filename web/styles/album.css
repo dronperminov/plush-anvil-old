@@ -2,14 +2,17 @@
     position: relative;
 }
 
-h1 {
-    width: calc(100% - 35px);
+.album-controls {
+    text-align: right
 }
 
-.add-photos {
-    position: absolute;
-    right: 5px;
-    top: 5px;
+.album-control {
+    display: inline-block;
+    padding-left: 15px;
+}
+
+.album-edit {
+    margin-bottom: 10px;
 }
 
 .photos {

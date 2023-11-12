@@ -97,6 +97,21 @@ def remove_album(user: Optional[dict] = Depends(get_current_user), album_id: int
     return JSONResponse({"status": constants.SUCCESS})
 
 
+@router.post("/rename-album")
+def rename_album(user: Optional[dict] = Depends(get_current_user), album_id: int = Body(..., embed=True), title: str = Body(..., embed=True)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    if user["role"] != "admin":
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
+
+    if not database.photo_albums.find_one({"album_id": album_id}):
+        return JSONResponse({"status": constants.ERROR, "message": "Фотоальбом не найден"})
+
+    database.photo_albums.update_one({"album_id": album_id}, {"$set": {"title": title}})
+    return JSONResponse({"status": constants.SUCCESS})
+
+
 @router.post("/upload-photo")
 def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int = Form(...), image: UploadFile = File(...)) -> JSONResponse:
     if not user:

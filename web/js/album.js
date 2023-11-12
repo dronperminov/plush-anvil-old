@@ -67,3 +67,52 @@ function DeletePhoto(icon, albumId, photoUrl) {
             noPhotos.classList.remove("hidden")
     })
 }
+
+function EditAlbum() {
+    let saveIcon = document.getElementById("save-album")
+    let cancelIcon = document.getElementById("cancel-edit-album")
+    let editIcon = document.getElementById("edit-album")
+    let editBlock = document.getElementById("edit-block")
+
+    saveIcon.classList.remove("hidden")
+    cancelIcon.classList.remove("hidden")
+    editIcon.classList.add("hidden")
+    editBlock.classList.remove("hidden")
+}
+
+function CancelEdit() {
+    let saveIcon = document.getElementById("save-album")
+    let cancelIcon = document.getElementById("cancel-edit-album")
+    let editIcon = document.getElementById("edit-album")
+    let editBlock = document.getElementById("edit-block")
+    let originalTitle = document.getElementById("original-title")
+
+    let title = document.getElementById("album-title")
+    title.value = originalTitle.innerText
+
+    saveIcon.classList.add("hidden")
+    cancelIcon.classList.add("hidden")
+    editIcon.classList.remove("hidden")
+    editBlock.classList.add("hidden")
+}
+
+function SaveAlbum(albumId) {
+    let title = GetTextField("album-title", "Введено пустое название альбома")
+    if (title === null)
+        return
+
+    let error = document.getElementById("error")
+    error.innerText = ""
+
+    SendRequest("/rename-album", {album_id: albumId, title: title}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            error.innerText = response.message
+            return
+        }
+
+        let originalTitle = document.getElementById("original-title")
+        originalTitle.innerText = title
+
+        CancelEdit()
+    })
+}

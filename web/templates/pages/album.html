@@ -11,22 +11,74 @@
     {% include "components/menu.html" %}
 
     <div class="content">
-        <h1>{{album.title}}</h1>
-
         {% if user and user.role == "admin" %}
-        <div class="interactive-fill-icon add-photos" onclick="SelectImages()">
-            <svg width="32px" height="32px" viewBox="0 0 562.927 562.927" xmlns="http://www.w3.org/2000/svg">
-                <path d="M562.927,462.019V138.88c0-12.677-10.275-22.95-22.95-22.95H263.864l-34.024-31.788c-4.25-3.975-9.85-6.184-15.67-6.184
-                        H22.95C10.275,77.958,0,88.231,0,100.909v361.11c0,12.678,10.275,22.949,22.95,22.949h517.024
-                        C552.651,484.968,562.927,474.693,562.927,462.019z M517.026,439.07H353.647v-78.756c0-5.07,4.109-9.18,9.18-9.18h52.567
-                        c5.07,0,6.273-2.908,2.69-6.49l-130.13-130.127c-3.586-3.586-9.397-3.586-12.983,0L144.845,344.644
-                        c-3.586,3.586-2.381,6.49,2.689,6.49h52.568c5.07,0,9.18,4.109,9.18,9.18v78.756H45.903V123.858h159.215l34.021,31.791
-                        c4.25,3.975,9.851,6.184,15.67,6.184h262.217V439.07z"/>
-            </svg>
+        <div class="album-controls">
+            <div class="album-control hidden" id="save-album">
+                <div class="interactive-fill-icon" onclick="SaveAlbum({{album.album_id}})" title="Отменить редактирование">
+                    <svg width="32px" height="32px" viewBox="-2 -2 28 28" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M18.1716 1C18.702 1 19.2107 1.21071 19.5858 1.58579L22.4142 4.41421C22.7893 4.78929 23 5.29799 23 5.82843V20C23 21.6569 21.6569 23 20 23H4C2.34315 23 1 21.6569 1 20V4C1 2.34315 2.34315 1 4 1H18.1716ZM4 3C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21L5 21L5 15C5 13.3431 6.34315 12 8 12L16 12C17.6569 12 19 13.3431 19 15V21H20C20.5523 21 21 20.5523 21 20V6.82843C21 6.29799 20.7893 5.78929 20.4142 5.41421L18.5858 3.58579C18.2107 3.21071 17.702 3 17.1716 3H17V5C17 6.65685 15.6569 8 14 8H10C8.34315 8 7 6.65685 7 5V3H4ZM17 21V15C17 14.4477 16.5523 14 16 14L8 14C7.44772 14 7 14.4477 7 15L7 21L17 21ZM9 3H15V5C15 5.55228 14.5523 6 14 6H10C9.44772 6 9 5.55228 9 5V3Z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="album-control hidden" id="cancel-edit-album">
+                <div class="interactive-stroke-icon" onclick="CancelEdit()" title="Отменить редактирование">
+                    <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke-width="2"/>
+                        <path d="M18 18L6 6" stroke-width="2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="album-control" id="edit-album">
+                <div class="interactive-fill-icon" onclick="EditAlbum()" title="Редактировать альбом">
+                    <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="m3.99 16.854-1.314 3.504a.75.75 0 0 0 .966.965l3.503-1.314a3 3 0 0 0 1.068-.687L18.36 9.175s-.354-1.061-1.414-2.122c-1.06-1.06-2.122-1.414-2.122-1.414L4.677 15.786a3 3 0 0 0-.687 1.068zm12.249-12.63 1.383-1.383c.248-.248.579-.406.925-.348.487.08 1.232.322 1.934 1.025.703.703.945 1.447 1.025 1.934.058.346-.1.677-.348.925L19.774 7.76s-.353-1.06-1.414-2.12c-1.06-1.062-2.121-1.415-2.121-1.415z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="album-control">
+                <div class="interactive-fill-icon add-photos" onclick="SelectImages()" title="Добавить фото">
+                    <svg width="32px" height="32px" viewBox="0 0 562.927 562.927" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M562.927,462.019V138.88c0-12.677-10.275-22.95-22.95-22.95H263.864l-34.024-31.788c-4.25-3.975-9.85-6.184-15.67-6.184
+                                H22.95C10.275,77.958,0,88.231,0,100.909v361.11c0,12.678,10.275,22.949,22.95,22.949h517.024
+                                C552.651,484.968,562.927,474.693,562.927,462.019z M517.026,439.07H353.647v-78.756c0-5.07,4.109-9.18,9.18-9.18h52.567
+                                c5.07,0,6.273-2.908,2.69-6.49l-130.13-130.127c-3.586-3.586-9.397-3.586-12.983,0L144.845,344.644
+                                c-3.586,3.586-2.381,6.49,2.689,6.49h52.568c5.07,0,9.18,4.109,9.18,9.18v78.756H45.903V123.858h159.215l34.021,31.791
+                                c4.25,3.975,9.851,6.184,15.67,6.184h262.217V439.07z"/>
+                    </svg>
+                </div>
+            </div>
         </div>
         <input type="file" class="hidden" id="images-input" multiple accept="image/png, image/gif, image/jpeg" onchange="UploadImages(event)">
+
+        <div class="album-edit hidden" id="edit-block">
+            <div class="form-row">
+                <div class="form-row-icon" id="album-title-icon">
+                    <svg class="form-row-fill-icon" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                        <path d="M62,6H10C8.896,6,8,6.896,8,8v6H2c-1.104,0-2,0.896-2,2v40c0,1.104,0.896,2,2,2h52c1.104,0,2-0.896,2-2v-6h6
+                            c1.104,0,2-0.896,2-2V8C64,6.896,63.104,6,62,6z M52,18v31.651l-10.698-9.17c-0.656-0.561-1.595-0.639-2.331-0.196l-8.566,5.14
+                            L17.505,30.683c-0.364-0.416-0.885-0.663-1.438-0.682c-0.551-0.015-1.089,0.193-1.48,0.585L4,41.172V18H52z M4,46.828
+                            l11.902-11.902l12.593,14.392c0.639,0.729,1.705,0.897,2.534,0.397l8.764-5.258L50.927,54H4V46.828z M60,46h-4V16
+                            c0-1.104-0.896-2-2-2H12v-4h48V46z"/>
+                        <path d="M41,36c3.859,0,7-3.141,7-7s-3.141-7-7-7s-7,3.141-7,7S37.141,36,41,36z M41,26c1.654,0,3,1.346,3,3s-1.346,3-3,3
+                            s-3-1.346-3-3S39.346,26,41,26z"/>
+                    </svg>
+                </div>
+                <div class="form-row-label">
+                    <label for="album-title" id="album-title-label">Название:</label>
+                </div>
+                <div class="form-row-input">
+                    <input type="text" class="basic-input default-input" id="album-title" placeholder="как будет называться фотоальбом?" oninput="InputError('album-title')" value="{{album.title}}">
+                </div>
+            </div>
+        </div>
+
         <div class="error" id="error"></div>
         {% endif %}
+
+        <h1 id="original-title">{{album.title}}</h1>
 
         <div class="photos" id="photos" data-album-id="{{album.album_id}}">
             {% for photo in album.photos %}
