@@ -52,9 +52,11 @@ h1 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 0 5px;
+    grid-auto-rows: 1fr;
 }
 
 .photo-album-main {
+    height: 100%;
     min-height: 160px;
     position: relative;
 }
