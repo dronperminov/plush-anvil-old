@@ -11,14 +11,14 @@ from src.api import make_error, templates
 from src.database import database
 from src.dataclasses.album import Album
 from src.utils.auth import get_current_user
-from src.utils.common import get_static_hash, is_landscape_image, preview_image, save_image
+from src.utils.common import get_static_hash, preview_image, save_image
 
 router = APIRouter()
 
 
 @router.get("/photos")
 def get_photos(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
-    albums = list(database.photo_albums.find({"deactivated": {"$ne": True}}).sort("datetime", -1))
+    albums = list(database.photo_albums.find({"deactivated": {"$ne": True}}).sort("date", -1))
     template = templates.get_template("pages/photos.html")
     content = template.render(user=user, page="photos", version=get_static_hash(), albums=albums)
     return HTMLResponse(content=content)
@@ -47,11 +47,8 @@ def add_album(user: Optional[dict] = Depends(get_current_user), title: str = Bod
     if user["role"] != "admin":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
-    if database.photo_albums.find_one({"title": title}):
-        return JSONResponse({"status": constants.ERROR, "message": f'Фотоальбом с названием "{title}" уже имеется'})
-
     album_id = database.photo_albums.count_documents({}) + 1
-    album = Album.from_dict({"title": title, "album_id": album_id, "datetime": datetime.now()})
+    album = Album.from_dict({"title": title, "album_id": album_id, "date": datetime.now()})
 
     database.photo_albums.insert_one(album.to_dict())
     return JSONResponse({"status": constants.SUCCESS, "url": album.url})
@@ -77,8 +74,10 @@ def add_quiz_album(quiz_id: str, user: Optional[dict] = Depends(get_current_user
 
     album_id = database.photo_albums.count_documents({}) + 1
     title = f'{quiz["name"]} ({quiz["date"].day:02}.{quiz["date"].month:02}.{quiz["date"].year}) {quiz["time"]} {quiz["place"]}'
-    album = Album.from_dict({"title": title, "album_id": album_id, "datetime": datetime.now(), "quiz_id": quiz["_id"]})
+    hour, minute = quiz["time"].split(":")
+    quiz_date = datetime(quiz["date"].year, quiz["date"].month, quiz["date"].day, int(hour), int(minute))
 
+    album = Album.from_dict({"title": title, "album_id": album_id, "date": quiz_date, "quiz_id": quiz["_id"]})
     database.photo_albums.insert_one(album.to_dict())
     return RedirectResponse(album.url)
 
@@ -126,7 +125,7 @@ def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
 
     database.photo_albums.update_one({"album_id": album_id}, {"$push": {"photos": {"url": photo_src, "preview_url": photo_preview_src}}})
 
-    if not album.preview_url and is_landscape_image(photo_path):
+    if not album.preview_url:
         database.photo_albums.update_one({"album_id": album_id}, {"$set": {"preview_url": photo_preview_src}})
 
     return JSONResponse({"status": constants.SUCCESS, "added": True, "src": photo_src, "preview_src": photo_preview_src})

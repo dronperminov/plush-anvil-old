@@ -67,10 +67,21 @@ def crop_image(path: str, x: float, y: float, size: float) -> None:
     cv2.imwrite(path, image)
 
 
-def preview_image(original_path: str, preview_path: str, preview_width: int = 500) -> None:
+def preview_image(original_path: str, preview_path: str, preview_width: int = 495, preview_height: int = 450) -> None:
     image = cv2.imread(original_path)
     height, width = image.shape[:2]
-    image = cv2.resize(image, (preview_width, int(preview_width / width * height)), interpolation=cv2.INTER_AREA)
+    preview_aspect_ratio = preview_width / preview_height
+
+    if width > height:
+        target_width = int(height * preview_aspect_ratio)
+        x = (width - target_width) // 2
+        image = image[:, x:x + target_width]
+    else:
+        target_height = int(width / preview_aspect_ratio)
+        y = (height - target_height) // 2
+        image = image[y:y + target_height]
+
+    image = cv2.resize(image, (preview_width, preview_height), interpolation=cv2.INTER_AREA)
     cv2.imwrite(preview_path, image)
 
 
@@ -91,12 +102,6 @@ def save_image(image: UploadFile, path: str) -> str:
         shutil.move(file_path, path)
 
     return path
-
-
-def is_landscape_image(path: str) -> bool:
-    image = cv2.imread(path)
-    height, width = image.shape[:2]
-    return width > height * 1.2
 
 
 def parse_date(date: str) -> datetime:

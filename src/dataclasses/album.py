@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from typing import List
 
 
@@ -9,6 +10,7 @@ class Album:
     album_id: int
     url: str
     photos: List[dict]
+    date: datetime
     quiz_id: str
     preview_url: str
 
@@ -17,11 +19,12 @@ class Album:
         title = data["title"]
         album_id = data["album_id"]
         photos = data.get("photos", [])
+        date = data["date"]
         cleared_title = re.sub(r"[ \-]", "_", title)
         url = data.get("url", f"/albums/{album_id}-{cleared_title}")
         quiz_id = data.get("quiz_id", "")
         preview_url = data.get("preview_url", "")
-        return cls(title, album_id, url, photos, quiz_id, preview_url)
+        return cls(title, album_id, url, photos, date, quiz_id, preview_url)
 
     def to_dict(self) -> dict:
         return {
@@ -29,6 +32,7 @@ class Album:
             "album_id": self.album_id,
             "url": self.url,
             "photos": self.photos,
+            "date": self.date,
             "quiz_id": self.quiz_id,
             "preview_url": self.preview_url
         }

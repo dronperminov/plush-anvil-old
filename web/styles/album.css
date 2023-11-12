@@ -15,7 +15,7 @@ h1 {
 .photos {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 10px;
+    grid-gap: 0 5px;
 }
 
 .photo {
@@ -24,9 +24,26 @@ h1 {
 
 .photo-remove {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 5px;
+    right: 5px;
     padding: 5px;
+    opacity: 0;
+    border-radius: 5px;
+    background-color: #00000080;
+    transition: opacity 100ms ease-in;
+}
+
+.photo-remove svg {
+    fill: #eeeeee;
+}
+
+.photo-remove:hover svg {
+    fill: #ffffff;
+}
+
+.photo:hover .photo-remove {
+    opacity: 1;
+    transition: opacity 100ms ease-in;
 }
 
 .photo a, .photo a:hover {
@@ -43,14 +60,13 @@ h1 {
     font-size: 0.8em;
 }
 
-
-@media (max-width: 767px) {
+@media (max-width: 500px) {
     .photos {
         grid-template-columns: 1fr 1fr;
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 300px) {
     .photos {
         grid-template-columns: 1fr;
     }
