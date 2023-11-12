@@ -1,6 +1,11 @@
+{% set title = 'Фотоальбом %s | Плюшевая наковальня' % album.title %}
+{% if album.preview_url %}
+{% set banner = album.preview_url %}
+{% set banner_width = 495 %}
+{% set banner_height = 450 %}
+{% endif %}
 {% include "header.html" %}
 <link rel="stylesheet" type="text/css" href="/styles/album.css?v={{version}}">
-<title>Фотоальбом "{{album.title}}" | Плюшевая наковальня</title>
 </head>
 <body>
     {% include "components/menu.html" %}

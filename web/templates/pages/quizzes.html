@@ -1,6 +1,6 @@
+{% set title = "Квизы в %s %02d.%02d.%d | Плюшевая наковальня" % (weekday, date.day, date.month, date.year) %}
 {% include "header.html" %}
 <link rel="stylesheet" type="text/css" href="/styles/quizzes.css?v={{version}}">
-<title>Квизы в {{weekday}} {{"%02d" % date.day}}.{{"%02d" % date.month}}.{{date.year}} | Плюшевая наковальня</title>
 </head>
 <body>
     {% include "components/menu.html" %}
