@@ -23,6 +23,7 @@
 
 .photo {
     position: relative;
+    cursor: pointer;
 }
 
 .photos-edit img {

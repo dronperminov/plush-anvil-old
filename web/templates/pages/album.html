@@ -131,7 +131,10 @@
     <script src="/js/utils/gallery.js?v={{version}}"></script>
     <script src="/js/album.js?v={{version}}"></script>
     <script>
-        let gallery = new Gallery("gallery")
+        let users = {{users}}
+        let markups = [{{album.photos|map(attribute="markup")|join(",")}}]
+
+        let gallery = new Gallery({{album.album_id}}, "gallery", markups, users, {{"true" if user.role == "admin" else "false"}})
     </script>
 
     {% include "footer.html" %}

@@ -1,4 +1,7 @@
 import os
+import re
+import uuid
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -12,6 +15,25 @@ from src.database import database
 from src.dataclasses.album import Album
 from src.utils.auth import get_current_user
 from src.utils.common import get_static_hash, preview_image, save_image
+
+
+@dataclass
+class AddMarkupForm:
+    album_id: int = Body(..., embed=True)
+    photo_url: str = Body(..., embed=True)
+    username: str = Body(..., embed=True)
+    x: float = Body(..., embed=True)
+    y: float = Body(..., embed=True)
+    width: float = Body(..., embed=True)
+    height: float = Body(..., embed=True)
+
+
+@dataclass
+class RemoveMarkupForm:
+    album_id: int = Body(..., embed=True)
+    photo_url: str = Body(..., embed=True)
+    markup_id: str = Body(..., embed=True)
+
 
 router = APIRouter()
 
@@ -34,8 +56,9 @@ def get_album(album_id: int, title: str, user: Optional[dict] = Depends(get_curr
     if album.get("deactivated"):
         return make_error(message="Запрашиваемый альбом был удалён.", user=user)
 
+    users = {user["username"]: user for user in database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0})}
     template = templates.get_template("pages/album.html")
-    content = template.render(user=user, page="album", version=get_static_hash(), album=album)
+    content = template.render(user=user, page="album", version=get_static_hash(), album=album, users=users)
     return HTMLResponse(content=content)
 
 
@@ -153,7 +176,7 @@ def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
     if photo_src in {photo["url"] for photo in album.photos}:
         return JSONResponse({"status": constants.SUCCESS, "added": False})
 
-    database.photo_albums.update_one({"album_id": album_id}, {"$push": {"photos": {"url": photo_src, "preview_url": photo_preview_src}}})
+    database.photo_albums.update_one({"album_id": album_id}, {"$push": {"photos": {"url": photo_src, "preview_url": photo_preview_src, "markup": []}}})
 
     if not album.preview_url:
         database.photo_albums.update_one({"album_id": album_id}, {"$set": {"preview_url": photo_preview_src}})
@@ -189,4 +212,54 @@ def remove_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
         update_data["preview_url"] = photos[0]["preview_url"]
 
     database.photo_albums.update_one({"album_id": album_id}, {"$set": update_data})
+    return JSONResponse({"status": constants.SUCCESS})
+
+
+@router.post("/add-user-markup")
+def add_user_markup(user: Optional[dict] = Depends(get_current_user), markup: AddMarkupForm = Depends()) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    if user["role"] != "admin":
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
+
+    album = database.photo_albums.find_one({"album_id": markup.album_id})
+    if not album:
+        return JSONResponse({"status": constants.ERROR, "message": "Фотоальбом не найден"})
+
+    markup.photo_url = re.sub(r"\?v=.*$", "", markup.photo_url)
+    photo = [photo for photo in album["photos"] if photo["url"] == markup.photo_url]
+
+    if len(photo) != 1:
+        return JSONResponse({"status": constants.ERROR, "message": "Фото не найдено"})
+
+    if "markup" not in photo[0]:
+        photo[0]["markup"] = []
+
+    markup_id = str(uuid.uuid1())
+    photo[0]["markup"].append({"username": markup.username, "x": markup.x, "y": markup.y, "width": markup.width, "height": markup.height, "markup_id": markup_id})
+    database.photo_albums.update_one({"album_id": markup.album_id}, {"$set": {"photos": album["photos"]}})
+    return JSONResponse({"status": constants.SUCCESS, "markup_id": markup_id})
+
+
+@router.post("/remove-user-markup")
+def remove_user_markup(user: Optional[dict] = Depends(get_current_user), markup: RemoveMarkupForm = Depends()) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    if user["role"] != "admin":
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
+
+    album = database.photo_albums.find_one({"album_id": markup.album_id})
+    if not album:
+        return JSONResponse({"status": constants.ERROR, "message": "Фотоальбом не найден"})
+
+    markup.photo_url = re.sub(r"\?v=.*$", "", markup.photo_url)
+    photo = [photo for photo in album["photos"] if photo["url"] == markup.photo_url]
+
+    if len(photo) != 1:
+        return JSONResponse({"status": constants.ERROR, "message": "Фото не найдено"})
+
+    photo[0]["markup"] = [photo_markup for photo_markup in photo[0].get("markup", []) if photo_markup["markup_id"] != markup.markup_id]
+    database.photo_albums.update_one({"album_id": markup.album_id}, {"$set": {"photos": album["photos"]}})
     return JSONResponse({"status": constants.SUCCESS})
