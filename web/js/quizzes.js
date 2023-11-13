@@ -47,7 +47,7 @@ function AddQuiz(date) {
     })
 }
 
-function DeleteQuiz(icon, date) {
+function DeleteQuiz(icon, quizId) {
     let quizBlock = GetBlock(icon, "quiz")
     let name = quizBlock.getAttribute("data-name")
     let place = quizBlock.getAttribute("data-place")
@@ -58,7 +58,7 @@ function DeleteQuiz(icon, date) {
     let error = quizBlock.getElementsByClassName("error")[0]
     error.innerText = ""
 
-    SendRequest("/delete-quiz", {name: name, place: place, date: date}).then(response => {
+    SendRequest("/delete-quiz", {quiz_id: quizId}).then(response => {
         if (response.status != SUCCESS_STATUS) {
             error.innerText = response.message
             error.scrollIntoView({behavior: "smooth"})
@@ -71,15 +71,14 @@ function DeleteQuiz(icon, date) {
     })
 }
 
-function UpdateQuiz(button, date, quizId) {
-    let quizData = ParseQuiz(date, quizId)
+function UpdateQuiz(button, date, quizId, blockId) {
+    let quizData = ParseQuiz(date, blockId)
 
     if (quizData == null)
         return
 
     let quizBlock = GetBlock(button, "quiz")
-    quizData.original_name = quizBlock.getAttribute("data-name")
-    quizData.original_place = quizBlock.getAttribute("data-place")
+    quizData.quiz_id = quizId
 
     let error = GetChildBlock(quizBlock, "error")
     error.innerText = ""

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+from bson import ObjectId
 from fastapi import APIRouter, Body, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
@@ -13,13 +14,6 @@ from src.utils.auth import get_current_user
 from src.utils.common import get_static_hash, parse_date
 
 router = APIRouter()
-
-
-@dataclass
-class QuizForm:
-    name: str = Body(..., embed=True)
-    date: datetime = Body(..., embed=True)
-    place: str = Body(..., embed=True)
 
 
 @dataclass
@@ -35,8 +29,7 @@ class QuizAddForm:
 
 @dataclass
 class QuizUpdateForm(QuizAddForm):
-    original_name: str = Body(..., embed=True)
-    original_place: str = Body(..., embed=True)
+    quiz_id: str = Body(..., embed=True)
 
 
 @router.get("/quizzes/{date}")
@@ -83,14 +76,14 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
     if user["role"] != "admin":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
-    if database.quizzes.find_one({"date": quiz_params.date, "name": quiz_params.name, "place": quiz_params.place}):
-        return JSONResponse({"status": constants.ERROR, "message": f'Квиз с названием "{quiz_params.name}" в {quiz_params.place} уже имеется'})
+    if database.quizzes.find_one({"date": quiz_params.date, "name": quiz_params.name, "place": quiz_params.place, "time": quiz_params.time}):
+        return JSONResponse({"status": constants.ERROR, "message": f'Квиз с названием "{quiz_params.name}" в {quiz_params.place} в {quiz_params.time} уже имеется'})
 
     if not database.places.find_one({"name": quiz_params.place}):
         return JSONResponse({"status": constants.ERROR, "message": f'Места проведения квиза с названием "{quiz_params.place}" не существует'})
 
     if not database.organizers.find_one({"name": quiz_params.organizer}):
-        return JSONResponse({"status": constants.ERROR, "message": f'Организатора квизов с названием "{quiz_params.place}" не существует'})
+        return JSONResponse({"status": constants.ERROR, "message": f'Организатора квизов с названием "{quiz_params.organizer}" не существует'})
 
     quiz = Quiz.from_dict({
         "name": quiz_params.name,
@@ -107,18 +100,17 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
 
 
 @router.post("/delete-quiz")
-def delete_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: QuizForm = Depends()) -> JSONResponse:
+def delete_quiz(user: Optional[dict] = Depends(get_current_user), quiz_id: str = Body(..., embed=True)) -> JSONResponse:
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
     if user["role"] != "admin":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
-    if not database.quizzes.find_one({"date": quiz_params.date, "name": quiz_params.name, "place": quiz_params.place}):
-        return JSONResponse({"status": constants.ERROR, "message": f'Квиза с названием "{quiz_params.name}" в {quiz_params.place} не существует'})
+    if not database.quizzes.find_one({"_id": ObjectId(quiz_id)}):
+        return JSONResponse({"status": constants.ERROR, "message": f'Выбранного квиза не существует'})
 
-    # TODO: возможно, нужно будет удалять что-то ещё, например, фотки?
-    database.quizzes.delete_one({"date": quiz_params.date, "name": quiz_params.name, "place": quiz_params.place})
+    database.quizzes.delete_one({"_id": ObjectId(quiz_id)})
     return JSONResponse({"status": constants.SUCCESS})
 
 
@@ -130,8 +122,8 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
     if user["role"] != "admin":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
-    if not database.quizzes.find_one({"date": quiz_params.date, "name": quiz_params.original_name, "place": quiz_params.original_place}):
-        return JSONResponse({"status": constants.ERROR, "message": f'Квиза с названием "{quiz_params.original_name}" в {quiz_params.original_place} нет'})
+    if not database.quizzes.find_one({"_id": ObjectId(quiz_params.quiz_id)}):
+        return JSONResponse({"status": constants.ERROR, "message": f'Указанного квиза не существует, возможно, он был удалён ранее'})
 
     if not database.places.find_one({"name": quiz_params.place}):
         return JSONResponse({"status": constants.ERROR, "message": f'Места проведения квиза с названием "{quiz_params.place}" не существует'})
@@ -146,5 +138,5 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
         "cost": quiz_params.cost
     })
 
-    database.quizzes.update_one({"date": quiz_params.date, "name": quiz_params.original_name, "place": quiz_params.original_place}, {"$set": quiz.to_dict()})
+    database.quizzes.update_one({"_id": ObjectId(quiz_params.quiz_id)}, {"$set": quiz.to_dict()})
     return JSONResponse({"status": constants.SUCCESS})
