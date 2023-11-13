@@ -5,6 +5,10 @@ function ParseQuiz(date, quizId = "") {
     if (quizData.name === null)
         return null
 
+    quizData.short_name = GetTextField(`short-name${quizId}`, "Сокращение квиза не указано")
+    if (quizData.short_name === null)
+        return null
+
     quizData.place = GetDatalistTextField(`place${quizId}`, "places", "Место проведения квиза не выбрано", "Необходимо выбрать место из имеющихся")
     if (quizData.place === null)
         return null

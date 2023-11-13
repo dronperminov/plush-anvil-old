@@ -19,6 +19,7 @@ router = APIRouter()
 @dataclass
 class QuizAddForm:
     name: str = Body(..., embed=True)
+    short_name: str = Body(..., embed=True)
     date: datetime = Body(..., embed=True)
     time: str = Body(..., embed=True)
     place: str = Body(..., embed=True)
@@ -87,6 +88,7 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
 
     quiz = Quiz.from_dict({
         "name": quiz_params.name,
+        "short_name": quiz_params.short_name,
         "date": quiz_params.date,
         "time": quiz_params.time,
         "place": quiz_params.place,
@@ -108,7 +110,7 @@ def delete_quiz(user: Optional[dict] = Depends(get_current_user), quiz_id: str =
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.quizzes.find_one({"_id": ObjectId(quiz_id)}):
-        return JSONResponse({"status": constants.ERROR, "message": f'Выбранного квиза не существует'})
+        return JSONResponse({"status": constants.ERROR, "message": "Выбранного квиза не существует"})
 
     database.quizzes.delete_one({"_id": ObjectId(quiz_id)})
     return JSONResponse({"status": constants.SUCCESS})
@@ -123,13 +125,14 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.quizzes.find_one({"_id": ObjectId(quiz_params.quiz_id)}):
-        return JSONResponse({"status": constants.ERROR, "message": f'Указанного квиза не существует, возможно, он был удалён ранее'})
+        return JSONResponse({"status": constants.ERROR, "message": "Указанного квиза не существует, возможно, он был удалён ранее"})
 
     if not database.places.find_one({"name": quiz_params.place}):
         return JSONResponse({"status": constants.ERROR, "message": f'Места проведения квиза с названием "{quiz_params.place}" не существует'})
 
     quiz = Quiz.from_dict({
         "name": quiz_params.name,
+        "short_name": quiz_params.short_name,
         "date": quiz_params.date,
         "time": quiz_params.time,
         "place": quiz_params.place,
