@@ -69,11 +69,13 @@ function DeletePhoto(icon, albumId, photoUrl) {
 }
 
 function EditAlbum() {
+    let photos = document.getElementById("photos")
     let saveIcon = document.getElementById("save-album")
     let cancelIcon = document.getElementById("cancel-edit-album")
     let editIcon = document.getElementById("edit-album")
     let editBlock = document.getElementById("edit-block")
 
+    photos.classList.add("photos-edit")
     saveIcon.classList.remove("hidden")
     cancelIcon.classList.remove("hidden")
     editIcon.classList.add("hidden")
@@ -81,6 +83,7 @@ function EditAlbum() {
 }
 
 function CancelEdit() {
+    let photos = document.getElementById("photos")
     let saveIcon = document.getElementById("save-album")
     let cancelIcon = document.getElementById("cancel-edit-album")
     let editIcon = document.getElementById("edit-album")
@@ -90,6 +93,7 @@ function CancelEdit() {
     let title = document.getElementById("album-title")
     title.value = originalTitle.innerText
 
+    photos.classList.remove("photos-edit")
     saveIcon.classList.add("hidden")
     cancelIcon.classList.add("hidden")
     editIcon.classList.remove("hidden")
@@ -101,6 +105,12 @@ function SaveAlbum(albumId) {
     if (title === null)
         return
 
+    let originalTitle = document.getElementById("original-title")
+    if (title == originalTitle.innerText) {
+        CancelEdit()
+        return
+    }
+
     let error = document.getElementById("error")
     error.innerText = ""
 
@@ -110,9 +120,7 @@ function SaveAlbum(albumId) {
             return
         }
 
-        let originalTitle = document.getElementById("original-title")
         originalTitle.innerText = title
-
         CancelEdit()
     })
 }
@@ -129,8 +137,13 @@ function SetPreview(icon, albumId, previewUrl) {
         }
 
         for (let photo of document.getElementsByClassName("photo-preview"))
-            photo.classList.remove("photo-album-preview")
+            photo.classList.remove("hidden")
 
-        icon.classList.add("photo-album-preview")
+        for (let photo of document.getElementsByClassName("photo-album-preview"))
+            photo.classList.add("hidden")
+
+        icon.classList.add("hidden")
+        let albumPreview = GetChildBlock(block, "photo-album-preview")
+        albumPreview.classList.remove("hidden")
     })
 }

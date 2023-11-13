@@ -25,6 +25,10 @@
     position: relative;
 }
 
+.photos-edit img {
+    pointer-events: none;
+}
+
 .photo-remove, .photo-preview {
     position: absolute;
     width: 30px;
@@ -57,7 +61,7 @@
     fill: #ffffff;
 }
 
-.photo:hover .photo-remove, .photo:hover .photo-preview {
+.photos-edit .photo-remove, .photos-edit .photo-preview {
     opacity: 1;
     transition: opacity 100ms ease-in;
 }
