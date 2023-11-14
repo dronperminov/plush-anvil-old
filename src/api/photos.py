@@ -58,7 +58,25 @@ def get_album(album_id: int, title: str, user: Optional[dict] = Depends(get_curr
 
     users = {user["username"]: user for user in database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0})}
     template = templates.get_template("pages/album.html")
-    content = template.render(user=user, page="album", version=get_static_hash(), album=album, users=users)
+    content = template.render(user=user, page="album", version=get_static_hash(), album=album, users=users, is_admin=user["role"] == "admin")
+    return HTMLResponse(content=content)
+
+
+@router.get("/photos-with-me")
+def photos_with_me(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
+    albums = database.photo_albums.find({"photos.markup.username": user["username"]}).sort("date", -1)
+    photos = []
+
+    for album in albums:
+        for photo in album["photos"]:
+            photo_users = {markup["username"] for markup in photo["markup"]}
+            if user["username"] in photo_users:
+                photos.append(photo)
+
+    album = Album("Фото со мной", 0, "/photos-with-me", photos, datetime.now(), "", "")
+    users = {user["username"]: user for user in database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0})}
+    template = templates.get_template("pages/album.html")
+    content = template.render(user=user, page="photos-with-me", version=get_static_hash(), album=album, users=users, is_admin=False)
     return HTMLResponse(content=content)
 
 
@@ -180,6 +198,9 @@ def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
 
     if not album.preview_url:
         database.photo_albums.update_one({"album_id": album_id}, {"$set": {"preview_url": photo_preview_src}})
+
+    if not album.quiz_id:
+        database.photo_albums.update_one({"album_id": album_id}, {"$set": {"date": datetime.now()}})
 
     return JSONResponse({"status": constants.SUCCESS, "added": True, "src": photo_src, "preview_src": photo_preview_src})
 

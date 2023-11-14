@@ -12,7 +12,17 @@
 
     <nav class="nav">
         <ul class="menu">
+            {% if user %}
+            <li class="subnav">
+                <p class="subnavbtn">Фото</p>
+                <div class="subnav-content">
+                    <a href="/photos">Альбомы</a>
+                    <a href="/photos-with-me">Фото со мной</a>
+                </div>
+            </li>
+            {% else %}
             <li><a href="/photos">Фото</a></li>
+            {% endif %}
             <li><a href="#">О нас</a></li>
             <li class="subnav">
                 <p class="subnavbtn">Тренировки</p>

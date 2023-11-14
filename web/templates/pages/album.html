@@ -12,7 +12,7 @@
     {% include "components/menu.html" %}
 
     <div class="content">
-        {% if user and user.role == "admin" %}
+        {% if is_admin %}
         <div class="album-controls">
             <div class="album-control hidden" id="save-album">
                 <div class="interactive-fill-icon" onclick="SaveAlbum({{album.album_id}})" title="Сохранить">
@@ -84,7 +84,7 @@
         <div class="photos" id="photos" data-album-id="{{album.album_id}}">
             {% for photo in album.photos %}
             <div class="photo">
-                {% if user and user.role == "admin" %}
+                {% if is_admin %}
                 <div class="interactive-fill-icon photo-remove">
                     <svg width="22px" height="22px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" onclick="DeletePhoto(this, '{{album.album_id}}', '{{photo.url}}')">
                         <path d="M12 4h3c.6 0 1 .4 1 1v1H3V5c0-.6.5-1 1-1h3c.2-1.1 1.3-2 2.5-2s2.3.9 2.5 2zM8 4h3c-.2-.6-.9-1-1.5-1S8.2 3.4 8 4zM4 7h11l-.9 10.1c0 .5-.5.9-1 .9H5.9c-.5 0-.9-.4-1-.9L4 7z"/>
@@ -134,7 +134,7 @@
         let users = {{users}}
         let markups = [{{album.photos|map(attribute="markup")|join(",")}}]
 
-        let gallery = new Gallery({{album.album_id}}, "gallery", markups, users, {{"true" if user.role == "admin" else "false"}})
+        let gallery = new Gallery({{album.album_id}}, "gallery", markups, users, {{"true" if is_admin else "false"}})
     </script>
 
     {% include "footer.html" %}
