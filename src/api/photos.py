@@ -123,6 +123,8 @@ def add_quiz_album(quiz_id: str, user: Optional[dict] = Depends(get_current_user
     album = database.photo_albums.find_one({"quiz_id": quiz["_id"]})
 
     if album:
+        if album.get("deactivated"):
+            database.photo_albums.update_one({"album_id": album["album_id"]}, {"$set": {"deactivated": False}})
         return RedirectResponse(album["url"])
 
     album_id = database.photo_albums.count_documents({}) + 1
@@ -241,8 +243,8 @@ def remove_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
     photos = [photo for photo in album["photos"] if photo["url"] != photo_url]
     update_data = {"photos": photos}
 
-    if f"preview_{filename}" == os.path.basename(album["preview_url"]) and photos:
-        update_data["preview_url"] = photos[0]["preview_url"]
+    if f"preview_{filename}" == os.path.basename(album["preview_url"]):
+        update_data["preview_url"] = photos[0]["preview_url"] if photos else ""
 
     database.photo_albums.update_one({"album_id": album_id}, {"$set": update_data})
     return JSONResponse({"status": constants.SUCCESS})

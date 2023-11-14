@@ -132,7 +132,7 @@
     <script src="/js/album.js?v={{version}}"></script>
     <script>
         let users = {{users}}
-        let markups = [{{album.photos|map(attribute="markup")|join(",")}}]
+        let markups = [{{album.photos|reverse|map(attribute="markup")|join(",")}}]
 
         let gallery = new Gallery("gallery", markups, users, {{"true" if is_admin else "false"}}, {{"true" if page == "photos-with-me" else "false"}})
     </script>
