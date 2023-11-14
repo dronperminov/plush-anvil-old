@@ -80,7 +80,7 @@ function SignIn() {
 }
 
 function SignUp() {
-    let username = GetTextField("username", "Имя пользователя не заполнено")
+    let username = GetFormatTextField("username", /^[a-zA-Z\d\-_]+$/, "Имя пользователя не заполнено", "В имени пользователя используются недопустимые символы")
     if (username === null)
         return
 
