@@ -82,7 +82,7 @@
         <h1 id="original-title">{{album.title}}</h1>
 
         <div class="photos" id="photos" data-album-id="{{album.album_id}}">
-            {% for photo in album.photos %}
+            {% for photo in album.photos|reverse %}
             <div class="photo">
                 {% if is_admin %}
                 <div class="interactive-fill-icon photo-remove">
