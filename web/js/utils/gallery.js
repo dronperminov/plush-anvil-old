@@ -40,6 +40,7 @@ const GALLERY_SCALE_MODE = "scale"
 const GALLERY_MARKUP_MODE = "markup"
 
 const GALLERY_BBOX_MIN_SIZE = 20
+const GALLERY_RESIZE_OFFSET = 10
 
 function Gallery(albumId, popupId, markups = null, users = null, isAdmin) {
     this.albumId = albumId
@@ -281,12 +282,20 @@ Gallery.prototype.Markup = function() {
     this.usersMarkup.classList.add("gallery-hidden")
 
     for (let bbox of document.getElementsByClassName("gallery-bbox")) {
+        if (bbox.classList.contains("gallery-editing-bbox"))
+            continue
+
         let removeIcon = bbox.getElementsByClassName("gallery-remove-bbox")[0]
 
         if (this.mode == GALLERY_MARKUP_MODE)
             removeIcon.children[0].classList.remove("gallery-hidden")
         else
             removeIcon.children[0].classList.add("gallery-hidden")
+    }
+
+    if (this.mode != GALLERY_MARKUP_MODE && this.bbox) {
+        this.bbox.div.remove()
+        this.bbox = null
     }
 }
 
@@ -365,9 +374,6 @@ Gallery.prototype.TouchStart = function(e) {
 }
 
 Gallery.prototype.TouchMove = function(e) {
-    if (!this.isPressed)
-        return
-
     e.preventDefault()
 
     if (this.mode == GALLERY_SWIPE_MODE || this.mode == GALLERY_HORIZONTAL_SWIPE_MODE || this.mode == GALLERY_VERTICAL_SWIPE_MODE) {
@@ -399,6 +405,9 @@ Gallery.prototype.TouchEnd = function(e) {
 }
 
 Gallery.prototype.SwipeMove = function(e) {
+    if (!this.isPressed)
+        return
+
     let position = this.GetPosition(e)
     let dx = position.x - this.initialPosition.x
     let dy = position.y - this.initialPosition.y
@@ -443,6 +452,9 @@ Gallery.prototype.GetDistance = function(p1, p2) {
 }
 
 Gallery.prototype.ScaleMove = function(e) {
+    if (!this.isPressed)
+        return
+
     let block = this.photos[this.photoIndex].block
     let image = this.photos[this.photoIndex].image
 
@@ -469,13 +481,50 @@ Gallery.prototype.ScaleEnd = function() {
 }
 
 Gallery.prototype.IsInsideBbox = function(x, y, bbox) {
-    return bbox.x <= x && x <= bbox.x + bbox.width && bbox.y <= y && y <= bbox.y + bbox.height
+    let horizontal = bbox.x - GALLERY_RESIZE_OFFSET <= x && x <= bbox.x + bbox.width + GALLERY_RESIZE_OFFSET
+    let vertical = bbox.y - GALLERY_RESIZE_OFFSET <= y && y <= bbox.y + bbox.height + GALLERY_RESIZE_OFFSET
+    return horizontal && vertical
 }
 
-Gallery.prototype.NormalizeBbox = function(bbox) {
-    let image = this.photos[this.photoIndex].image
-    bbox.x = Math.max(image.offsetLeft, Math.min(image.offsetLeft + image.clientWidth - bbox.width, bbox.x))
-    bbox.y = Math.max(image.offsetTop, Math.min(image.offsetTop + image.clientHeight - bbox.height, bbox.y))
+Gallery.prototype.GetMarkupCursor = function(x, y) {
+    if (this.bbox === null)
+        return "default"
+
+    let left = Math.abs(this.bbox.x - x) < GALLERY_RESIZE_OFFSET
+    let right = Math.abs(this.bbox.x + this.bbox.width - x) < GALLERY_RESIZE_OFFSET
+    let top = Math.abs(this.bbox.y - y) < GALLERY_RESIZE_OFFSET
+    let bottom = Math.abs(this.bbox.y + this.bbox.height - y) < GALLERY_RESIZE_OFFSET
+
+    if (left) {
+        if (top)
+            return "nw-resize"
+
+        if (bottom)
+            return "sw-resize"
+
+        return "w-resize"
+    }
+
+    if (right) {
+        if (top)
+            return "ne-resize"
+
+        if (bottom)
+            return "se-resize"
+
+        return "e-resize"
+    }
+
+    if (top)
+        return "n-resize"
+
+    if (bottom)
+        return "s-resize"
+
+    if (this.IsInsideBbox(x, y, this.bbox))
+        return "move"
+
+    return "default"
 }
 
 Gallery.prototype.MarkupStart = function(e) {
@@ -494,36 +543,95 @@ Gallery.prototype.MarkupStart = function(e) {
     if (x < image.offsetLeft || y < image.offsetTop || x > image.offsetLeft + image.clientWidth || y > image.offsetTop + image.clientHeight)
         return
 
-    if (this.bbox === null)
-        this.bbox = {x: x, y: y, width: 0, height: 0, mode: "create", div: this.MakeElement("gallery-bbox gallery-editing-bbox", block, {style: `left: ${x}px; top: ${y}px;`}), username: null}
-    else
-        this.bbox.mode = "move"
+    if (this.bbox === null) {
+        this.bbox = {x: x, y: y, width: 0, height: 0, mode: "default", div: this.MakeElement("gallery-bbox gallery-editing-bbox", block, {style: `left: ${x}px; top: ${y}px;`}), username: null}
+        return
+    }
+
+    let cursor = this.GetMarkupCursor(x, y)
+    block.style.cursor = cursor
+    this.bbox.mode = cursor
+}
+
+Gallery.prototype.MoveBboxHorizontally = function(image, x1, x2) {
+    let dx = x2 - x1
+
+    if (this.bbox.x + dx < image.offsetLeft || this.bbox.x + this.bbox.width + dx > image.offsetLeft + image.clientWidth)
+        return
+
+    this.bbox.x += dx
+    this.position.x = Math.max(image.offsetLeft, Math.min(image.offsetLeft + image.clientWidth, x2)) / this.popup.clientWidth
+}
+
+Gallery.prototype.MoveBboxVertically = function(image, y1, y2) {
+    let dy = y2 - y1
+
+    if (this.bbox.y + dy < image.offsetTop || this.bbox.y + this.bbox.height + dy > image.offsetTop + image.clientHeight)
+        return
+
+    this.bbox.y += dy
+    this.position.y = Math.max(image.offsetTop, Math.min(image.offsetTop + image.clientHeight, y2)) / this.popup.clientHeight
+}
+
+Gallery.prototype.ResizeBboxHorizontally = function(image, x1, x2) {
+    dx = x2 - x1
+
+    if (this.bbox.mode == "nw-resize" || this.bbox.mode == "sw-resize" || this.bbox.mode == "w-resize") {
+        if (this.bbox.width - dx < GALLERY_BBOX_MIN_SIZE || this.bbox.x + dx < image.offsetLeft)
+            return
+
+        this.bbox.x += dx
+        this.bbox.width -= dx
+
+    }
+    else if (this.bbox.mode == "ne-resize" || this.bbox.mode == "se-resize" || this.bbox.mode == "e-resize") {
+        if (this.bbox.width + dx < GALLERY_BBOX_MIN_SIZE || this.bbox.x + this.bbox.width + dx > image.offsetLeft + image.clientWidth)
+            return
+
+        this.bbox.width += dx
+    }
+
+    this.position.x = Math.max(image.offsetLeft, Math.min(image.offsetLeft + image.clientWidth, x2)) / this.popup.clientWidth
+}
+
+Gallery.prototype.ResizeBboxVertically = function(image, y1, y2) {
+    let dy = y2 - y1
+
+    if (this.bbox.mode == "nw-resize" || this.bbox.mode == "ne-resize" || this.bbox.mode == "n-resize") {
+        if (this.bbox.height - dy < GALLERY_BBOX_MIN_SIZE || this.bbox.y + dy < image.offsetTop)
+            return
+
+        this.bbox.y += dy
+        this.bbox.height -= dy
+
+    }
+    else if (this.bbox.mode == "sw-resize" || this.bbox.mode == "se-resize" || this.bbox.mode == "s-resize") {
+        if (this.bbox.height + dy < GALLERY_BBOX_MIN_SIZE || this.bbox.y + this.bbox.height + dy > image.offsetTop + image.clientHeight)
+            return
+
+        this.bbox.height += dy
+    }
+
+    this.position.y = Math.max(image.offsetTop, Math.min(image.offsetTop + image.clientHeight, y2)) / this.popup.clientHeight
 }
 
 Gallery.prototype.MarkupMove = function(e) {
-    if (this.bbox === null)
-        return
-
-    let image = this.photos[this.photoIndex].image
     let position = this.GetPosition(e)
-
-    let x1 = this.position.x * this.popup.clientWidth
-    let y1 = this.position.y * this.popup.clientHeight
     let x2 = position.x * this.popup.clientWidth
     let y2 = position.y * this.popup.clientHeight
 
-    if (this.bbox.mode == "move") {
-        this.bbox.x += x2 - x1
-        this.bbox.y += y2 - y1
+    let cursor = this.GetMarkupCursor(x2, y2)
+    let block = this.photos[this.photoIndex].block
+    block.style.cursor = cursor
 
-        x2 = Math.max(image.offsetLeft, Math.min(image.offsetLeft + image.clientWidth, x2))
-        y2 = Math.max(image.offsetTop, Math.min(image.offsetTop + image.clientHeight, y2))
+    if (!this.isPressed || this.bbox === null)
+        return
 
-        this.position.x = x2 / this.popup.clientWidth
-        this.position.y = y2 / this.popup.clientHeight
-        this.NormalizeBbox(this.bbox)
-    }
-    else {
+    let x1 = this.position.x * this.popup.clientWidth
+    let y1 = this.position.y * this.popup.clientHeight
+    let image = this.photos[this.photoIndex].image
+
+    if (this.bbox.mode == "default") {
         x2 = Math.max(image.offsetLeft, Math.min(image.offsetLeft + image.clientWidth, x2))
         y2 = Math.max(image.offsetTop, Math.min(image.offsetTop + image.clientHeight, y2))
 
@@ -531,6 +639,14 @@ Gallery.prototype.MarkupMove = function(e) {
         this.bbox.y = Math.min(y1, y2)
         this.bbox.width = Math.abs(x2 - x1)
         this.bbox.height = Math.abs(y2 - y1)
+    }
+    else if (this.bbox.mode == "move") {
+        this.MoveBboxHorizontally(image, x1, x2)
+        this.MoveBboxVertically(image, y1, y2)
+    }
+    else {
+        this.ResizeBboxHorizontally(image, x1, x2)
+        this.ResizeBboxVertically(image, y1, y2)
     }
 
     this.bbox.div.style = `left: ${this.bbox.x}px; top: ${this.bbox.y}px; width: ${this.bbox.width}px; height: ${this.bbox.height}px;`

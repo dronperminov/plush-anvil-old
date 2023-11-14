@@ -146,10 +146,6 @@
     background-color: transparent !important;
 }
 
-.gallery-editing-bbox:hover {
-    cursor: move;
-}
-
 .gallery-error-bbox {
     border-color: #f44336 !important;
 }
@@ -170,6 +166,7 @@
 }
 
 .gallery-remove-bbox svg {
+    cursor: pointer;
     width: 20px;
 }
 
