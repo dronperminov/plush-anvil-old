@@ -134,7 +134,7 @@
         let users = {{users}}
         let markups = [{{album.photos|map(attribute="markup")|join(",")}}]
 
-        let gallery = new Gallery("gallery", markups, users, {{"true" if is_admin else "false"}})
+        let gallery = new Gallery("gallery", markups, users, {{"true" if is_admin else "false"}}, {{"true" if page == "photos-with-me" else "false"}})
     </script>
 
     {% include "footer.html" %}

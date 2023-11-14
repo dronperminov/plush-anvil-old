@@ -46,8 +46,8 @@ def get_photos(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse
     return HTMLResponse(content=content)
 
 
-@router.get("/albums/{album_id}-{title:path}")
-def get_album(album_id: int, title: str, user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
+@router.get("/albums/{album_id}-{title}")
+def get_title_album(album_id: int, title: str, user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
     album = database.photo_albums.find_one({"album_id": album_id})
 
     if not album:
@@ -62,6 +62,17 @@ def get_album(album_id: int, title: str, user: Optional[dict] = Depends(get_curr
     return HTMLResponse(content=content)
 
 
+@router.get("/albums/{album_id}")
+def get_album(album_id: int, user: Optional[dict] = Depends(get_current_user)) -> Response:
+    album = database.photo_albums.find_one({"album_id": album_id})
+
+    if not album:
+        return make_error(message="Запрашиваемый альбом не найден.", user=user)
+
+    album = Album.from_dict(album)
+    return RedirectResponse(album.url)
+
+
 @router.get("/photos-with-me")
 def photos_with_me(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
     albums = database.photo_albums.find({"photos.markup.username": user["username"]}).sort("date", -1)
@@ -70,6 +81,7 @@ def photos_with_me(user: Optional[dict] = Depends(get_current_user)) -> HTMLResp
     for album in albums:
         for photo in album["photos"]:
             photo_users = {markup["username"] for markup in photo["markup"]}
+            photo["album_id"] = album["album_id"]
             if user["username"] in photo_users:
                 photos.append(photo)
 
