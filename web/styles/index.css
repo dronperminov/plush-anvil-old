@@ -81,6 +81,9 @@
     left: 2px;
     font-size: 0.7em;
     z-index: 1;
+}
+
+.schedule-day-link {
     text-decoration: underline;
 }
 

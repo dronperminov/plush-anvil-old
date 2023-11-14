@@ -71,7 +71,7 @@
                             {% endfor %}
                             {% endif %}
 
-                            <text class="schedule-day" x="2%" y="0" dominant-baseline="text-before-edge" text-anchor="start">
+                            <text class="schedule-day {% if user.role == 'admin' %}schedule-day-link{% endif %}" x="2%" y="0" dominant-baseline="text-before-edge" text-anchor="start">
                                 {% if user.role == "admin" %}
                                 <a href="/quizzes/{{schedule_cell.year}}-{{'%02d' % schedule_cell.month}}-{{'%02d' % schedule_cell.day}}">{{schedule_cell.day}}</a>
                                 {% else %}
