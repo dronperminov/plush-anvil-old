@@ -129,6 +129,9 @@ Gallery.prototype.AddPhoto = function(image, markup) {
 
 Gallery.prototype.BuildMarkup = function() {
     this.usersMarkup = this.MakeElement("gallery-users-markup gallery-hidden", this.popup)
+    this.usersFilter = this.MakeElement("gallery-users-filter", this.usersMarkup)
+    let input = this.MakeElement("gallery-input", this.usersFilter, {type: "text", placeholder: "начните вводить"}, "input")
+    input.addEventListener("input", () => this.FilterUsers(input.value))
 
     for (let user of Object.values(this.users)) {
         let userMarkup = this.MakeElement("gallery-user-markup", this.usersMarkup)
@@ -138,6 +141,8 @@ Gallery.prototype.BuildMarkup = function() {
 
         userMarkup.addEventListener("click", () => this.AddUserMarkup(user.username))
     }
+
+    this.usersNoFilter = this.MakeElement("gallery-users-no-filter gallery-hidden", this.usersMarkup, {innerText: "никого не нашлось"})
 }
 
 Gallery.prototype.InitEvents = function() {
@@ -325,6 +330,39 @@ Gallery.prototype.Markup = function() {
     if (this.mode != GALLERY_MARKUP_MODE && this.bbox !== null) {
         this.bbox.div.remove()
         this.bbox = null
+    }
+}
+
+Gallery.prototype.Transliterate = function(query) {
+    let rus = "абвгдеёжзийклмнопрстуфхцшщю"
+    let eng = "abvgdeezzijklmnoprstufhcssu"
+    let map = {}
+
+    for (let i = 0; i < rus.length; i++) {
+        map[rus[i]] = eng[i]
+        map[eng[i]] = rus[i]
+    }
+
+    return query.split("").map(c => c in map ? map[c] : c).join("")
+}
+
+Gallery.prototype.FilterUsers = function(query) {
+    query = query.toLowerCase()
+    let translit = this.Transliterate(query)
+
+    this.usersNoFilter.classList.remove("gallery-hidden")
+
+    for (let userMarkup of this.usersMarkup.getElementsByClassName("gallery-user-markup")) {
+        let username = userMarkup.getElementsByClassName("gallery-user-fullname")[0].innerText.toLowerCase()
+
+        if (username.indexOf(query) == -1 && username.indexOf(translit) == -1) {
+            userMarkup.classList.add("gallery-hidden")
+            continue
+        }
+
+        userMarkup.classList.remove("gallery-hidden")
+        this.usersNoFilter.classList.add("gallery-hidden")
+        find = true
     }
 }
 
