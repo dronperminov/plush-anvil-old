@@ -216,6 +216,15 @@ Gallery.prototype.AddInfoToBbox = function(bbox, username, markupId, x, y, width
 }
 
 Gallery.prototype.Show = function() {
+    if (this.photos.length == 1) {
+        this.prev.classList.add("gallery-hidden")
+        this.next.classList.add("gallery-hidden")
+    }
+    else {
+        this.prev.classList.remove("gallery-hidden")
+        this.next.classList.remove("gallery-hidden")
+    }
+
     for (let delta of [0, -1, 1]) {
         let index = this.GetIndex(delta)
         let photo = this.photos[index]
@@ -432,7 +441,7 @@ Gallery.prototype.SwipeMove = function(e) {
     let dx = position.x - this.initialPosition.x
     let dy = position.y - this.initialPosition.y
 
-    if (Math.abs(dx) > Math.abs(dy) && this.mode == GALLERY_SWIPE_MODE || this.mode == GALLERY_HORIZONTAL_SWIPE_MODE) {
+    if (this.photos.length > 1 && (Math.abs(dx) > Math.abs(dy) && this.mode == GALLERY_SWIPE_MODE || this.mode == GALLERY_HORIZONTAL_SWIPE_MODE)) {
         this.offsetX += position.x - this.position.x
         this.offsetY = 0
         this.mode = GALLERY_HORIZONTAL_SWIPE_MODE
