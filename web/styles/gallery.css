@@ -179,6 +179,19 @@
     border-color: #ffffffaa;
 }
 
+.gallery-fullname-bbox {
+    user-select: none;
+    pointer-events: none;
+}
+
+.gallery-finished-bbox:hover .gallery-fullname-span {
+    background-color: #00000080;
+    display: inline-block;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
 .gallery-users-markup {
     position: fixed;
     top: 0;
@@ -210,4 +223,10 @@
     font-size: 0.9em;
     color: #555555;
     padding-left: 10px;
+}
+
+@media (max-width: 767px) {
+    .gallery-photo {
+        cursor: default;
+    }
 }

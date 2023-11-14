@@ -85,8 +85,6 @@ Gallery.prototype.BuildControls = function() {
 
     this.next = this.MakeElement("gallery-next-control", this.popup, {innerHTML: GALLERY_RIGHT_ICON})
     this.next.addEventListener("click", () => this.Next())
-
-    document.addEventListener("keydown", (e) => this.KeyDown(e))
 }
 
 Gallery.prototype.BuildPhotos = function(markups) {
@@ -107,7 +105,7 @@ Gallery.prototype.BuildPhotos = function(markups) {
         let loader = this.MakeElement("gallery-loader", photo, {innerHTML: GALLERY_LOADER_ICON})
 
         photoImage.addEventListener("load", () => this.LoadImage(loader, photo, photoImage, markups[index]))
-        photoImage.addEventListener("contextmenu", (e) => e.preventDefault())
+        photo.addEventListener("contextmenu", (e) => e.preventDefault())
         this.photos.push({original: originalUrl, image: photoImage, loader: loader, block: photo})
     }
 
@@ -140,6 +138,7 @@ Gallery.prototype.InitEvents = function() {
 
     this.gallery.addEventListener("transitionend", () => this.TransitionEnd())
     window.addEventListener("resize", () => this.Resize())
+    document.addEventListener("keydown", (e) => this.KeyDown(e))
 }
 
 Gallery.prototype.SetAttributes = function(element, attributes) {
@@ -193,7 +192,8 @@ Gallery.prototype.AddInfoToBbox = function(bbox, username, markupId, x, y, width
     this.AddDataAttributesToBbox(bbox, x, y, width, height)
 
     let removeIcon = this.MakeElement("gallery-remove-bbox", bbox, {innerHTML: GALLERY_CLOSE_ICON})
-    let userName = this.MakeElement("gallery-fullname-bbox", bbox, {innerText: this.users[username].fullname})
+    let userName = this.MakeElement("gallery-fullname-bbox", bbox)
+    let user = this.MakeElement("gallery-fullname-span", userName, {innerText: this.users[username].fullname})
     removeIcon.addEventListener("click", () => this.RemoveUserMarkup(bbox, markupId))
 
     if (!this.isAdmin || isFirst)
@@ -484,6 +484,8 @@ Gallery.prototype.MarkupStart = function(e) {
     let x = this.position.x * this.popup.clientWidth
     let y = this.position.y * this.popup.clientHeight
 
+    this.usersMarkup.classList.add("gallery-hidden")
+
     if (this.bbox !== null && !this.IsInsideBbox(x, y, this.bbox)) {
         this.bbox.div.remove()
         this.bbox = null
@@ -496,8 +498,6 @@ Gallery.prototype.MarkupStart = function(e) {
         this.bbox = {x: x, y: y, width: 0, height: 0, mode: "create", div: this.MakeElement("gallery-bbox gallery-editing-bbox", block, {style: `left: ${x}px; top: ${y}px;`}), username: null}
     else
         this.bbox.mode = "move"
-
-    this.usersMarkup.classList.add("gallery-hidden")
 }
 
 Gallery.prototype.MarkupMove = function(e) {
