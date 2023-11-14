@@ -1,3 +1,27 @@
+const DELETE_ICON = `<svg width="22px" height="22px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"">
+    <path d="M12 4h3c.6 0 1 .4 1 1v1H3V5c0-.6.5-1 1-1h3c.2-1.1 1.3-2 2.5-2s2.3.9 2.5 2zM8 4h3c-.2-.6-.9-1-1.5-1S8.2 3.4 8 4zM4 7h11l-.9 10.1c0 .5-.5.9-1 .9H5.9c-.5 0-.9-.4-1-.9L4 7z"/>
+</svg>`
+
+const STAR_STROKE_ICON = `<svg width="16px" height="16px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <path d="M32.001,2.484c0.279,0,0.463,0.509,0.463,0.509l8.806,18.759l20.729,3.167L47,40.299L50.541,62
+    l-18.54-10.254L13.461,62l3.541-21.701L2.003,24.919l20.729-3.167L31.53,3.009C31.53,3.009,31.722,2.484,32.001,2.484 M32.001,0.007
+    c-0.775,0-1.48,0.448-1.811,1.15l-8.815,18.778L1.701,22.941c-0.741,0.113-1.356,0.632-1.595,1.343
+    c-0.238,0.71-0.059,1.494,0.465,2.031l14.294,14.657l-3.378,20.704c-0.124,0.756,0.195,1.517,0.822,1.957
+    C12.653,63.877,13.057,64,13.461,64c0.332,0,0.666-0.084,0.968-0.25l17.572-9.719l17.572,9.719c0.302,0.166,0.636,0.25,0.968,0.25
+    c0.404,0,0.808-0.123,1.151-0.366c0.627-0.44,0.946-1.201,0.822-1.957l-3.378-20.704l14.294-14.657
+    c0.523-0.537,0.703-1.321,0.465-2.031c-0.238-0.711-0.854-1.229-1.595-1.343l-19.674-3.006L33.812,1.157
+    C33.481,0.455,32.776,0.007,32.001,0.007L32.001,0.007z"/>
+</svg>`
+
+const STAR_FILL_ICON = `<svg width="16px" height="16px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <path d="M63.893,24.277c-0.238-0.711-0.854-1.229-1.595-1.343l-19.674-3.006L33.809,1.15
+        C33.479,0.448,32.773,0,31.998,0s-1.48,0.448-1.811,1.15l-8.815,18.778L1.698,22.935c-0.741,0.113-1.356,0.632-1.595,1.343
+        c-0.238,0.71-0.059,1.494,0.465,2.031l14.294,14.657L11.484,61.67c-0.124,0.756,0.195,1.517,0.822,1.957
+        c0.344,0.243,0.747,0.366,1.151,0.366c0.332,0,0.666-0.084,0.968-0.25l17.572-9.719l17.572,9.719c0.302,0.166,0.636,0.25,0.968,0.25
+        c0.404,0,0.808-0.123,1.151-0.366c0.627-0.44,0.946-1.201,0.822-1.957l-3.378-20.704l14.294-14.657
+        C63.951,25.771,64.131,24.987,63.893,24.277z"/>
+</svg>`
+
 function SelectImages() {
     let input = document.getElementById("images-input")
     input.click()
@@ -20,8 +44,15 @@ function UploadImage(file, albumId) {
 
         if (response.added) {
             let photoBlock = MakeElement("photo", block)
-            let link = MakeElement("", photoBlock, {tag: "a", "href": response.src})
-            let img = MakeElement("", link, {tag: "img", "src": response.preview_src})
+            let remove = MakeElement("interactive-fill-icon photo-remove", photoBlock, {innerHTML: DELETE_ICON})
+            remove.children[0].addEventListener("click", () => DeletePhoto(remove.children[0], albumId, response.src))
+            let starStroke = MakeElement("interactive-fill-icon photo-preview", photoBlock, {innerHTML: STAR_STROKE_ICON})
+            starStroke.addEventListener("click", () => SetPreview(starStroke, albumId, response.preview_src))
+            let starFill = MakeElement("interactive-fill-icon photo-preview photo-album-preview hidden", photoBlock, {innerHTML: STAR_FILL_ICON})
+
+            let img = MakeElement("gallery-source", photoBlock, {tag: "img", "src": response.preview_src, "data-src": response.src, "data-album-id": albumId})
+            let error = MakeElement("error", photoBlock)
+            gallery.AddPhoto(img, [])
             photoBlock.scrollIntoView({behaviors: "smooth"})
             noPhotos.classList.add("hidden")
         }

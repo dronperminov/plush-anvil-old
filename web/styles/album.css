@@ -24,6 +24,7 @@
 .photo {
     position: relative;
     cursor: pointer;
+    user-select: none;
 }
 
 .photos-edit img {
@@ -47,11 +48,13 @@
 .photo-remove {
     top: 5px;
     right: 5px;
+    pointer-events: none;
 }
 
 .photo-preview {
     bottom: 5px;
     right: 0;
+    pointer-events: none;
 }
 
 .photo-remove svg, .photo-preview svg {
@@ -65,6 +68,7 @@
 .photos-edit .photo-remove, .photos-edit .photo-preview {
     opacity: 1;
     transition: opacity 100ms ease-in;
+    pointer-events: all;
 }
 
 .photo-album-preview {
@@ -90,13 +94,13 @@
     font-size: 0.8em;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 320px) {
     .photos {
         grid-template-columns: 1fr 1fr;
     }
 }
 
-@media (max-width: 300px) {
+@media (max-width: 280px) {
     .photos {
         grid-template-columns: 1fr;
     }

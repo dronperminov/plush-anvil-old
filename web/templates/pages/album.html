@@ -115,7 +115,7 @@
                     </svg>
                 </div>
                 {% endif %}
-                <img class="gallery-source" src="{{photo.preview_url}}?v={{version}}" alt="Превью к фотоальбому {{album.title}}" loading="lazy" data-src="{{photo.url}}?v={{version}}">
+                <img class="gallery-source" src="{{photo.preview_url}}?v={{version}}" alt="Превью к фотоальбому {{album.title}}" loading="lazy" data-src="{{photo.url}}?v={{version}}" data-album-id="{{photo.get('album_id', album.album_id)}}">
                 <div class="error"></div>
             </div>
             {% endfor %}
@@ -134,7 +134,7 @@
         let users = {{users}}
         let markups = [{{album.photos|map(attribute="markup")|join(",")}}]
 
-        let gallery = new Gallery({{album.album_id}}, "gallery", markups, users, {{"true" if is_admin else "false"}})
+        let gallery = new Gallery("gallery", markups, users, {{"true" if is_admin else "false"}})
     </script>
 
     {% include "footer.html" %}

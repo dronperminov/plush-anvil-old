@@ -42,8 +42,7 @@ const GALLERY_MARKUP_MODE = "markup"
 const GALLERY_BBOX_MIN_SIZE = 20
 const GALLERY_RESIZE_OFFSET = 10
 
-function Gallery(albumId, popupId, markups = null, users = null, isAdmin) {
-    this.albumId = albumId
+function Gallery(popupId, markups = null, users = null, isAdmin) {
     this.isAdmin = isAdmin
 
     this.popup = document.getElementById(popupId)
@@ -92,25 +91,29 @@ Gallery.prototype.BuildPhotos = function(markups) {
     this.gallery = this.MakeElement("gallery-photos", this.popup)
     this.photos = []
 
-    for (let image of document.getElementsByClassName("gallery-source")) {
-        let index = this.photos.length
-        image.setAttribute("data-index", index)
-        image.addEventListener("click", () => this.ShowPhoto(image))
-
-        let alt = image.getAttribute("alt")
-        let previewUrl = image.getAttribute("src")
-        let originalUrl = image.getAttribute("data-src")
-
-        let photo = this.MakeElement("gallery-photo", this.gallery)
-        let photoImage = this.MakeElement("gallery-photo-image", photo, {alt: alt}, "img")
-        let loader = this.MakeElement("gallery-loader", photo, {innerHTML: GALLERY_LOADER_ICON})
-
-        photoImage.addEventListener("load", () => this.LoadImage(loader, photo, photoImage, markups[index]))
-        photo.addEventListener("contextmenu", (e) => e.preventDefault())
-        this.photos.push({original: originalUrl, image: photoImage, loader: loader, block: photo})
-    }
+    for (let image of document.getElementsByClassName("gallery-source"))
+        this.AddPhoto(image, markups[this.photos.length])
 
     this.photoIndex = 0
+}
+
+Gallery.prototype.AddPhoto = function(image, markup) {
+    let index = this.photos.length
+    image.setAttribute("data-index", index)
+    image.addEventListener("click", () => this.ShowPhoto(image))
+
+    let alt = image.getAttribute("alt")
+    let previewUrl = image.getAttribute("src")
+    let originalUrl = image.getAttribute("data-src")
+    let albumId = +image.getAttribute("data-album-id")
+
+    let photo = this.MakeElement("gallery-photo", this.gallery)
+    let photoImage = this.MakeElement("gallery-photo-image", photo, {alt: alt}, "img")
+    let loader = this.MakeElement("gallery-loader", photo, {innerHTML: GALLERY_LOADER_ICON})
+
+    photoImage.addEventListener("load", () => this.LoadImage(loader, photo, photoImage, markup))
+    photo.addEventListener("contextmenu", (e) => e.preventDefault())
+    this.photos.push({original: originalUrl, image: photoImage, loader: loader, block: photo, albumId: albumId})
 }
 
 Gallery.prototype.BuildMarkup = function() {
@@ -293,7 +296,7 @@ Gallery.prototype.Markup = function() {
             removeIcon.children[0].classList.add("gallery-hidden")
     }
 
-    if (this.mode != GALLERY_MARKUP_MODE && this.bbox) {
+    if (this.mode != GALLERY_MARKUP_MODE && this.bbox !== null) {
         this.bbox.div.remove()
         this.bbox = null
     }
@@ -692,6 +695,7 @@ Gallery.prototype.AddUserMarkup = function(username) {
         return
 
     let url = this.photos[this.photoIndex].original
+    let albumId = this.photos[this.photoIndex].albumId
     let image = this.photos[this.photoIndex].image
     let x = (this.bbox.x - image.offsetLeft) / image.clientWidth
     let y = (this.bbox.y - image.offsetTop) / image.clientHeight
@@ -699,7 +703,7 @@ Gallery.prototype.AddUserMarkup = function(username) {
     let height = this.bbox.height / image.clientHeight
     let bbox = this.bbox.div
 
-    SendRequest("/add-user-markup", {album_id: this.albumId, username: username, x: x, y: y, width: width, height: height, photo_url: url}).then(response => {
+    SendRequest("/add-user-markup", {album_id: albumId, username: username, x: x, y: y, width: width, height: height, photo_url: url}).then(response => {
         if (response.status != "success") {
             bbox.classList.add("gallery-error-bbox")
             return
@@ -716,8 +720,9 @@ Gallery.prototype.AddUserMarkup = function(username) {
 
 Gallery.prototype.RemoveUserMarkup = function(bbox, markupId) {
     let url = this.photos[this.photoIndex].original
+    let albumId = this.photos[this.photoIndex].albumId
 
-    SendRequest("/remove-user-markup", {album_id: this.albumId, photo_url: url, markup_id: markupId}).then(response => {
+    SendRequest("/remove-user-markup", {album_id: albumId, photo_url: url, markup_id: markupId}).then(response => {
         if (response.status != "success") {
             bbox.classList.add("gallery-error-bbox")
             return
