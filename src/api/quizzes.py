@@ -7,7 +7,7 @@ from fastapi import APIRouter, Body, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import constants
-from src.api import make_error, templates
+from src.api import make_error, templates, vk_api
 from src.database import database
 from src.dataclasses.quiz import Quiz
 from src.utils.auth import get_current_user
@@ -143,3 +143,16 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
 
     database.quizzes.update_one({"_id": ObjectId(quiz_params.quiz_id)}, {"$set": quiz.to_dict()})
     return JSONResponse({"status": constants.SUCCESS})
+
+
+@router.post("/get-vk-post")
+def get_vk_post(user: Optional[dict] = Depends(get_current_user), post_id: str = Body(..., embed=True)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    post_text = vk_api.get_post(post_id)
+
+    if post_text is None:
+        return JSONResponse({"status": constants.ERROR, "message": "Не удалось получить текст поста"})
+
+    return JSONResponse({"status": constants.SUCCESS, "text": post_text})

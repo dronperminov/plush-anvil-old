@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from fastapi.responses import HTMLResponse
@@ -5,8 +6,13 @@ from jinja2 import Environment, FileSystemLoader
 
 from src.database import database
 from src.utils.common import get_static_hash
+from src.utils.vkapi import VKApi
 
 templates = Environment(loader=FileSystemLoader("web/templates"), cache_size=0)
+
+
+with open(os.path.join(os.path.dirname(__file__), "..", "..", "vk_tokens.txt"), "r") as f:
+    vk_api = VKApi(f.read().splitlines())
 
 
 def make_error(message: str, user: Optional[dict], title: str = "Произошла ошибка") -> HTMLResponse:

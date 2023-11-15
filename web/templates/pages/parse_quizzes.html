@@ -30,10 +30,12 @@
                 <button class="basic-button default-button" onclick="ParseQuizzes()">Распарсить</button>
             </div>
 
-            <div class="error"></div>
+            <div class="error" id="parse-error"></div>
         </div>
+        <div class="post-quizzes" id="post-quizzes"></div>
 
         <div id="invalid-lines"></div>
+        <h2 class="hidden" id="parsed-result">Результат парсинга</h2>
         <div id="parsed"></div>
     </div>
 
@@ -60,7 +62,8 @@
     <script src="/js/fetch.js?v={{version}}"></script>
     <script src="/js/utils.js?v={{version}}"></script>
     <script src="/js/icons/quiz_icons.js?v={{version}}"></script>
-    <script src="/js/utils/quiz_parser.js?v={{version}}"></script>
+    <script src="/js/utils/string_utils.js?v={{version}}"></script>
+    <script src="/js/utils/smuzi_parser.js?v={{version}}"></script>
     <script src="/js/quizzes.js?v={{version}}"></script>
     <script src="/js/parse_quizzes.js?v={{version}}"></script>
     {% include "footer.html" %}
