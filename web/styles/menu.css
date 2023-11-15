@@ -6,6 +6,7 @@
     height: 65px;
     border-bottom: 1px solid var(--menu-border-color);
     z-index: 3;
+    user-select: none;
 }
 
 .header ul {

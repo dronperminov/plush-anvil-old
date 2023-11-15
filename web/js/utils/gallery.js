@@ -36,7 +36,6 @@ const GALLERY_LOADER_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="62px
     <animateTransform xmlns="http://www.w3.org/2000/svg" attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="0.9s" repeatCount="indefinite"/>
 </svg>`
 
-const GALLERY_TRANSITION = "transform 150ms"
 const GALLERY_DEFAULT_MODE = "default"
 const GALLERY_SWIPE_MODE = "swipe"
 const GALLERY_HORIZONTAL_SWIPE_MODE = "swipe-horizontal"
@@ -46,6 +45,8 @@ const GALLERY_MARKUP_MODE = "markup"
 
 const GALLERY_BBOX_MIN_SIZE = 20
 const GALLERY_RESIZE_OFFSET = 10
+const GALLERY_SHOW_BLOCKS = 5
+const GALLERY_EFFECTIVE_SIZE = 2 * GALLERY_SHOW_BLOCKS + 1
 
 function Gallery(popupId, markups = null, users = null, isAdmin, withAlbumLinks) {
     this.isAdmin = isAdmin
@@ -98,6 +99,20 @@ Gallery.prototype.BuildControls = function(withAlbumLinks) {
     this.next.addEventListener("click", () => this.Next())
 }
 
+Gallery.prototype.UpdateBlockIndices = function(offset = 0) {
+    for (let photo of this.photos)
+        photo.blockIndex = -1
+
+    for (let i = -GALLERY_SHOW_BLOCKS; i <= GALLERY_SHOW_BLOCKS; i++) {
+        let index = this.GetIndex(i)
+        this.photos[index].blockIndex = GALLERY_SHOW_BLOCKS + i
+    }
+
+    this.gallery.classList.remove("gallery-transition")
+    this.gallery.style.transform = `translate(${(-(this.photos[this.photoIndex].blockIndex + offset) + this.offsetX) * 100}%, ${this.offsetY * 100}%)`
+    this.gallery.offsetHeight
+}
+
 Gallery.prototype.BuildPhotos = function(markups) {
     this.gallery = this.MakeElement("gallery-photos", this.popup)
     this.photos = []
@@ -106,6 +121,41 @@ Gallery.prototype.BuildPhotos = function(markups) {
         this.AddPhoto(image, markups[this.photos.length])
 
     this.photoIndex = 0
+
+    if (this.photos.length > GALLERY_EFFECTIVE_SIZE)
+        this.BuildBlocks()
+}
+
+Gallery.prototype.RemoveBlocks = function() {
+    while (this.gallery.children.length > 0)
+        this.gallery.children[0].remove()
+}
+
+Gallery.prototype.BuildBlock = function(index, position = -1) {
+    let photo = this.MakeElement("gallery-photo")
+    let photoImage = this.MakeElement("gallery-photo-image", photo, {alt: this.photos[index].alt}, "img")
+    let loader = this.MakeElement("gallery-loader", photo, {innerHTML: GALLERY_LOADER_ICON})
+
+    photoImage.addEventListener("load", () => this.LoadImage(loader, photo, photoImage, this.photos[index].markup))
+    photo.addEventListener("contextmenu", (e) => e.preventDefault())
+
+    this.photos[index].block = photo
+    this.photos[index].image = photoImage
+    this.photos[index].loader = loader
+
+    if (position == -1)
+        this.gallery.appendChild(photo)
+    else
+        this.gallery.insertBefore(photo, this.gallery.children[position])
+}
+
+Gallery.prototype.BuildBlocks = function() {
+    this.RemoveBlocks()
+
+    for (let i = -GALLERY_SHOW_BLOCKS; i <= GALLERY_SHOW_BLOCKS; i++)
+        this.BuildBlock(this.GetIndex(i))
+
+    this.UpdateBlockIndices()
 }
 
 Gallery.prototype.AddPhoto = function(image, markup) {
@@ -114,17 +164,15 @@ Gallery.prototype.AddPhoto = function(image, markup) {
     image.addEventListener("click", () => this.ShowPhoto(image))
 
     let alt = image.getAttribute("alt")
-    let previewUrl = image.getAttribute("src")
-    let originalUrl = image.getAttribute("data-src")
+    let original = image.hasAttribute("data-src") ? image.getAttribute("data-src") : image.getAttribute("src")
     let albumId = +image.getAttribute("data-album-id")
 
-    let photo = this.MakeElement("gallery-photo", this.gallery)
-    let photoImage = this.MakeElement("gallery-photo-image", photo, {alt: alt}, "img")
-    let loader = this.MakeElement("gallery-loader", photo, {innerHTML: GALLERY_LOADER_ICON})
+    this.photos.push({original: original, alt: alt, albumId: albumId, markup: markup, block: null, image: null, loader: null, blockIndex: index})
 
-    photoImage.addEventListener("load", () => this.LoadImage(loader, photo, photoImage, markup))
-    photo.addEventListener("contextmenu", (e) => e.preventDefault())
-    this.photos.push({original: originalUrl, image: photoImage, loader: loader, block: photo, albumId: albumId})
+    if (this.photos.length <= GALLERY_EFFECTIVE_SIZE)
+        this.BuildBlock(index)
+    else
+        this.RemoveBlocks()
 }
 
 Gallery.prototype.BuildMarkup = function() {
@@ -211,13 +259,14 @@ Gallery.prototype.AddDataAttributesToBbox = function(bbox, x, y, width, height) 
 Gallery.prototype.AddInfoToBbox = function(bbox, username, markupId, x, y, width, height, isFirst = false) {
     this.AddDataAttributesToBbox(bbox, x, y, width, height)
 
-    let removeIcon = this.MakeElement("gallery-remove-bbox", bbox, {innerHTML: GALLERY_CLOSE_ICON})
+    let removeIcon = this.MakeElement("gallery-remove-bbox", bbox)
+    let removeSpan = this.MakeElement("", removeIcon, {innerHTML: GALLERY_CLOSE_ICON}, "span")
     let userName = this.MakeElement("gallery-fullname-bbox", bbox)
     let user = this.MakeElement("gallery-fullname-span", userName, {innerText: this.users[username].fullname})
-    removeIcon.addEventListener("click", () => this.RemoveUserMarkup(bbox, markupId))
+    removeSpan.addEventListener("click", () => this.RemoveUserMarkup(bbox, markupId))
 
     if (!this.isAdmin || isFirst)
-        removeIcon.children[0].classList.add("gallery-hidden")
+        removeSpan.classList.add("gallery-hidden")
 }
 
 Gallery.prototype.Show = function() {
@@ -238,7 +287,7 @@ Gallery.prototype.Show = function() {
             photo.image.setAttribute("src", photo.original)
     }
 
-    this.gallery.style.transform = `translate(${(-this.photoIndex + this.offsetX) * 100}%, ${this.offsetY * 100}%)`
+    this.gallery.style.transform = `translate(${(-this.photos[this.photoIndex].blockIndex + this.offsetX) * 100}%, ${this.offsetY * 100}%)`
     this.photos[this.photoIndex].image.style.transform = null
 
     for (let bbox of document.getElementsByClassName("gallery-bbox")) {
@@ -251,6 +300,9 @@ Gallery.prototype.Show = function() {
 
 Gallery.prototype.ShowPhoto = function(image) {
     this.photoIndex = +image.getAttribute("data-index")
+
+    if (this.photos.length > GALLERY_EFFECTIVE_SIZE)
+        this.BuildBlocks()
 
     this.Open()
     this.Show()
@@ -281,12 +333,42 @@ Gallery.prototype.GetIndex = function(delta = 0) {
     return (this.photoIndex + delta + this.photos.length) % this.photos.length
 }
 
+Gallery.prototype.StepNext = function() {
+    this.photoIndex = this.GetIndex(1)
+
+    if (this.photos.length <= GALLERY_EFFECTIVE_SIZE || this.photos[this.GetIndex(1)].blockIndex !== -1)
+        return
+
+    for (let i = 0; i < GALLERY_SHOW_BLOCKS; i++)
+        this.gallery.children[0].remove()
+
+    for (let i = 0; i < GALLERY_SHOW_BLOCKS; i++)
+        this.BuildBlock(this.GetIndex(i + 1))
+
+    this.UpdateBlockIndices(-1)
+}
+
+Gallery.prototype.StepPrev = function() {
+    this.photoIndex = this.GetIndex(-1)
+
+    if (this.photos.length <= GALLERY_EFFECTIVE_SIZE || this.photos[this.GetIndex(-1)].blockIndex !== -1)
+        return
+
+    for (let i = 0; i < GALLERY_SHOW_BLOCKS; i++)
+        this.gallery.children[this.gallery.children.length - 1].remove()
+
+    for (let i = 0; i < GALLERY_SHOW_BLOCKS; i++)
+        this.BuildBlock(this.GetIndex(-i - 1), 0)
+
+    this.UpdateBlockIndices(1)
+}
+
 Gallery.prototype.Next = function() {
     if (this.mode == GALLERY_MARKUP_MODE && this.bbox !== null)
         this.Escape()
 
-    this.gallery.style.transition = GALLERY_TRANSITION
-    this.photoIndex = this.GetIndex(1)
+    this.StepNext()
+    this.gallery.classList.add("gallery-transition")
     this.Show()
 }
 
@@ -294,8 +376,8 @@ Gallery.prototype.Prev = function() {
     if (this.mode == GALLERY_MARKUP_MODE && this.bbox !== null)
         this.Escape()
 
-    this.gallery.style.transition = GALLERY_TRANSITION
-    this.photoIndex = this.GetIndex(-1)
+    this.StepPrev()
+    this.gallery.classList.add("gallery-transition")
     this.Show()
 }
 
@@ -437,7 +519,7 @@ Gallery.prototype.TouchStart = function(e) {
         this.mode = e.touches && e.touches.length == 2 ? GALLERY_SCALE_MODE : GALLERY_SWIPE_MODE
     }
 
-    this.gallery.style.transition = null
+    this.gallery.classList.remove("gallery-transition")
 }
 
 Gallery.prototype.TouchMove = function(e) {
@@ -499,15 +581,15 @@ Gallery.prototype.SwipeEnd = function() {
         this.Close()
     }
     else if (this.offsetX < -0.2) {
-        this.photoIndex = this.GetIndex(1)
+        this.StepNext()
     }
     else if (this.offsetX > 0.2) {
-        this.photoIndex = this.GetIndex(-1)
+        this.StepPrev()
     }
 
     this.offsetX = 0
     this.offsetY = 0
-    this.gallery.style.transition = GALLERY_TRANSITION
+    this.gallery.classList.add("gallery-transition")
     this.mode = GALLERY_DEFAULT_MODE
     this.Show()
 }
@@ -779,6 +861,7 @@ Gallery.prototype.AddUserMarkup = function(username) {
         bbox.classList.add("gallery-finished-bbox")
         this.usersMarkup.classList.add("gallery-hidden")
         this.AddInfoToBbox(bbox, username, response.markup_id, x, y, width, height)
+        this.photos[this.photoIndex].markup.push({username: username, x: x, y: y, width: width, height: height, markup_id: response.markup_id})
     })
 }
 
@@ -793,11 +876,12 @@ Gallery.prototype.RemoveUserMarkup = function(bbox, markupId) {
         }
 
         bbox.remove()
+        this.photos[this.photoIndex].markup = this.photos[this.photoIndex].markup.filter(markup => markup.markup_id != markupId)
     })
 }
 
 Gallery.prototype.TransitionEnd = function() {
-    this.gallery.style.transition = null
+    this.gallery.classList.remove("gallery-transition")
 }
 
 Gallery.prototype.ResizeBbox = function(bbox, image) {

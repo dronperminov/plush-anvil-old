@@ -17,6 +17,14 @@
     display: none !important;
 }
 
+.gallery-transition {
+    transition: transform 150ms;
+}
+
+.gallery-no-transition {
+    transition: none !important;
+}
+
 .gallery-open {
     display: unset;
 }
