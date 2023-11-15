@@ -3,7 +3,7 @@ import re
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends, File, Form, UploadFile
@@ -38,11 +38,11 @@ class RemoveMarkupForm:
 router = APIRouter()
 
 
-@router.get("/photos")
-def get_photos(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
+@router.get("/albums")
+def get_albums(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
     albums = list(database.photo_albums.find({"deactivated": {"$ne": True}}).sort("date", -1))
     template = templates.get_template("pages/photos.html")
-    content = template.render(user=user, page="photos", version=get_static_hash(), albums=albums)
+    content = template.render(user=user, page="albums", version=get_static_hash(), albums=albums)
     return HTMLResponse(content=content)
 
 
@@ -73,9 +73,21 @@ def get_album(album_id: int, user: Optional[dict] = Depends(get_current_user)) -
     return RedirectResponse(album.url)
 
 
+def render_album(user: Optional[dict], title: str, page_name: str, photos: List[dict], is_admin: bool) -> HTMLResponse:
+    photos = sorted(photos, key=lambda photo: photo["date"])
+    album = Album(title=title, album_id=0, url=f"/{page_name}", photos=photos, date=datetime.now(), quiz_id="", preview_url="")
+    users = {user["username"]: user for user in database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0})}
+    template = templates.get_template("pages/album.html")
+    content = template.render(user=user, page=page_name, version=get_static_hash(), album=album, users=users, is_admin=is_admin)
+    return HTMLResponse(content=content)
+
+
 @router.get("/photos-with-me")
-def photos_with_me(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
-    albums = database.photo_albums.find({"photos.markup.username": user["username"]}).sort("date", -1)
+def get_user_photos(user: Optional[dict] = Depends(get_current_user)) -> Response:
+    if not user:
+        return RedirectResponse(url="/login?back_url=/photos-with-me")
+
+    albums = database.photo_albums.find({"photos.markup.username": user["username"]})
     photos = []
 
     for album in albums:
@@ -85,11 +97,20 @@ def photos_with_me(user: Optional[dict] = Depends(get_current_user)) -> HTMLResp
             if user["username"] in photo_users:
                 photos.append(photo)
 
-    album = Album("Фото со мной", 0, "/photos-with-me", photos, datetime.now(), "", "")
-    users = {user["username"]: user for user in database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0})}
-    template = templates.get_template("pages/album.html")
-    content = template.render(user=user, page="photos-with-me", version=get_static_hash(), album=album, users=users, is_admin=False)
-    return HTMLResponse(content=content)
+    return render_album(user, "Фото со мной", "photos-with-me", photos, False)
+
+
+@router.get("/photos")
+def get_all_photos(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
+    albums = database.photo_albums.find({"deactivated": {"$ne": True}})
+    photos = []
+
+    for album in albums:
+        for photo in album["photos"]:
+            photo["album_id"] = album["album_id"]
+            photos.append(photo)
+
+    return render_album(user, "Все фото", "photos", photos, user and user["role"] == "admin")
 
 
 @router.post("/add-album")
@@ -204,17 +225,18 @@ def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
 
     photo_src = f"/images/albums/{album_id}/{os.path.basename(photo_path)}"
     photo_preview_src = f"/images/albums/{album_id}/preview_{os.path.basename(photo_path)}"
+    date = datetime.now()
 
     if photo_src in {photo["url"] for photo in album.photos}:
         return JSONResponse({"status": constants.SUCCESS, "added": False})
 
-    database.photo_albums.update_one({"album_id": album_id}, {"$push": {"photos": {"url": photo_src, "preview_url": photo_preview_src, "markup": []}}})
+    database.photo_albums.update_one({"album_id": album_id}, {"$push": {"photos": {"url": photo_src, "preview_url": photo_preview_src, "markup": [], "date": date}}})
 
     if not album.preview_url:
         database.photo_albums.update_one({"album_id": album_id}, {"$set": {"preview_url": photo_preview_src}})
 
     if not album.quiz_id:
-        database.photo_albums.update_one({"album_id": album_id}, {"$set": {"date": datetime.now()}})
+        database.photo_albums.update_one({"album_id": album_id}, {"$set": {"date": date}})
 
     return JSONResponse({"status": constants.SUCCESS, "added": True, "src": photo_src, "preview_src": photo_preview_src})
 

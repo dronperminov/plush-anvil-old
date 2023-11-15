@@ -113,6 +113,7 @@ def delete_quiz(user: Optional[dict] = Depends(get_current_user), quiz_id: str =
         return JSONResponse({"status": constants.ERROR, "message": "Выбранного квиза не существует"})
 
     database.quizzes.delete_one({"_id": ObjectId(quiz_id)})
+    database.photo_albums.update_many({"quiz_id": ObjectId(quiz_id)}, {"$set": {"quiz_id": ""}})
     return JSONResponse({"status": constants.SUCCESS})
 
 

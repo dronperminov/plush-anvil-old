@@ -73,15 +73,15 @@ Gallery.prototype.BuildControls = function(withAlbumLinks) {
     let topInfo = this.MakeElement("gallery-top-info", topControls)
     this.positionSpan = this.MakeElement("gallery-top-info-text", topInfo, {}, "span")
 
-    if (this.isAdmin) {
-        this.markupControl = this.MakeElement("gallery-top-control", topControls, {innerHTML: GALLERY_MARKUP_ICON, title: "Отметить людей"})
-        this.markupControl.addEventListener("click", () => this.Markup())
-    }
-
     if (withAlbumLinks) {
         this.albumLink = this.MakeElement("", null, {}, "a")
         let albumIcon = this.MakeElement("gallery-top-control", topControls, {innerHTML: GALLERY_LINK_ICON, title: "Перейти в альбом"})
         albumIcon.addEventListener("click", () => this.GoToAlbum())
+    }
+
+    if (this.isAdmin) {
+        this.markupControl = this.MakeElement("gallery-top-control", topControls, {innerHTML: GALLERY_MARKUP_ICON, title: "Отметить людей"})
+        this.markupControl.addEventListener("click", () => this.Markup())
     }
 
     this.downloadLink = this.MakeElement("", null, {download: ""}, "a")

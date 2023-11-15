@@ -1,4 +1,4 @@
-{% set title = 'Фотоальбом %s | Плюшевая наковальня' % album.title %}
+{% set title = 'Фотоальбом %s | Плюшевая наковальня' % album.title if page == "album" else '%s | Плюшевая наковальня' % album.title %}
 {% if album.preview_url %}
 {% set banner = album.preview_url %}
 {% set banner_width = 495 %}
@@ -12,7 +12,7 @@
     {% include "components/menu.html" %}
 
     <div class="content">
-        {% if is_admin %}
+        {% if is_admin and page == "album" %}
         <div class="album-controls">
             <div class="album-control hidden" id="save-album">
                 <div class="interactive-fill-icon" onclick="SaveAlbum({{album.album_id}})" title="Сохранить">
@@ -134,7 +134,7 @@
         let users = {{users}}
         let markups = [{{album.photos|reverse|map(attribute="markup")|join(",")}}]
 
-        let gallery = new Gallery("gallery", markups, users, {{"true" if is_admin else "false"}}, {{"true" if page == "photos-with-me" else "false"}})
+        let gallery = new Gallery("gallery", markups, users, {{"true" if is_admin else "false"}}, {{"true" if page != "album" else "false"}})
     </script>
 
     {% include "footer.html" %}
