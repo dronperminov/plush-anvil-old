@@ -11,17 +11,17 @@ SmuziParser.prototype.GetRegexp = function() {
     let weekday = `(?<weekday>${this.weekdays.join("|")})`
     let time = "(?<time>\\d\\d?:\\d\\d?)"
     let place = "(?<place>[^\\/\\n]+)"
-    let name = "(?<name>[^№\\n]+?№\\s*\\d+(\\s*:[^.!\\n]+?[\\.\\!]|[\\.\\!])?|[^\\.\\!\\n]+?[\\.\\!])"
+    let name = "(?<name>[^№\\n]+?№\\s*\\d+(\\s*\\([^\\)]+\\))?(\\s*:[^.!\\n]+?[\\.\\!]|[\\.\\!])?|[^\\.\\!\\n]+?[\\.\\!])"
     let description = "(?<description>.+?)"
     let questions = "(?<questions>\\d+ вопро[а-я]+)"
-    let cost = "(?<cost>\\d+) рублей с игрока\\s*\\)?\\s*.?\\s*"
-    return new RegExp(`^${day}\\s*${month}\\s+${weekday}\\s+${time}\\s+\\/${place}\\/\\s*${name}\\s*${description}\\s*\\(\\s*${questions}.*[\\s\\/]${cost}$`, "gim")
+    let cost = "((?<cost>\\d+) рублей с (человека|игрока)\\s*)?\\)?\\s*.?\\s*"
+    return new RegExp(`^${day}\\s*${month}\\s+${weekday}\\s+${time}\\s+\\/${place}\\/\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?$`, "gim")
 }
 
 SmuziParser.prototype.MatchToQuiz = function(match) {
     let day = match.groups.day.padStart(2, '0')
     let month = `${this.months.indexOf(match.groups.month.toLowerCase()) + 1}`.padStart(2, '0')
-    let name = match.groups.name.replace(/\s*№\s*\d+\.?\s*/gi, "")
+    let name = match.groups.name.replace(/\s*№\s*\d+[\.!]?/gi, "").trim()
 
     return {
         line: match[0],
@@ -32,8 +32,8 @@ SmuziParser.prototype.MatchToQuiz = function(match) {
         place: this.GetPlace(match.groups.place),
         name: name,
         description: match.groups.description,
-        questions: +match.groups.questions,
-        cost: +match.groups.cost,
+        questions: match.groups.questions === undefined ? 0 : +match.groups.questions,
+        cost: match.groups.cost === undefined ? 600 : +match.groups.cost,
         organizer: "Смузи"
     }
 }
@@ -67,7 +67,7 @@ SmuziParser.prototype.GetPlace = function(parsedPlace) {
     let bestPlace = null
 
     for (let place of this.places) {
-        let ratio = this.Ratio(place, this.PrepareParsedPlace(parsedPlace))
+        let ratio = Ratio(place, this.PrepareParsedPlace(parsedPlace))
 
         if (ratio > bestRatio) {
             bestRatio = ratio
