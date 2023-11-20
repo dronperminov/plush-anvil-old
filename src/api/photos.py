@@ -2,9 +2,10 @@ import os
 import re
 import urllib.parse
 import uuid
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends, File, Form, Query, UploadFile
@@ -57,7 +58,7 @@ def get_title_album(album_id: int, title: str, user: Optional[dict] = Depends(ge
     if album.get("deactivated"):
         return make_error(message="Запрашиваемый альбом был удалён.", user=user)
 
-    users = {user["username"]: user for user in database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0})}
+    users = get_markup_users()
     template = templates.get_template("pages/album.html")
     content = template.render(user=user, page="album", version=get_static_hash(), album=album, users=users, is_admin=user and user["role"] == "admin")
     return HTMLResponse(content=content)
@@ -74,25 +75,39 @@ def get_album(album_id: int, user: Optional[dict] = Depends(get_current_user)) -
     return RedirectResponse(album.url)
 
 
+def get_markup_users() -> Dict[str, dict]:
+    user2count = defaultdict(int)
+    for album in database.photo_albums.find({}):
+        for photo in album["photos"]:
+            for markup in photo["markup"]:
+                user2count[markup["username"]] += 1
+
+    users = sorted(database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0}), key=lambda user: -user2count[user["username"]])
+    return {user["username"]: user for user in users}
+
+
 def render_album(user: Optional[dict], title: str, page_name: str, photos: List[dict], is_admin: bool) -> HTMLResponse:
     photos = sorted(photos, key=lambda photo: photo["date"])
     album = Album(title=title, album_id=0, url=f"/{page_name}", photos=photos, date=datetime.now(), quiz_id="", preview_url="")
-    users = {user["username"]: user for user in database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0})}
+    users = get_markup_users()
     template = templates.get_template("pages/album.html")
     content = template.render(user=user, page=page_name, version=get_static_hash(), album=album, users=users, is_admin=is_admin)
     return HTMLResponse(content=content)
 
 
 def get_photos_with_users(usernames: List[str]) -> List[dict]:
-    albums = database.photo_albums.find({"photos.markup.username": {"$in": usernames}})
-    usernames = set(usernames)
+    query = {"deactivated": {"$ne": True}}
+    if usernames:
+        query["photos.markup.username"] = {"$regex": f'^({"|".join(usernames)})$', "$options": "i"}
+
+    usernames = {username.lower() for username in usernames}
     photos = []
 
-    for album in albums:
+    for album in database.photo_albums.find(query):
         for photo in album["photos"]:
-            photo_users = {markup["username"] for markup in photo["markup"]}
+            photo_users = {markup["username"].lower() for markup in photo["markup"]}
             photo["album_id"] = album["album_id"]
-            if usernames.issubset(photo_users):
+            if usernames and usernames.issubset(photo_users) or not usernames and not photo_users:
                 photos.append(photo)
 
     return photos
@@ -112,15 +127,11 @@ def get_users_photos(user: Optional[dict] = Depends(get_current_user), usernames
         query = urllib.parse.quote_plus("&".join(f"usernames={username}" for username in usernames))
         return RedirectResponse(url=f"/login?back_url=/photos-with-users?{query}")
 
-    if user["role"] != "admin":
-        return make_error(message="Эта страница доступна только администраторам.", user=user)
-
-    if not usernames:
-        usernames = [user["username"]]
-    elif not database.users.find({"username": {"$in": usernames}}):
+    if usernames and not database.users.find({"username": {"$in": usernames}}):
         return make_error(f'Не удалось найти ни одного из пользователей среди "{", ".join(usernames)}"', user=user)
 
-    return render_album(user, f'Фото с {", ".join(usernames)}', "photos-with-users", get_photos_with_users(usernames), False)
+    title = f'Фото с {", ".join(usernames)}' if usernames else "Фото без отметок"
+    return render_album(user, title, "photos-with-users", get_photos_with_users(usernames), False)
 
 
 @router.get("/photos")
