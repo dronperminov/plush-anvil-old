@@ -92,3 +92,16 @@
     font-size: 0.9em;
     margin-bottom: 10px;
 }
+
+h2 {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.content ul {
+    padding-left: 20px;
+}
+
+.content li {
+    margin-bottom: 10px;
+}

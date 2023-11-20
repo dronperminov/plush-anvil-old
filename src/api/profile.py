@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import constants
 from src.api import templates
@@ -23,7 +23,10 @@ class AvatarForm:
 
 
 @router.get("/profile")
-def profile(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
+def profile(user: Optional[dict] = Depends(get_current_user)) -> Response:
+    if not user:
+        return RedirectResponse(url="/login?back_url=/profile")
+
     template = templates.get_template("pages/profile.html")
     content = template.render(user=user, page="profile", version=get_static_hash())
     return HTMLResponse(content=content)
