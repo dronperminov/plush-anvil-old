@@ -12,6 +12,7 @@
 
     /* status */
     --error-color: #f44336;
+    --success-color: #4caf50;
     --disabled-color: #d0d0d0;
 
     /* icons  */
@@ -131,6 +132,13 @@ html {
     margin-top: 10px;
     font-size: 0.9em;
     color: var(--error-color);
+    text-align: center;
+}
+
+.success:not(:empty) {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: var(--success-color);
     text-align: center;
 }
 

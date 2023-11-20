@@ -23,6 +23,15 @@ def login(user: Optional[dict] = Depends(auth.get_current_user), back_url: str =
     return HTMLResponse(content=template.render(page="login", version=get_static_hash()))
 
 
+@router.get("/change-password")
+def get_change_password(user: Optional[dict] = Depends(auth.get_current_user)) -> Response:
+    if not user:
+        return RedirectResponse(url="/login?back_url=/change-password")
+
+    template = templates.get_template("pages/change_password.html")
+    return HTMLResponse(content=template.render(user=user, page="change_password", version=get_static_hash()))
+
+
 @router.post("/sign-in")
 def sign_in(username: str = Body(..., embed=True), password: str = Body(..., embed=True)) -> JSONResponse:
     user = database.users.find_one({"username": {"$regex": f"^{username}$", "$options": "i"}})
@@ -65,3 +74,18 @@ def logout() -> Response:
 @router.post("/validate")
 def validate(user: Optional[dict] = Depends(auth.get_current_user)) -> JSONResponse:
     return JSONResponse({"status": constants.SUCCESS, "valid": user is not None})
+
+
+@router.post("/change-password")
+def change_password(user: Optional[dict] = Depends(auth.get_current_user), curr_pass: str = Body(..., embed=True), new_pass: str = Body(..., embed=True)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не залогинен"})
+
+    if not auth.validate_password(curr_pass, user["password_hash"]):
+        return JSONResponse({"status": "error", "message": "Текущий пароль введён неверно"})
+
+    if curr_pass == new_pass:
+        return JSONResponse({"status": "error", "message": "Текущий пароль совпадает с новым"})
+
+    database.users.update_one({"username": user["username"]}, {"$set": {"password_hash": auth.get_password_hash(new_pass)}})
+    return JSONResponse({"status": constants.SUCCESS})
