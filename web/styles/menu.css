@@ -123,7 +123,6 @@
     background-color: var(--submenu-background);
     width: 100%;
     z-index: 3;
-    padding: 10px 0;
     display: none;
 }
 
@@ -229,8 +228,4 @@
     .subnav-content a {
         padding: 20px 10px;
     }
-}
-
-@media (max-width: 767px) {
-
 }
