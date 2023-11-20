@@ -1,12 +1,13 @@
 import os
 import re
+import urllib.parse
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
 from bson import ObjectId
-from fastapi import APIRouter, Body, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Form, Query, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import constants
@@ -82,22 +83,44 @@ def render_album(user: Optional[dict], title: str, page_name: str, photos: List[
     return HTMLResponse(content=content)
 
 
-@router.get("/photos-with-me")
-def get_user_photos(user: Optional[dict] = Depends(get_current_user)) -> Response:
-    if not user:
-        return RedirectResponse(url="/login?back_url=/photos-with-me")
-
-    albums = database.photo_albums.find({"photos.markup.username": user["username"]})
+def get_photos_with_users(usernames: List[str]) -> List[dict]:
+    albums = database.photo_albums.find({"photos.markup.username": {"$in": usernames}})
+    usernames = set(usernames)
     photos = []
 
     for album in albums:
         for photo in album["photos"]:
             photo_users = {markup["username"] for markup in photo["markup"]}
             photo["album_id"] = album["album_id"]
-            if user["username"] in photo_users:
+            if usernames.issubset(photo_users):
                 photos.append(photo)
 
-    return render_album(user, "Фото со мной", "photos-with-me", photos, False)
+    return photos
+
+
+@router.get("/photos-with-me")
+def get_user_photos(user: Optional[dict] = Depends(get_current_user)) -> Response:
+    if not user:
+        return RedirectResponse(url="/login?back_url=/photos-with-me")
+
+    return render_album(user, "Фото со мной", "photos-with-me", get_photos_with_users([user["username"]]), False)
+
+
+@router.get("/photos-with-users")
+def get_users_photos(user: Optional[dict] = Depends(get_current_user), usernames: List[str] = Query([])) -> Response:
+    if not user:
+        query = urllib.parse.quote_plus("&".join(f"usernames={username}" for username in usernames))
+        return RedirectResponse(url=f"/login?back_url=/photos-with-users?{query}")
+
+    if user["role"] != "admin":
+        return make_error(message="Эта страница доступна только администраторам.", user=user)
+
+    if not usernames:
+        usernames = [user["username"]]
+    elif not database.users.find({"username": {"$in": usernames}}):
+        return make_error(f'Не удалось найти ни одного из пользователей среди "{", ".join(usernames)}"', user=user)
+
+    return render_album(user, f'Фото с {", ".join(usernames)}', "photos-with-users", get_photos_with_users(usernames), False)
 
 
 @router.get("/photos")

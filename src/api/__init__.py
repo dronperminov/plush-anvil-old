@@ -18,5 +18,5 @@ with open(os.path.join(os.path.dirname(__file__), "..", "..", "vk_tokens.txt"), 
 def make_error(message: str, user: Optional[dict], title: str = "Произошла ошибка") -> HTMLResponse:
     template = templates.get_template("pages/error.html")
     settings = database.settings.find_one({"username": user["username"]}) if user else None
-    content = template.render(user=user, settings=settings, page="error", title=title, message=message, version=get_static_hash())
+    content = template.render(user=user, settings=settings, page="error", error_title=title, message=message, version=get_static_hash())
     return HTMLResponse(content=content)
