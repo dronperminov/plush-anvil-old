@@ -167,32 +167,28 @@
         top: 0;
         position: relative;
         float: right;
-        width: calc(100% - 82px);
+        width: fit-content;
         height: 100%;
         background-color: transparent;
         overflow: unset;
     }
 
     .menu {
-        display: table;
-        table-layout: fixed;
         width: 100%;
     }
 
     .menu li {
-        display: table-cell;
+        float: left;
         white-space: nowrap;
         text-align: center;
-        vertical-align: top;
-        width: calc(33% - 20px);
     }
 
     .menu a {
-        padding: 20px 0;
+        padding: 20px 30px;
     }
 
     .menu .menu-profile {
-        width: 82px;
+        min-width: 0;
     }
 
     .menu .menu-profile-text {
@@ -200,7 +196,7 @@
     }
 
     .menu .login {
-        width: 120px;
+        min-width: 0;
     }
 
     .menu .menu-profile a {
@@ -217,12 +213,19 @@
         display: none;
     }
 
+    .subnav {
+        position: relative;
+    }
+
+    .subnavbtn {
+        padding: 20px 30px;
+    }
+
     .subnav-content {
-        background-color: var(--menu-background);
         padding: 0;
-        border-left: 1px solid var(--border-color);
-        border-right: 1px solid var(--border-color);
-        border-bottom: 1px solid var(--border-color);
+        position: absolute;
+        left: 0;
+        width: fit-content;
     }
 
     .subnav-content a {

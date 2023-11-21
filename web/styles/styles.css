@@ -1,14 +1,14 @@
 :root {
     /* basic */
-    --background-color: #a8d0e6;
-    --text-color: #585858;
+    --background-color: #111111;
+    --text-color: #ffffff;
     --text-font: Roboto;
-    --border-color: #585858;
+    --border-color: #aaa;
     --main-color: #a8d0e6;
-    --link-color: #585858;
+    --link-color: #ffffff;
 
-    --content-background-color: #ffffff;
-    --content-border-color: #888888;
+    --content-background-color: #1a1a1a;
+    --content-border-color: #1a1a1a;
 
     /* status */
     --error-color: #f44336;
@@ -16,25 +16,25 @@
     --disabled-color: #d0d0d0;
 
     /* icons  */
-    --interactive-icon-color: #585858;
-    --interactive-icon-hover-color: #888888;
+    --interactive-icon-color: #aaa;
+    --interactive-icon-hover-color: #fff;
 
     /* menu  */
-    --menu-background: #a8d0e6;
-    --menu-icon-color: #585858;
-    --menu-border-color: #585858;
+    --menu-background: #111111;
+    --menu-icon-color: #eee;
+    --menu-border-color: transparent;
 
-    --menu-item-text-color: #585858;
-    --menu-item-text-hover-color: #333333;
-    --menu-item-background-hover-color: #cfe6f3;
+    --menu-item-text-color: #eee;
+    --menu-item-text-hover-color: #fff;
+    --menu-item-background-hover-color: #252525;
 
-    --submenu-background: #9ccae2;
-    --submenu-item-text-color: #585858;
-    --submenu-item-text-hover-color: #333333;
-    --submenu-item-background-hover-color: #cfe6f3;
+    --submenu-background: #333333;
+    --submenu-item-text-color: #eee;
+    --submenu-item-text-hover-color: #fff;
+    --submenu-item-background-hover-color: #252525;
 
     /* form */
-    --form-row-background: #f0f0f0;
+    --form-row-background: #0f0f0f;
     --form-row-text-color: var(--text-color);
     --form-row-icon-color: var(--text-color);
 
@@ -57,21 +57,21 @@
     /* button */
     --button-font-family: Roboto;
 
-    --button-background-color: #ffffff;
-    --button-border-color: var(--text-color);
-    --button-text-color: var(--text-color);
+    --button-background-color: #000000;
+    --button-border-color: #ccc;
+    --button-text-color: #ccc;
 
     --button-disabled-background-color: var(--disabled-color);
     --button-disabled-border-color: var(--disabled-color);
     --button-disabled-text-color: #888888;
 
-    --button-hover-background-color: #f0f0f0;
-    --button-hover-border-color: #000000;
-    --button-hover-text-color: #333333;
+    --button-hover-background-color: #0f0f0f;
+    --button-hover-border-color: #fff;
+    --button-hover-text-color: #fff;
 
-    --button-active-background-color: #eeeeee;
-    --button-active-border-color: #333333;
-    --button-active-text-color: #333333;
+    --button-active-background-color: #222;
+    --button-active-border-color: #eee;
+    --button-active-text-color: #eee;
 
     /* switch button */
     --switch-button-font-family: Roboto;

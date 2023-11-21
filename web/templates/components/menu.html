@@ -13,24 +13,24 @@
     <nav class="nav">
         <ul class="menu">
             <li class="subnav">
-                <p class="subnavbtn">Фото</p>
+                <p class="subnavbtn">ФОТО</p>
                 <div class="subnav-content">
-                    <a href="/albums">Альбомы</a>
-                    <a href="/photos">Все фото</a>
+                    <a href="/albums">АЛЬБОМЫ</a>
+                    <a href="/photos">ВСЕ ФОТО</a>
                     {% if user %}
-                    <a href="/photos-with-me">Фото со мной</a>
+                    <a href="/photos-with-me">СО МНОЙ</a>
                     {% endif %}
                 </div>
             </li>
-            <li><a href="#">О нас</a></li>
+            <li><a href="#">О НАС</a></li>
             <li class="subnav">
-                <p class="subnavbtn">Тренировки</p>
+                <p class="subnavbtn">ТРЕНИРОВКИ</p>
                 <div class="subnav-content">
                     <a class="subnav-content-icon-item" href="https://music-quiz.plush-anvil.ru">
                         <svg width="24px" height="24px" viewBox="-3 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="m18.07.169c-.148-.106-.333-.169-.532-.169-.111 0-.217.02-.316.055l.006-.002-11.077 3.938c-.361.131-.613.471-.613.869v.001 2.193.042 10.604c-.534-.295-1.169-.469-1.846-.471h-.001c-.043-.002-.093-.003-.143-.003-1.904 0-3.458 1.497-3.549 3.379v.008c.091 1.89 1.645 3.388 3.549 3.388.05 0 .1-.001.15-.003h-.007c.043.002.093.003.143.003 1.904 0 3.458-1.497 3.549-3.379v-.008-12.883l9.23-3.223v8.973c-.534-.294-1.17-.468-1.846-.47h-.001c-.043-.002-.094-.003-.144-.003-1.904 0-3.457 1.498-3.547 3.379v.008c.09 1.89 1.644 3.388 3.548 3.388.051 0 .101-.001.151-.003h-.007c.031.001.068.002.105.002 1.696 0 3.12-1.166 3.513-2.74l.005-.025c.042-.101.068-.217.069-.34v-15.754c0-.31-.153-.585-.388-.752l-.003-.002z"/>
                         </svg>
-                        УМ квиз
+                        УМ КВИЗ
                     </a>
                     <a class="subnav-content-icon-item" href="https://movie-quiz.plush-anvil.ru">
                         <svg height="24px" width="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -48,24 +48,24 @@
                                      M177.969,389.203c0-27.188,22.063-49.234,49.25-49.234s49.219,22.047,49.219,49.234s-22.031,49.234-49.219,49.234
                                     S177.969,416.391,177.969,389.203z"/>
                         </svg>
-                        КМС квиз
+                        КМС КВИЗ
                     </a>
                 </div>
             </li>
             {% if user %}
             {% if user.role == "admin" %}
             <li class="subnav">
-                <p class="subnavbtn">Управление</p>
+                <p class="subnavbtn">УПРАВЛЕНИЕ</p>
                 <div class="subnav-content">
-                    <a href="/parse-quizzes">Квизы</a>
-                    <a href="/places">Места</a>
-                    <a href="/organizers">Организаторы</a>
+                    <a href="/parse-quizzes">КВИЗЫ</a>
+                    <a href="/places">МЕСТА</a>
+                    <a href="/organizers">ОРГАНИЗАТОРЫ</a>
                 </div>
             </li>
             {% endif %}
             <li class="menu-profile"><a href="/profile"><img class="menu-profile-img" id="menu-profile-image" src="{{user.image_src}}" alt="аватар пользователя {{user.username}}" /><span class="menu-profile-text"> Мой профиль</span></a></li>
             {% else %}
-            <li class="login"><a href="/login">Вход</a></li>
+            <li class="login"><a href="/login">ВХОД / РЕГИСТРАЦИЯ</a></li>
             {% endif %}
         </ul>
     </nav>

@@ -123,6 +123,12 @@ def parse_time(time: str) -> Tuple[int, int]:
     return int(hour), int(minute)
 
 
+def quiz_to_datetime(quiz: dict) -> datetime:
+    date = quiz["date"]
+    hours, minutes = parse_time(quiz["time"])
+    return datetime(date.year, date.month, date.day, hours, minutes, 0, 0)
+
+
 def get_quizzes(start_date: datetime, end_date: datetime) -> Dict[datetime, List[dict]]:
     quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
     date2quizzes = defaultdict(list)
