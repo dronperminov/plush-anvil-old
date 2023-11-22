@@ -72,11 +72,11 @@ def preview_image(original_path: str, preview_path: str, preview_width: int = 22
     height, width = image.shape[:2]
     preview_aspect_ratio = preview_width / preview_height
 
-    if width > height * 1.2:
+    if width / height > 1.2:
         target_width = int(height * preview_aspect_ratio)
         x = (width - target_width) // 2
         image = image[:, x:x + target_width]
-    else:
+    elif width / height < 0.8:
         target_height = int(width / preview_aspect_ratio)
         y = (height - target_height) // 2
         image = image[y:y + target_height]

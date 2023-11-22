@@ -1,6 +1,5 @@
 import os
 import re
-import urllib.parse
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
@@ -123,10 +122,6 @@ def get_user_photos(user: Optional[dict] = Depends(get_current_user)) -> Respons
 
 @router.get("/photos-with-users")
 def get_users_photos(user: Optional[dict] = Depends(get_current_user), usernames: List[str] = Query([])) -> Response:
-    if not user:
-        query = urllib.parse.quote_plus("&".join(f"usernames={username}" for username in usernames))
-        return RedirectResponse(url=f"/login?back_url=/photos-with-users?{query}")
-
     if usernames and not database.users.find({"username": {"$in": usernames}}):
         return make_error(f'Не удалось найти ни одного из пользователей среди "{", ".join(usernames)}"', user=user)
 
@@ -259,7 +254,7 @@ def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
 
     photo_src = f"/images/albums/{album_id}/{os.path.basename(photo_path)}"
     photo_preview_src = f"/images/albums/{album_id}/preview_{os.path.basename(photo_path)}"
-    date = datetime.now()
+    date = album.date if album.quiz_id else datetime.now()
 
     if photo_src in {photo["url"] for photo in album.photos}:
         return JSONResponse({"status": constants.SUCCESS, "added": False})
