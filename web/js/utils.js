@@ -7,16 +7,21 @@ function SetAttributes(element, attributes) {
             element.innerText = value
         else if (name == "innerHTML")
             element.innerHTML = value
-        else
+        else if (name != "tag")
             element.setAttribute(name, value)
     }
 }
 
 function MakeElement(className, parent = null, attributes = null) {
     let tagName = attributes !== null && "tag" in attributes ? attributes["tag"] : "div"
-    let element = document.createElement(tagName)
-    element.className = className
+    let element = null
 
+    if (["svg", "path", "text", "foreignObject"].indexOf(tagName) > -1)
+        element = document.createElementNS("http://www.w3.org/2000/svg", tagName)
+    else
+        element = document.createElement(tagName)
+
+    element.setAttribute("class", className)
     SetAttributes(element, attributes)
 
     if (parent !== null)
@@ -155,4 +160,10 @@ function AutoHeightTextareas() {
         textarea.style.height = "5px"
         textarea.style.height = `${textarea.scrollHeight + 2}px`
     }
+}
+
+function FormatDate(date) {
+    let day = `${date.day}`.padStart(2, '0')
+    let month = `${date.month}`.padStart(2, '0')
+    return `${day}.${month}.${date.year}`
 }

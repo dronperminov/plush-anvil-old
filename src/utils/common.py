@@ -134,7 +134,10 @@ def get_quizzes(start_date: datetime, end_date: datetime) -> Dict[datetime, List
     date2quizzes = defaultdict(list)
 
     for quiz in quizzes:
-        date2quizzes[quiz["date"]].append(quiz)
+        quiz_date = quiz["date"]
+        quiz["date"] = {"year": quiz_date.year, "month": quiz_date.month, "day": quiz_date.day}
+        quiz["_id"] = str(quiz["_id"])
+        date2quizzes[quiz_date].append(quiz)
 
     for date, date_quizzes in date2quizzes.items():
         date2quizzes[date] = sorted(date_quizzes, key=lambda quiz: parse_time(quiz["time"]))

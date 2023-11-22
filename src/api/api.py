@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi import APIRouter, Body, Depends, Query
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
+from src import constants
 from src.api import templates
 from src.database import database
 from src.utils.auth import get_current_user
@@ -20,12 +21,23 @@ def index(user: Optional[dict] = Depends(get_current_user), date: str = Query(""
     if date and parsed_date.year == today.year and parsed_date.month == today.month:
         return RedirectResponse("/")
 
-    prev_quiz = min([quiz for quiz in database.quizzes.find({}) if quiz_to_datetime(quiz) <= today], key=lambda quiz: today - quiz_to_datetime(quiz))
-    next_quiz = min([quiz for quiz in database.quizzes.find({}) if quiz_to_datetime(quiz) >= today], key=lambda quiz: quiz_to_datetime(quiz) - today)
+    quizzes = [quiz for quiz in database.quizzes.find({}) if quiz_to_datetime(quiz) >= today]
+    next_quiz1 = min(quizzes, key=lambda quiz: quiz_to_datetime(quiz) - today)
+    next_quiz2 = min([quiz for quiz in quizzes if quiz_to_datetime(quiz) > quiz_to_datetime(next_quiz1)], key=lambda quiz: quiz_to_datetime(quiz) - today)
 
     template = templates.get_template("pages/index.html")
-    schedule = get_schedule(parsed_date)
+    curr_schedule = get_schedule(parsed_date)
     places = {place["name"]: place for place in database.places.find({})}
 
-    content = template.render(user=user, page="index", version=get_static_hash(), schedule=schedule, places=places, prev_quiz=prev_quiz, next_quiz=next_quiz)
+    content = template.render(user=user, page="index", version=get_static_hash(), schedule=curr_schedule, places=places, next_quiz1=next_quiz1, next_quiz2=next_quiz2)
     return HTMLResponse(content=content)
+
+
+@router.post("/schedule")
+def schedule(date: str = Body(..., embed=True)) -> JSONResponse:
+    parsed_date = parse_date(date)
+    return JSONResponse({
+        "status": constants.SUCCESS,
+        "schedule": get_schedule(parsed_date),
+        "places": {place["name"]: place for place in database.places.find({}, {"_id": 0})}
+    })

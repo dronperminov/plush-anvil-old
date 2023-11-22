@@ -62,30 +62,43 @@
     border: none;
 }
 
-.schedule-controls {
-    display: table;
-    table-layout: fixed;
-    margin: 0 auto 20px auto;
-}
-
-.schedule-control {
-    display: table-cell;
+.content h2 {
     text-align: center;
-    padding: 0 10px;
-}
-
-.schedule-control span {
-    border-bottom: 1px dashed var(--text-color);
-    cursor: pointer;
-}
-
-.schedule-control span:hover {
-    border-bottom-style: solid;
+    margin-bottom: 20px;
 }
 
 .schedule-month {
     text-align: center;
+    display: table;
+    margin: 0 auto;
+    margin-bottom: 10px;
     scroll-margin-top: 65px;
+}
+
+.schedule-date {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0 5px;
+}
+
+.schedule-control-icon {
+    fill: #ddd;
+    cursor: pointer;
+    display: table-cell;
+    vertical-align: middle;
+    width: 25px;
+}
+
+.schedule-control-icon:first-child {
+    text-align: right;
+}
+
+.schedule-control-icon:last-child {
+    text-align: left;
+}
+
+.schedule-control-icon:hover {
+    fill: #fff;
 }
 
 .schedule-places {
