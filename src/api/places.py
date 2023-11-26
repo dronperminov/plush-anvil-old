@@ -28,7 +28,7 @@ def get_places(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if not user:
         return RedirectResponse(url="/login?back_url=/places")
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
     template = templates.get_template("pages/places.html")
@@ -44,7 +44,7 @@ def add_place(user: Optional[dict] = Depends(get_current_user), place_params: Pl
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if database.places.find_one({"name": place_params.name}):
@@ -67,7 +67,7 @@ def delete_place(user: Optional[dict] = Depends(get_current_user), name: str = B
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.places.find_one({"name": name}):
@@ -85,7 +85,7 @@ def change_place_color(user: Optional[dict] = Depends(get_current_user), name: s
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.places.find_one({"name": name}):

@@ -59,7 +59,7 @@ def get_title_album(album_id: int, title: str, user: Optional[dict] = Depends(ge
 
     users = get_markup_users()
     template = templates.get_template("pages/album.html")
-    content = template.render(user=user, page="album", version=get_static_hash(), album=album, users=users, is_admin=user and user["role"] == "admin")
+    content = template.render(user=user, page="album", version=get_static_hash(), album=album, users=users, is_owner=user and user["role"] == "owner")
     return HTMLResponse(content=content)
 
 
@@ -85,12 +85,12 @@ def get_markup_users() -> Dict[str, dict]:
     return {user["username"]: user for user in users}
 
 
-def render_album(user: Optional[dict], title: str, page_name: str, photos: List[dict], is_admin: bool) -> HTMLResponse:
+def render_album(user: Optional[dict], title: str, page_name: str, photos: List[dict], is_owner: bool) -> HTMLResponse:
     photos = sorted(photos, key=lambda photo: photo["date"])
     album = Album(title=title, album_id=0, url=f"/{page_name}", photos=photos, date=datetime.now(), quiz_id="", preview_url="")
     users = get_markup_users()
     template = templates.get_template("pages/album.html")
-    content = template.render(user=user, page=page_name, version=get_static_hash(), album=album, users=users, is_admin=is_admin)
+    content = template.render(user=user, page=page_name, version=get_static_hash(), album=album, users=users, is_owner=is_owner)
     return HTMLResponse(content=content)
 
 
@@ -139,7 +139,7 @@ def get_all_photos(user: Optional[dict] = Depends(get_current_user)) -> HTMLResp
             photo["album_id"] = album["album_id"]
             photos.append(photo)
 
-    return render_album(user, "Все фото", "photos", photos, user and user["role"] == "admin")
+    return render_album(user, "Все фото", "photos", photos, user and user["role"] == "owner")
 
 
 @router.post("/add-album")
@@ -147,7 +147,7 @@ def add_album(user: Optional[dict] = Depends(get_current_user), title: str = Bod
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     album_id = database.photo_albums.count_documents({}) + 1
@@ -162,7 +162,7 @@ def add_quiz_album(quiz_id: str, user: Optional[dict] = Depends(get_current_user
     if not user:
         return make_error(message="Пользователь не авторизован", user=user)
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return make_error(message="Пользователь не является администратором", user=user)
 
     quiz = database.quizzes.find_one({"_id": ObjectId(quiz_id)})
@@ -192,7 +192,7 @@ def remove_album(user: Optional[dict] = Depends(get_current_user), album_id: int
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.photo_albums.find_one({"album_id": album_id}):
@@ -207,7 +207,7 @@ def rename_album(user: Optional[dict] = Depends(get_current_user), album_id: int
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.photo_albums.find_one({"album_id": album_id}):
@@ -222,7 +222,7 @@ def set_album_preview(user: Optional[dict] = Depends(get_current_user), album_id
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.photo_albums.find_one({"album_id": album_id}):
@@ -237,7 +237,7 @@ def upload_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     album = database.photo_albums.find_one({"album_id": album_id})
@@ -275,7 +275,7 @@ def remove_photo(user: Optional[dict] = Depends(get_current_user), album_id: int
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     album = database.photo_albums.find_one({"album_id": album_id})
@@ -306,7 +306,7 @@ def add_user_markup(user: Optional[dict] = Depends(get_current_user), markup: Ad
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     album = database.photo_albums.find_one({"album_id": markup.album_id})
@@ -333,7 +333,7 @@ def remove_user_markup(user: Optional[dict] = Depends(get_current_user), markup:
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     album = database.photo_albums.find_one({"album_id": markup.album_id})

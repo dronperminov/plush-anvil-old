@@ -30,7 +30,7 @@ def get_organizers(user: Optional[dict] = Depends(get_current_user)) -> Response
     if not user:
         return RedirectResponse(url="/login?back_url=/organizers")
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
     template = templates.get_template("pages/organizers.html")
@@ -44,7 +44,7 @@ def add_organizer(user: Optional[dict] = Depends(get_current_user), organizer_pa
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if database.organizers.find_one({"name": organizer_params.name}):
@@ -60,7 +60,7 @@ def delete_organizer(user: Optional[dict] = Depends(get_current_user), name: str
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.organizers.find_one({"name": name}):
@@ -78,7 +78,7 @@ def update_organizer(user: Optional[dict] = Depends(get_current_user), organizer
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.organizers.find_one({"name": organizer_params.original_name}):

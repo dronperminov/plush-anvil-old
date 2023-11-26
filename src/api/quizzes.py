@@ -38,7 +38,7 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
     if not user:
         return RedirectResponse(url=f"/login?back_url=/quizzes/{date}")
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
     date = parse_date(date)
@@ -58,7 +58,7 @@ def parse_quizzes(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if not user:
         return RedirectResponse(url="/login?back_url=/parse-quizzes")
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
     places = [place["name"] for place in database.places.find({})]
@@ -74,7 +74,7 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if database.quizzes.find_one({"date": quiz_params.date, "name": quiz_params.name, "place": quiz_params.place, "time": quiz_params.time}):
@@ -106,7 +106,7 @@ def delete_quiz(user: Optional[dict] = Depends(get_current_user), quiz_id: str =
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.quizzes.find_one({"_id": ObjectId(quiz_id)}):
@@ -122,7 +122,7 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
 
-    if user["role"] != "admin":
+    if user["role"] != "owner":
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
 
     if not database.quizzes.find_one({"_id": ObjectId(quiz_params.quiz_id)}):
