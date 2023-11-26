@@ -129,33 +129,25 @@ h1 {
     grid-template-rows: 25px;
     grid-auto-rows: 1fr;
     border-radius: 5px;
+    border: 2px solid #fff;
 }
 
 .schedule-cell {
-    border-right: 4px solid #fff;
-    border-top: 4px solid #fff;
+    border: 2px solid #fff;
     position: relative;
     aspect-ratio: 1/1;
-    background: #fff4d7;
-    border-radius: 5px;
-}
-
-.schedule-cell:nth-child(-n + 7) {
-    border-top: none;
-}
-
-.schedule-cell:nth-child(7n) {
-    border-right: none;
 }
 
 .schedule-weekday {
     text-align: center;
-    font-size: 0.9em;
+    font-size: 0.8em;
     min-height: 0;
     display: grid;
     align-items: center;
     aspect-ratio: unset;
-    color: #000;
+    color: #333;
+    border-radius: 5px;
+    background-color: #efefef;
 }
 
 .schedule-day {
@@ -164,6 +156,11 @@ h1 {
     left: 2px;
     font-size: 0.7em;
     z-index: 1;
+    fill: #333;
+}
+
+.schedule-day-current {
+    fill: #fff !important;
 }
 
 .schedule-edit {
@@ -196,18 +193,17 @@ h1 {
 
 .schedule-quiz-time {
     font-size: 0.7em;
-    color: #000;
+    fill: #fff;
 }
 
 .schedule-quiz-name {
     font-size: 0.8em;
-    font-weight: bold;
     cursor: pointer;
     text-align: center;
     display: grid;
     align-items: center;
     height: 100%;
-    color: #000;
+    color: #fff;
 }
 
 .schedule-quiz-name-left {
@@ -236,7 +232,7 @@ h1 {
 .quiz-details-content {
     background: var(--background-color);
     position: relative;
-    padding: 10px;
+    padding: 20px 10px 10px 10px;
     border: 2px solid var(--border-color);
     border-radius: 10px;
     width: 550px;
@@ -305,13 +301,7 @@ h1 {
         margin: 0;
     }
 
-    .schedule {
-        border-left: 2px solid #fff;
-        border-top: 2px solid #fff;
-    }
-
     .schedule-cell {
-        border-right: 2px solid #fff;
-        border-top: 2px solid #fff;
+        border-width: 1px;
     }
 }

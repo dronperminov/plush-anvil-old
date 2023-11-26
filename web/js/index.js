@@ -65,10 +65,10 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
         let name2Span = MakeElement("", name2, {tag: "span", innerText: cell.quizzes[1].short_name})
         name2Span.addEventListener("click", () => ShowDetails(`${cell.day}-2`))
     }
-    else {
+    else if (cell.quizzes.length > 0) {
         let h = 100 / cell.quizzes.length
 
-        for (i = 0; i < cell.quizzes.length; i++) {
+        for (let i = 0; i < cell.quizzes.length; i++) {
             let y = i * h
             let yc = (i + 0.5) * h
 
@@ -84,8 +84,17 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
             nameSpan.addEventListener("click", () => ShowDetails(`${cell.day}-${i + 1}`))
         }
     }
+    else {
+        MakeElement("", svg, {tag: "path", d: `M0 0 L100 0 L100 100 L0 100 Z`, fill: "#efefef"})
+    }
+
+    if (!cell.current)
+        return
 
     let day = MakeElement("schedule-day", svg, {tag: "text", x: "4", y: "2", "dominant-baseline": "text-before-edge", "text-anchor": "start", innerHTML: cell.day})
+
+    if (cell.quizzes.length > 0)
+        day.classList.add("schedule-day-current")
 
     if (isAdmin)
         day.addEventListener("click", () => location.href = `/quizzes/${cell.year}-${cell.month}-${cell.day}`)
@@ -100,9 +109,6 @@ function BuildScheduleCells(schedule, places, isAdmin) {
     for (let row of schedule.calendar) {
         for (let cell of row) {
             let cellBlock = MakeElement("schedule-cell", scheduleBlock)
-
-            if (!cell.current)
-                continue
 
             let quizzes = MakeElement("schedule-quizzes", cellBlock)
             let svg = MakeElement("schedule-quiz", quizzes, {viewBox: "0 0 100 100", preserveAspectRatio: "none", tag: "svg"})

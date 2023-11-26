@@ -28,26 +28,20 @@
     <div class="content">
         <h2>Расписание</h2>
         <h3 class="schedule-month">
-            <svg class="schedule-control-icon" width="25px" height="25px" viewBox="100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-prev-date" data-date="{{schedule.prev_date}}" onclick="SwitchSchedule(this, {{'true' if user.role == 'owner' else 'false'}})">
+            <svg class="schedule-control-icon" width="25px" height="25px" viewBox="100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-prev-date" onclick="SwitchSchedule(this, {{'true' if user.role == 'owner' else 'false'}})">
                 <path d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z" />
             </svg>
 
-            <span class="schedule-date" id="schedule-month">{{schedule.month | upper}} {{schedule.year}}</span>
+            <span class="schedule-date" id="schedule-month"></span>
 
-            <svg class="schedule-control-icon" width="25px" height="25px" viewBox="-100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-next-date" data-date="{{schedule.next_date}}" onclick="SwitchSchedule(this, {{'true' if user.role == 'owner' else 'false'}})">
+            <svg class="schedule-control-icon" width="25px" height="25px" viewBox="-100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-next-date" onclick="SwitchSchedule(this, {{'true' if user.role == 'owner' else 'false'}})">
                 <path d="M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z" />
             </svg>
         </h3>
 
         <div class="error" id="schedule-error"></div>
 
-        <div class="schedule-places" id="schedule-places">
-            {% for place in schedule.places %}
-            <div class="schedule-place">
-                <span class="schedule-place-color" style="background: {{places[place].color}}"></span> {{place}} (м. {{places[place].metro_station}})
-            </div>
-            {% endfor %}
-        </div>
+        <div class="schedule-places" id="schedule-places"></div>
         <div class="scrollable" id="scrollable">
             <div class="schedule" id="schedule">
                 <div class="schedule-cell schedule-weekday">Пн</div>
@@ -57,85 +51,6 @@
                 <div class="schedule-cell schedule-weekday">Пт</div>
                 <div class="schedule-cell schedule-weekday">Сб</div>
                 <div class="schedule-cell schedule-weekday">Вс</div>
-
-                {% for schedule_row in schedule.calendar %}
-                {% for schedule_cell in schedule_row %}
-                <div class="schedule-cell">
-                    {% if schedule_cell.current %}
-                    <div class="schedule-quizzes">
-                        <svg class="schedule-quiz" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            {% if schedule_cell.quizzes|length == 2 %}
-                            <path d="M0 0 L100 0 L0 100 Z" fill="{{places[schedule_cell.quizzes[0].place].color}}" />
-                            <path d="M0 100 L100 100 L100 0 Z" fill="{{places[schedule_cell.quizzes[1].place].color}}" />
-                            <path d="M0 100 L100 0" stroke="#ffffff" stroke-width="2%" />
-
-                            <foreignObject x="2%" y="22" width="70" height="80">
-                                <div class="schedule-quiz-name schedule-quiz-name-left" xmlns="http://www.w3.org/1999/xhtml"><span onclick="ShowDetails('{{schedule_cell.day}}-1')">{{schedule_cell.quizzes[0].short_name}}</span></div>
-                            </foreignObject>
-
-                            <text class="schedule-quiz-time" x="50" y="2" dominant-baseline="text-before-edge" text-anchor="middle">{{schedule_cell.quizzes[0].time}}</text>
-                            <text class="schedule-quiz-time" x="50" y="98" dominant-baseline="text-after-edge" text-anchor="middle">{{schedule_cell.quizzes[1].time}}</text>
-                            <foreignObject x="28" y="50" width="70" height="30">
-                                <div class="schedule-quiz-name schedule-quiz-name-right" xmlns="http://www.w3.org/1999/xhtml"><span onclick="ShowDetails('{{schedule_cell.day}}-2')">{{schedule_cell.quizzes[1].short_name}}</span></div>
-                            </foreignObject>
-
-                            {% else %}
-                            {% for quiz in schedule_cell.quizzes %}
-                            {% set h = 100 / (schedule_cell.quizzes|length) %}
-                            {% set y = loop.index0 * h %}
-                            {% set yc = (loop.index0 + 0.5) * h %}
-                            {% if loop.index > 1 %}
-                            <path d="M0 {{y + h}} L100 {{y + h}}" stroke="#ffffff" stroke-width="1%" />
-                            {% endif %}
-
-                            <path d="M0 {{y}} L100 {{y}} L100 {{y + h}} L0 {{y + h}} Z" fill="{{places[quiz.place].color}}" />
-                            <text class="schedule-quiz-time" x="96" y="{{y + 2}}" dominant-baseline="text-before-edge" text-anchor="end">{{quiz.time}}</text>
-                            <foreignObject x="2" y="{{y}}" width="96" height="{{h}}">
-                                <div class="schedule-quiz-name" xmlns="http://www.w3.org/1999/xhtml"><span onclick="ShowDetails('{{schedule_cell.day}}-{{loop.index}}')">{{quiz.short_name}}</span></div>
-                            </foreignObject>
-                            {% endfor %}
-                            {% endif %}
-
-                            <text class="schedule-day" x="4" y="2" dominant-baseline="text-before-edge" text-anchor="start">
-                                {% if user.role == "owner" %}
-                                <a href="/quizzes/{{schedule_cell.year}}-{{'%02d' % schedule_cell.month}}-{{'%02d' % schedule_cell.day}}">{{schedule_cell.day}}</a>
-                                {% else %}
-                                {{schedule_cell.day}}
-                                {% endif %}
-                            </text>
-                        </svg>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-                {% endfor %}
-
-                {% for schedule_row in schedule.calendar %}
-                {% for schedule_cell in schedule_row %}
-                {% for quiz in schedule_cell.quizzes %}
-                <div class="quiz-details hidden" id="{{schedule_cell.day}}-{{loop.index}}">
-                    <div class="quiz-details-content">
-                        <div class="quiz-details-content-close" onclick="CloseDetails('{{schedule_cell.day}}-{{loop.index}}')"></div>
-
-                        {% if user.role == "owner" %}
-                        <div class="schedule-quiz-album interactive-fill-icon" onclick="location.href='/quiz-album/{{quiz._id}}'">
-                            <svg width="25px" height="25px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M277.333333,1.42108547e-14 C277.333333,1.42108547e-14 277.681778,0.557511111 278.378667,1.67253333 L278.698667,2.18453333 C279.438222,3.36782222 280.478222,5.03182222 281.818667,7.17653333 L282.458667,8.20053333 C283.891556,10.4931556 285.624889,13.2664889 287.658667,16.5205333 L288.618667,18.0565333 C290.744889,21.4584889 293.171556,25.3411556 295.898667,29.7045333 L297.178667,31.7525333 C299.998222,36.2638222 303.118222,41.2558222 306.538667,46.7285333 L308.138667,49.2885333 C311.003462,53.8722052 314.068069,58.775577 317.332489,63.9986486 L426.666667,64 L426.666667,362.666667 L7.10542736e-15,362.666667 L7.10542736e-15,64 L109.333,64 L149.333333,1.42108547e-14 L277.333333,1.42108547e-14 L277.333333,1.42108547e-14 Z M213.333333,85.3333333 C148.531923,85.3333333 96,137.865256 96,202.666667 C96,267.468077 148.531923,320 213.333333,320 C278.134744,320 330.666667,267.468077 330.666667,202.666667 C330.666667,137.865256 278.134744,85.3333333 213.333333,85.3333333 Z M213.333333,128 C254.570595,128 288,161.429405 288,202.666667 C288,243.903928 254.570595,277.333333 213.333333,277.333333 C172.096072,277.333333 138.666667,243.903928 138.666667,202.666667 C138.666667,161.429405 172.096072,128 213.333333,128 Z M384,106.666667 C372.217925,106.666667 362.666667,116.217925 362.666667,128 C362.666667,139.782075 372.217925,149.333333 384,149.333333 C395.782075,149.333333 405.333333,139.782075 405.333333,128 C405.333333,116.217925 395.782075,106.666667 384,106.666667 Z" transform="translate(42.666667, 64.000000)" />
-                            </svg>
-                        </div>
-                        {% endif %}
-
-                        <div class="quiz-details-name">{{quiz.name}}</div>
-                        <div class="quiz-details-cost"><b>Сколько?</b> {{quiz.cost}}₽</div>
-                        <div class="quiz-details-datetime"><b>Когда?</b> {{"%02d" % quiz.date.day}}.{{"%02d" % quiz.date.month}}.{{quiz.date.year}} {{schedule_cell.weekday}} в {{quiz.time}}</div>
-                        <div class="quiz-details-place"><b>Где?</b> {{quiz.place}} (м. {{places[quiz.place].metro_station}})</div>
-                        <div class="quiz-details-organizer"><b>От кого?</b> {{quiz.organizer}}</div>
-                        <div class="quiz-details-description"><b>Что ожидается?</b><br>{{quiz.description}}</div>
-                    </div>
-                </div>
-                {% endfor %}
-                {% endfor %}
-                {% endfor %}
             </div>
         </div>
 
@@ -145,6 +60,9 @@
     <script src="/js/fetch.js?v={{version}}"></script>
     <script src="/js/utils.js?v={{version}}"></script>
     <script src="/js/index.js?v={{version}}"></script>
+    <script>
+        BuildSchedule({{schedule|tojson()}}, {{places|tojson()}}, {{'true' if user.role == 'owner' else 'false'}})
+    </script>
     {% include "footer.html" %}
 </body>
 </html>

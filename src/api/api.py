@@ -27,7 +27,7 @@ def index(user: Optional[dict] = Depends(get_current_user), date: str = Query(""
 
     template = templates.get_template("pages/index.html")
     curr_schedule = get_schedule(parsed_date)
-    places = {place["name"]: place for place in database.places.find({})}
+    places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
 
     content = template.render(user=user, page="index", version=get_static_hash(), schedule=curr_schedule, places=places, next_quiz1=next_quiz1, next_quiz2=next_quiz2)
     return HTMLResponse(content=content)
