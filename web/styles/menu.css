@@ -6,7 +6,6 @@
     height: 65px;
     border-bottom: 1px solid var(--menu-border-color);
     z-index: 3;
-    user-select: none;
 }
 
 .header ul {
@@ -131,8 +130,12 @@
     color: var(--menu-item-text-color);
 }
 
-.subnav:hover .subnav-content {
+.subnavbtn label {
     display: block;
+}
+
+.subnav-checkbox {
+    display: none;
 }
 
 .subnav-content a {
@@ -159,6 +162,20 @@
 
 .menu .subnav-content-icon-item:hover svg {
     fill: var(--submenu-item-text-hover-color);
+}
+
+@media (max-width: 767px) {
+    .subnav-content {
+        display: block;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .2s ease-out;
+    }
+
+    .subnav-checkbox:checked ~ .subnav-content {
+        display: block;
+        max-height: 200px;
+    }
 }
 
 @media (min-width: 768px) {
@@ -219,6 +236,10 @@
 
     .subnavbtn {
         padding: 20px 30px;
+    }
+
+    .subnav:hover .subnav-content {
+       display: block;
     }
 
     .subnav-content {

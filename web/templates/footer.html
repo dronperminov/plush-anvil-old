@@ -1,6 +1,11 @@
 <script>
 const TOKEN_NAME = "quiz_token"
 
+function CloseMenu() {
+    for (let checkbox of document.getElementsByClassName("subnav-checkbox"))
+        checkbox.checked = false
+}
+
 function Logout() {
     localStorage.removeItem(TOKEN_NAME)
     document.cookie = `${TOKEN_NAME}=; Max-Age=-99999999; SameSite=strict`
