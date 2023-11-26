@@ -81,7 +81,7 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
             let foreign = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y}`, width: "96", height: `${h}`})
             let name = MakeElement("schedule-quiz-name", foreign)
             let nameSpan = MakeElement("", name, {tag: "span", innerText: cell.quizzes[i].short_name})
-            nameSpan.addEventListener("click", () => ShowDetails(`${cell.day}-${i}`))
+            nameSpan.addEventListener("click", () => ShowDetails(`${cell.day}-${i + 1}`))
         }
     }
 

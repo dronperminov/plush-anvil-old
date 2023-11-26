@@ -6,30 +6,24 @@
     {% include "components/menu.html" %}
 
     <div class="first-screen">
-        <div class="first-screen-header">
-            <h1>КОМАНДА ПЛЮШЕВАЯ НАКОВАЛЬНЯ</h1>
+        <h1>КОМАНДА ПЛЮШЕВАЯ НАКОВАЛЬНЯ</h1>
+
+        <div class="first-screen-quiz">
+            <div class="first-screen-quiz-header">БЛИЖАЙШИЙ КВИЗ</div>
+            <div class="first-screen-quiz-name">{{next_quiz1.name}}</div>
+            <div class="first-screen-quiz-date">{{"%02d" % next_quiz1.date.day}}.{{"%02d" % next_quiz1.date.month}}.{{next_quiz1.date.year}}</div>
+            <div class="first-screen-quiz-time">{{next_quiz1.time}}</div>
         </div>
 
-        <div class="first-screen-photo">
-            <img src="https://plush-anvil.ru/images/bg.png">
-        </div>
-
-        <div class="first-screen-info">
-            <div class="first-screen-quiz">
-                <div class="first-screen-quiz-header">БЛИЖАЙШИЙ КВИЗ</div>
-                <div class="first-screen-quiz-name">{{next_quiz1.name}}</div>
-                <div class="first-screen-quiz-date">{{"%02d" % next_quiz1.date.day}}.{{"%02d" % next_quiz1.date.month}}.{{next_quiz1.date.year}}</div>
-                <div class="first-screen-quiz-time">{{next_quiz1.time}}</div>
-            </div>
-
-            <div class="first-screen-quiz">
-                <div class="first-screen-quiz-header">СЛЕДУЮЩИЙ КВИЗ</div>
-                <div class="first-screen-quiz-name">{{next_quiz2.name}}</div>
-                <div class="first-screen-quiz-date">{{"%02d" % next_quiz2.date.day}}.{{"%02d" % next_quiz2.date.month}}.{{next_quiz2.date.year}}</div>
-                <div class="first-screen-quiz-time">{{next_quiz2.time}}</div>
-            </div>
+        <div class="first-screen-quiz">
+            <div class="first-screen-quiz-header">СЛЕДУЮЩИЙ КВИЗ</div>
+            <div class="first-screen-quiz-name">{{next_quiz2.name}}</div>
+            <div class="first-screen-quiz-date">{{"%02d" % next_quiz2.date.day}}.{{"%02d" % next_quiz2.date.month}}.{{next_quiz2.date.year}}</div>
+            <div class="first-screen-quiz-time">{{next_quiz2.time}}</div>
         </div>
     </div>
+    <div class="first-screen-background"></div>
+    <div class="first-screen-popup"></div>
 
     <div class="content">
         <h2>Расписание</h2>
