@@ -57,6 +57,9 @@ def get_title_album(album_id: int, title: str, user: Optional[dict] = Depends(ge
     if album.get("deactivated"):
         return make_error(message="Запрашиваемый альбом был удалён.", user=user)
 
+    for photo in album["photos"]:
+        photo["caption"] = album["title"]
+
     users = get_markup_users()
     template = templates.get_template("pages/album.html")
     content = template.render(user=user, page="album", version=get_static_hash(), album=album, users=users, is_owner=user and user["role"] == "owner")
@@ -106,6 +109,7 @@ def get_photos_with_users(usernames: List[str]) -> List[dict]:
         for photo in album["photos"]:
             photo_users = {markup["username"].lower() for markup in photo["markup"]}
             photo["album_id"] = album["album_id"]
+            photo["caption"] = album["title"]
             if usernames and usernames.issubset(photo_users) or not usernames and not photo_users:
                 photos.append(photo)
 
@@ -137,6 +141,7 @@ def get_all_photos(user: Optional[dict] = Depends(get_current_user)) -> HTMLResp
     for album in albums:
         for photo in album["photos"]:
             photo["album_id"] = album["album_id"]
+            photo["caption"] = album["title"]
             photos.append(photo)
 
     return render_album(user, "Все фото", "photos", photos, user and user["role"] == "owner")

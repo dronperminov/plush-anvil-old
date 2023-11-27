@@ -17,6 +17,10 @@
     display: none !important;
 }
 
+.gallery-invisible {
+    opacity: 0;
+}
+
 .gallery-transition {
     transition: transform 150ms;
 }
@@ -126,6 +130,21 @@
 .gallery-photo-image {
     max-width: 100%;
     max-height: 100%;
+}
+
+.gallery-photo-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background: #000000bb;
+    color: #cccccc;
+    padding: 10px;
+    font-size: 0.7em;
+    transition: opacity 0.2s ease-in;
+    user-select: none;
+    pointer-events: none;
 }
 
 .gallery-loader {

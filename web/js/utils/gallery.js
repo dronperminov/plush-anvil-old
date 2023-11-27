@@ -134,6 +134,7 @@ Gallery.prototype.RemoveBlocks = function() {
 Gallery.prototype.BuildBlock = function(index, position = -1) {
     let photo = this.MakeElement("gallery-photo")
     let photoImage = this.MakeElement("gallery-photo-image", photo, {alt: this.photos[index].alt}, "img")
+    let photoCaption = this.MakeElement("gallery-photo-caption", photo, {innerText: this.photos[index].caption})
     let loader = this.MakeElement("gallery-loader", photo, {innerHTML: GALLERY_LOADER_ICON})
 
     photoImage.addEventListener("load", () => this.LoadImage(loader, photo, photoImage, this.photos[index].markup))
@@ -141,6 +142,7 @@ Gallery.prototype.BuildBlock = function(index, position = -1) {
 
     this.photos[index].block = photo
     this.photos[index].image = photoImage
+    this.photos[index].imageCaption = photoCaption
     this.photos[index].loader = loader
 
     if (position == -1)
@@ -166,8 +168,9 @@ Gallery.prototype.AddPhoto = function(image, markup) {
     let alt = image.getAttribute("alt")
     let original = image.hasAttribute("data-src") ? image.getAttribute("data-src") : image.getAttribute("src")
     let albumId = +image.getAttribute("data-album-id")
+    let caption = image.getAttribute("data-caption")
 
-    this.photos.push({original: original, alt: alt, albumId: albumId, markup: markup, block: null, image: null, loader: null, blockIndex: index})
+    this.photos.push({original: original, alt: alt, albumId: albumId, caption: caption, markup: markup, block: null, image: null, imageCaption: null, loader: null, blockIndex: index})
 
     if (this.photos.length <= GALLERY_EFFECTIVE_SIZE)
         this.BuildBlock(index)
@@ -525,6 +528,9 @@ Gallery.prototype.TouchStart = function(e) {
 Gallery.prototype.TouchMove = function(e) {
     e.preventDefault()
 
+    if (this.photos.length > 0 && this.isPressed)
+        this.photos[this.photoIndex].imageCaption.classList.add("gallery-invisible")
+
     if (this.mode == GALLERY_SWIPE_MODE || this.mode == GALLERY_HORIZONTAL_SWIPE_MODE || this.mode == GALLERY_VERTICAL_SWIPE_MODE) {
         this.SwipeMove(e)
     }
@@ -537,6 +543,9 @@ Gallery.prototype.TouchMove = function(e) {
 }
 
 Gallery.prototype.TouchEnd = function(e) {
+    if (this.photos.length > 0)
+        this.photos[this.photoIndex].imageCaption.classList.remove("gallery-invisible")
+
     if (!this.isPressed)
         return
 
