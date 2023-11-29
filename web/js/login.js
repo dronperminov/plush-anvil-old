@@ -84,6 +84,11 @@ function SignUp() {
     if (username === null)
         return
 
+    if (username.toLowerCase() == "admin") {
+        InputError("username", "Использовать это имя пользователя запрещено")
+        return
+    }
+
     let fullname = GetTextField("fullname", "Полное имя не заполнено")
     if (fullname === null)
         return

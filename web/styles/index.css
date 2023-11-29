@@ -293,7 +293,7 @@ h1 {
     }
 
     .schedule-quiz {
-        font-size: calc(min(23px, 6.5vw));
+        font-size: calc(min(20px, 6.5vw));
     }
 
     .quiz-details-content {
