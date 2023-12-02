@@ -46,13 +46,25 @@ function BuildScedulePlaces(schedule, places) {
     }
 }
 
+function FixFontSize(foreign, nameSpan) {
+    for (let fontSize = 1; fontSize > 0.01; fontSize -= 0.01) {
+        nameSpan.style.fontSize = `${fontSize}em`
+
+        let rect1 = foreign.getBoundingClientRect()
+        let rect2 = nameSpan.getBoundingClientRect()
+
+        if (rect2.width <= rect1.width && rect2.height <= rect1.height)
+            break
+    }
+}
+
 function FillQuizSVG(svg, cell, places, isAdmin) {
     if (cell.quizzes.length == 2) {
         MakeElement("", svg, {tag: "path", d: "M0 0 L100 0 L0 100 Z", fill: places[cell.quizzes[0].place].color})
         MakeElement("", svg, {tag: "path", d: "M0 100 L100 100 L100 0 Z", fill: places[cell.quizzes[1].place].color})
         MakeElement("", svg, {tag: "path", d: "M0 100 L100 0", stroke: "#ffffff", "stroke-width": "2%"})
 
-        let foreign1 = MakeElement("", svg, {tag: "foreignObject", x: "2%", y: "22", width: "70", height: "80"})
+        let foreign1 = MakeElement("", svg, {tag: "foreignObject", x: "2", y: "22", width: "60", height: "40"})
         let name1 = MakeElement("schedule-quiz-name schedule-quiz-name-left", foreign1)
         let name1Span = MakeElement("", name1, {tag: "span", innerText: cell.quizzes[0].short_name})
         name1Span.addEventListener("click", () => ShowDetails(`${cell.day}-1`))
@@ -60,10 +72,13 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
         MakeElement("schedule-quiz-time", svg, {tag: "text", x: "50", y: "2", "dominant-baseline": "text-before-edge", "text-anchor": "middle", innerHTML: cell.quizzes[0].time})
         MakeElement("schedule-quiz-time", svg, {tag: "text", x: "50", y: "98", "dominant-baseline": "text-after-edge", "text-anchor": "middle", innerHTML: cell.quizzes[1].time})
 
-        let foreign2 = MakeElement("", svg, {tag: "foreignObject", x: "28", y: "50", width: "70", height: "30"})
+        let foreign2 = MakeElement("", svg, {tag: "foreignObject", x: "48", y: "42", width: "50", height: "40"})
         let name2 = MakeElement("schedule-quiz-name schedule-quiz-name-right", foreign2)
         let name2Span = MakeElement("", name2, {tag: "span", innerText: cell.quizzes[1].short_name})
         name2Span.addEventListener("click", () => ShowDetails(`${cell.day}-2`))
+
+        FixFontSize(foreign1, name1Span)
+        FixFontSize(foreign2, name2Span)
     }
     else if (cell.quizzes.length > 0) {
         let h = 100 / cell.quizzes.length
@@ -79,9 +94,11 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
             MakeElement("schedule-quiz-time", svg, {tag: "text", x: "96", y: `${y + 2}`, "dominant-baseline": "text-before-edge", "text-anchor": "end", innerHTML: cell.quizzes[i].time})
 
             let foreign = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y}`, width: "96", height: `${h}`})
-            let name = MakeElement("schedule-quiz-name", foreign)
+            let name = MakeElement("schedule-quiz-name schedule-quiz-name-grid", foreign)
             let nameSpan = MakeElement("", name, {tag: "span", innerText: cell.quizzes[i].short_name})
             nameSpan.addEventListener("click", () => ShowDetails(`${cell.day}-${i + 1}`))
+
+            FixFontSize(foreign, nameSpan)
         }
     }
     else {

@@ -14,7 +14,7 @@ SmuziParser.prototype.GetRegexp = function() {
     let name = "(?<name>[^№\\n]+?№\\s*\\d+(\\s*\\([^\\)]+\\))?(\\s*:[^.!\\n]+?[\\.\\!]|[\\.\\!])?|[^\\.\\!\\n]+?[\\.\\!])"
     let description = "(?<description>.+?)"
     let questions = "(?<questions>\\d+ вопро[а-я]+)"
-    let cost = "((?<cost>\\d+) рублей с (человека|игрока)\\s*)?\\)?\\s*.?\\s*"
+    let cost = "((?<cost>\\d+) рублей с (человека|игрока)\\s*)?\\)\\s*.?\\s*"
     return new RegExp(`^${day}\\s*${month}\\s+${weekday}\\s+${time}\\s+\\/${place}\\/\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?$`, "gim")
 }
 
@@ -33,7 +33,7 @@ SmuziParser.prototype.MatchToQuiz = function(match) {
         name: name,
         description: match.groups.description,
         questions: match.groups.questions === undefined ? 0 : +match.groups.questions,
-        cost: match.groups.cost === undefined ? 600 : +match.groups.cost,
+        cost: +match.groups.cost,
         organizer: "Смузи"
     }
 }
