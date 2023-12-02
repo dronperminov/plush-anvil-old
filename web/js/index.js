@@ -64,18 +64,27 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
         MakeElement("", svg, {tag: "path", d: "M0 100 L100 100 L100 0 Z", fill: places[cell.quizzes[1].place].color})
         MakeElement("", svg, {tag: "path", d: "M0 100 L100 0", stroke: "#ffffff", "stroke-width": "2%"})
 
-        let foreign1 = MakeElement("", svg, {tag: "foreignObject", x: "2", y: "22", width: "60", height: "40"})
+        let foreign1 = MakeElement("", svg, {tag: "foreignObject", x: "2", y: "2", width: "96", height: "96"})
         let name1 = MakeElement("schedule-quiz-name schedule-quiz-name-left", foreign1)
-        let name1Span = MakeElement("", name1, {tag: "span", innerText: cell.quizzes[0].short_name})
-        name1Span.addEventListener("click", () => ShowDetails(`${cell.day}-1`))
+        let name1Span = MakeElement("schedule-quiz-name-span", name1, {tag: "span", innerText: cell.quizzes[0].short_name})
 
         MakeElement("schedule-quiz-time", svg, {tag: "text", x: "50", y: "2", "dominant-baseline": "text-before-edge", "text-anchor": "middle", innerHTML: cell.quizzes[0].time})
         MakeElement("schedule-quiz-time", svg, {tag: "text", x: "50", y: "98", "dominant-baseline": "text-after-edge", "text-anchor": "middle", innerHTML: cell.quizzes[1].time})
 
-        let foreign2 = MakeElement("", svg, {tag: "foreignObject", x: "48", y: "42", width: "50", height: "40"})
+        let foreign2 = MakeElement("", svg, {tag: "foreignObject", x: "2", y: "2", width: "96", height: "96"})
         let name2 = MakeElement("schedule-quiz-name schedule-quiz-name-right", foreign2)
-        let name2Span = MakeElement("", name2, {tag: "span", innerText: cell.quizzes[1].short_name})
-        name2Span.addEventListener("click", () => ShowDetails(`${cell.day}-2`))
+        let name2Span = MakeElement("schedule-quiz-name-span", name2, {tag: "span", innerText: cell.quizzes[1].short_name})
+
+        svg.addEventListener("click", (e) => {
+            e.preventDefault()
+
+            let bbox = svg.getBoundingClientRect()
+            let x = (e.x - bbox.x) / bbox.width
+            let y = (e.y - bbox.y) / bbox.height
+
+            if (y > 0.2 && y < 0.8)
+                ShowDetails(`${cell.day}-${x < y ? 1 : 2}`)
+        })
 
         FixFontSize(foreign1, name1Span)
         FixFontSize(foreign2, name2Span)
@@ -88,7 +97,7 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
             let yc = (i + 0.5) * h
 
             if (i > 0)
-                MakeElement("", svg, {tag: "path", d: `M0 ${y + h} L100 ${y + h}`, stroke: "#ffffff", "stroke-width": "1%"})
+                MakeElement("", svg, {tag: "path", d: `M0 ${y} L100 ${y}`, stroke: "#ffffff", "stroke-width": "1%"})
 
             MakeElement("", svg, {tag: "path", d: `M0 ${y} L100 ${y} L100 ${y + h} L0 ${y + h} Z`, fill: places[cell.quizzes[i].place].color})
             MakeElement("schedule-quiz-time", svg, {tag: "text", x: "96", y: `${y + 2}`, "dominant-baseline": "text-before-edge", "text-anchor": "end", innerHTML: cell.quizzes[i].time})
