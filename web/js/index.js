@@ -58,6 +58,8 @@ function FixFontSize(foreign, nameSpan) {
     }
 }
 
+let resizebleBlocks = []
+
 function FillQuizSVG(svg, cell, places, isAdmin) {
     if (cell.quizzes.length == 2) {
         MakeElement("", svg, {tag: "path", d: "M0 0 L100 0 L0 100 Z", fill: places[cell.quizzes[0].place].color})
@@ -86,8 +88,8 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
                 ShowDetails(`${cell.day}-${x < y ? 1 : 2}`)
         })
 
-        FixFontSize(foreign1, name1Span)
-        FixFontSize(foreign2, name2Span)
+        resizebleBlocks.push({foreign: foreign1, nameSpan: name1Span})
+        resizebleBlocks.push({foreign: foreign2, nameSpan: name2Span})
     }
     else if (cell.quizzes.length > 0) {
         let h = 100 / cell.quizzes.length
@@ -107,7 +109,7 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
             let nameSpan = MakeElement("", name, {tag: "span", innerText: cell.quizzes[i].short_name})
             nameSpan.addEventListener("click", () => ShowDetails(`${cell.day}-${i + 1}`))
 
-            FixFontSize(foreign, nameSpan)
+            resizebleBlocks.push({foreign: foreign, nameSpan: nameSpan})
         }
     }
     else {
@@ -131,6 +133,8 @@ function BuildScheduleCells(schedule, places, isAdmin) {
 
     while (scheduleBlock.children.length > 7)
         scheduleBlock.children[scheduleBlock.children.length - 1].remove()
+
+    resizebleBlocks = []
 
     for (let row of schedule.calendar) {
         for (let cell of row) {
@@ -193,3 +197,12 @@ function SwitchSchedule(link, isAdmin) {
         BuildSchedule(response.schedule, response.places, isAdmin)
     })
 }
+
+function FixFontSizes() {
+    for (let block of resizebleBlocks)
+        FixFontSize(block.foreign, block.nameSpan)
+
+    window.requestAnimationFrame(FixFontSizes)
+}
+
+FixFontSizes()
