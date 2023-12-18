@@ -178,3 +178,18 @@ function SetPreview(icon, albumId, previewUrl) {
         albumPreview.classList.remove("hidden")
     })
 }
+
+function UpdateUsersPhotos() {
+    let users = document.getElementById("users")
+    let usernames = []
+
+    for (let checkbox of users.getElementsByTagName("input"))
+        if (checkbox.checked)
+            usernames.push(`usernames=${checkbox.getAttribute("data-username")}`)
+
+    location.href = `/photos-with-users?${usernames.join("&")}`
+}
+
+function ResetUsersPhotos() {
+    location.href = `/photos-with-users`
+}

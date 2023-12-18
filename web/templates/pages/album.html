@@ -81,6 +81,31 @@
 
         <h1 id="original-title">{{album.title}}</h1>
 
+        {% if page == "photos-with-users" %}
+        <div class="select-users">
+            <div class="users" id="users">
+                {% for username, user in users.items() %}
+                <div class="user">
+                    <input type="checkbox" id="user-{{username}}" data-username="{{username}}" {% if username|lower in usernames %}checked{% endif %}>
+
+                    <div class="user-photo">
+                        <label for="user-{{username}}"><img src="{{user.image_src}}"></label>
+                    </div>
+                    <div class="user-name">
+                        <label for="user-{{username}}">{{user.fullname}}</label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="buttons">
+                <button class="basic-button default-button" onclick="UpdateUsersPhotos()">Применить</button>
+                {% if usernames %}
+                <button class="basic-button default-button" onclick="ResetUsersPhotos()">Сбросить</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="photos" id="photos" data-album-id="{{album.album_id}}">
             {% for photo in album.photos|reverse %}
             <div class="photo">

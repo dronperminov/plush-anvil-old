@@ -20,6 +20,9 @@
                     <a href="/photos">ВСЕ ФОТО</a>
                     {% if user %}
                     <a href="/photos-with-me">СО МНОЙ</a>
+                    {% if user.role == "owner" %}
+                    <a href="/photos-with-users">С ЛЮДЬМИ</a>
+                    {% endif %}
                     {% endif %}
                 </div>
             </li>

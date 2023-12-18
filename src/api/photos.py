@@ -88,12 +88,12 @@ def get_markup_users() -> Dict[str, dict]:
     return {user["username"]: user for user in users}
 
 
-def render_album(user: Optional[dict], title: str, page_name: str, photos: List[dict], is_owner: bool) -> HTMLResponse:
+def render_album(user: Optional[dict], title: str, page_name: str, photos: List[dict], is_owner: bool, usernames: Optional[List[str]] = None) -> HTMLResponse:
     photos = sorted(photos, key=lambda photo: photo["date"])
     album = Album(title=title, album_id=0, url=f"/{page_name}", photos=photos, date=datetime.now(), quiz_id="", preview_url="")
     users = get_markup_users()
     template = templates.get_template("pages/album.html")
-    content = template.render(user=user, page=page_name, version=get_static_hash(), album=album, users=users, is_owner=is_owner)
+    content = template.render(user=user, page=page_name, version=get_static_hash(), album=album, users=users, is_owner=is_owner, usernames=usernames)
     return HTMLResponse(content=content)
 
 
@@ -130,7 +130,7 @@ def get_users_photos(user: Optional[dict] = Depends(get_current_user), usernames
         return make_error(f'Не удалось найти ни одного из пользователей среди "{", ".join(usernames)}"', user=user)
 
     title = f'Фото с {", ".join(usernames)}' if usernames else "Фото без отметок"
-    return render_album(user, title, "photos-with-users", get_photos_with_users(usernames), False)
+    return render_album(user, title, "photos-with-users", get_photos_with_users(usernames), False, [username.lower() for username in usernames])
 
 
 @router.get("/photos")
