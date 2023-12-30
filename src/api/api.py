@@ -22,8 +22,8 @@ def index(user: Optional[dict] = Depends(get_current_user), date: str = Query(""
         return RedirectResponse("/")
 
     quizzes = [quiz for quiz in database.quizzes.find({}) if quiz_to_datetime(quiz) >= today]
-    next_quiz1 = min(quizzes, key=lambda quiz: quiz_to_datetime(quiz) - today)
-    next_quiz2 = min([quiz for quiz in quizzes if quiz_to_datetime(quiz) > quiz_to_datetime(next_quiz1)], key=lambda quiz: quiz_to_datetime(quiz) - today)
+    next_quiz1 = min(quizzes, key=lambda quiz: quiz_to_datetime(quiz) - today, default=None)
+    next_quiz2 = min([quiz for quiz in quizzes if quiz_to_datetime(quiz) > quiz_to_datetime(next_quiz1)], key=lambda quiz: quiz_to_datetime(quiz) - today, default=None)
 
     template = templates.get_template("pages/index.html")
     curr_schedule = get_schedule(parsed_date)
