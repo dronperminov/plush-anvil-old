@@ -1,4 +1,4 @@
-function ParseQuiz(date, quizId = "") {
+function ParseQuiz(date, quizId = "", withGameResult = false) {
     let quizData = {date: date}
 
     quizData.name = GetTextField(`name${quizId}`, "Название квиза не указано")
@@ -28,6 +28,16 @@ function ParseQuiz(date, quizId = "") {
     quizData.cost = GetFormatTextField(`cost${quizId}`, /^\d+$/g, "Стоимость квиза не указана", "Стоимость квиза введена некорректно")
     if (quizData.cost === null)
         return null
+
+    if (withGameResult) {
+        quizData.position = GetFormatTextField(`position${quizId}`, /^\d*$/g, "", "Позиция команды на квизе введена некорректно")
+        if (quizData.position === null)
+            return null
+
+        quizData.teams = GetFormatTextField(`teams${quizId}`, /^\d*$/g, "", "Количество команд на квизе введено некорректно")
+        if (quizData.teams === null)
+            return null
+    }
 
     return quizData
 }
@@ -76,7 +86,7 @@ function DeleteQuiz(icon, quizId) {
 }
 
 function UpdateQuiz(button, date, quizId, blockId) {
-    let quizData = ParseQuiz(date, blockId)
+    let quizData = ParseQuiz(date, blockId, true)
 
     if (quizData == null)
         return
