@@ -10,18 +10,18 @@ SmuziParser.prototype.GetRegexp = function() {
     let month = `(?<month>${this.months.join("|")})`
     let weekday = `(?<weekday>${this.weekdays.join("|")})`
     let time = "(?<time>\\d\\d?:\\d\\d?)"
-    let place = "(?<place>[^\\/\\n]+)"
-    let name = "(?<name>[^№\\n]+?№\\s*\\d+(\\s*\\([^\\)]+\\))?(\\s*:[^.!\\n]+?[\\.\\!]|[\\.\\!])?|[^\\.\\!\\n]+?[\\.\\!])"
+    let place = "(?<place>[^\\/\\)\\n]+)"
+    let name = "(?<name>[^№\\n]+?№\\s*\\d+(\\.\\d+)?(\\s*\\([^\\)]+\\))?(\\s*:[^.!\\n]+?[\\.\\!]|[\\.\\!])?|[^\\.\\!\\n]+?[\\.\\!])"
     let description = "(?<description>.+?)"
     let questions = "(?<questions>\\d+ вопро[а-я]+)"
     let cost = "((?<cost>\\d+) рублей с (человека|игрока)\\s*)?\\)\\s*.?\\s*"
-    return new RegExp(`^${day}\\s*${month}\\s+${weekday}\\s+${time}\\s+\\/${place}\\/\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?$`, "gim")
+    return new RegExp(`^${day}\\s*${month}\\s+\\(?${weekday}\\)\\s+${time}\\s+[/(]${place}[\\)]\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?$`, "gim")
 }
 
 SmuziParser.prototype.MatchToQuiz = function(match) {
     let day = match.groups.day.padStart(2, '0')
     let month = `${this.months.indexOf(match.groups.month.toLowerCase()) + 1}`.padStart(2, '0')
-    let name = match.groups.name.replace(/\s*№\s*\d+[\.!]?/gi, "").trim()
+    let name = match.groups.name.replace(/\s*№\s*\d+(\.\d+)?[\.!]?/gi, "").trim()
 
     return {
         line: match[0],

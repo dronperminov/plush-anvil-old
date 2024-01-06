@@ -77,6 +77,7 @@ function ParseVKPost(link, parser) {
     let group = match.group
     let postId = match.post
 
+    let text = document.getElementById("text")
     let error = document.getElementById("parse-error")
     error.innerText = ""
 
@@ -85,6 +86,8 @@ function ParseVKPost(link, parser) {
             error.innerText = response.message
             return
         }
+
+        text.value = response.text
 
         let quizzes = parser.ParsePost(response.text)
         for (let quiz of quizzes)
