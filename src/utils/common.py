@@ -129,8 +129,7 @@ def quiz_to_datetime(quiz: dict) -> datetime:
     return datetime(date.year, date.month, date.day, hours, minutes, 0, 0)
 
 
-def get_quizzes(start_date: datetime, end_date: datetime) -> Dict[datetime, List[dict]]:
-    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+def get_date2quizzes(quizzes: List[dict]) -> Dict[datetime, List[dict]]:
     date2quizzes = defaultdict(list)
 
     for quiz in quizzes:
@@ -152,8 +151,13 @@ def get_schedule(schedule_date: datetime) -> dict:
     prev_date = start_date + timedelta(days=-1)
     next_date = end_date + timedelta(days=1)
 
-    date_quizzes = get_quizzes(start_date, end_date)
+    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+    date_quizzes = get_date2quizzes(quizzes)
     places = sorted({quiz["place"] for quizzes in date_quizzes.values() for quiz in quizzes})
+
+    wins = len([quiz for quiz in quizzes if quiz["position"] == 1])
+    prizes = len([quiz for quiz in quizzes if 2 <= quiz["position"] <= 3])
+    top10 = len([quiz for quiz in quizzes if 4 <= quiz["position"] <= 10])
 
     rows = (num_days + start_weekday + 6) // 7
     calendar_cells = []
@@ -165,6 +169,7 @@ def get_schedule(schedule_date: datetime) -> dict:
 
         for day in range(7):
             date = start_date + timedelta(days=day - start_weekday + 7 * row)
+
             cells.append({
                 "year": date.year,
                 "month": date.month,
@@ -182,5 +187,10 @@ def get_schedule(schedule_date: datetime) -> dict:
         "month": constants.MONTH_TO_RUS[schedule_date.month],
         "year": schedule_date.year,
         "calendar": calendar_cells,
-        "places": places
+        "places": places,
+        "statistics": {
+            "wins": wins,
+            "prizes": prizes,
+            "top10": top10
+        }
     }

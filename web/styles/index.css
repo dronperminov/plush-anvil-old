@@ -249,6 +249,25 @@ h1 {
     text-align: right;
 }
 
+.schedule-statistic {
+    text-align: center;
+}
+
+.schedule-statistic-header {
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.schedule-statistic-row {
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.schedule-statistic b {
+    font-size: 1.1em;
+}
+
 .quiz-details {
     position: fixed;
     top: 0;

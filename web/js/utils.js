@@ -167,3 +167,13 @@ function FormatDate(date) {
     let month = `${date.month}`.padStart(2, '0')
     return `${day}.${month}.${date.year}`
 }
+
+function GetWordForm(number, words) {
+    if ([0, 5, 6, 7, 8, 9].indexOf(number % 10) > -1 || [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].indexOf(number % 100) > -1)
+        return words[0]
+
+    if ([2, 3, 4].indexOf(number % 10) > -1)
+        return words[1]
+
+    return words[2]
+}
