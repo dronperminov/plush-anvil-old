@@ -8,7 +8,7 @@ from src import constants
 from src.api import templates
 from src.database import database
 from src.utils.auth import get_current_user
-from src.utils.common import get_schedule, get_static_hash, parse_date, quiz_to_datetime
+from src.utils.common import get_schedule, get_smuzi_rating, get_static_hash, parse_date, quiz_to_datetime
 
 router = APIRouter()
 
@@ -28,8 +28,18 @@ def index(user: Optional[dict] = Depends(get_current_user), date: str = Query(""
     template = templates.get_template("pages/index.html")
     curr_schedule = get_schedule(parsed_date)
     places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
+    smuzi_rating = get_smuzi_rating()
 
-    content = template.render(user=user, page="index", version=get_static_hash(), schedule=curr_schedule, places=places, next_quiz1=next_quiz1, next_quiz2=next_quiz2)
+    content = template.render(
+        user=user,
+        page="index",
+        version=get_static_hash(),
+        schedule=curr_schedule,
+        places=places,
+        smuzi_rating=smuzi_rating,
+        next_quiz1=next_quiz1,
+        next_quiz2=next_quiz2
+    )
     return HTMLResponse(content=content)
 
 

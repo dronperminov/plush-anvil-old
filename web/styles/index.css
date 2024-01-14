@@ -31,6 +31,11 @@ h1 {
     background: linear-gradient(#222222f2, #00283cf2, #008fd5f2);
 }
 
+.first-screen-rating {
+    margin-bottom: 20px;
+    color: #ffeb3b;
+}
+
 .first-screen-quiz {
     margin-bottom: 20px;
     text-align: center;

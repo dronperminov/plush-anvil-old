@@ -170,6 +170,9 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
                 MakeElement("quiz-details-place", content, {innerHTML: `<b>Где?</b> ${quiz.place} (м. ${places[quiz.place].metro_station})`})
                 MakeElement("quiz-details-organizer", content, {innerHTML: `<b>От кого?</b> ${quiz.organizer}`})
                 MakeElement("quiz-details-description", content, {innerHTML: `<b>Что ожидается?</b><br>${quiz.description}`})
+
+                if (quiz.position > 0)
+                    MakeElement("quiz-details-description", content, {innerHTML: `<b>Результат игры:</b> ${quiz.position} / ${quiz.teams}`})
             }
         }
     }

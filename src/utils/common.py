@@ -144,6 +144,13 @@ def get_date2quizzes(quizzes: List[dict]) -> Dict[datetime, List[dict]]:
     return date2quizzes
 
 
+def get_smuzi_rating() -> int:
+    position2score = {1: 100, 2: 95, 3: 90, 4: 85, 5: 80, 6: 75, 7: 70, 8: 65, 9: 60, 10: 55}
+    quizzes = database.quizzes.find({"date": {"$gte": datetime(2024, 1, 1)}, "position": {"$ne": 0}, "organizer": "Смузи"})
+    rating = sum([position2score.get(quiz["position"], 50) for quiz in quizzes])
+    return rating
+
+
 def get_schedule(schedule_date: datetime) -> dict:
     start_weekday, num_days = calendar.monthrange(schedule_date.year, schedule_date.month)
     start_date = datetime(schedule_date.year, schedule_date.month, 1)
