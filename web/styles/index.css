@@ -246,6 +246,14 @@ h1 {
     display: block;
 }
 
+.schedule-quiz-position {
+    border: 2px solid #fff;
+    border-radius: 5px;
+    padding: 1px 3px;
+    font-size: 0.7em;
+    white-space: nowrap;
+}
+
 .schedule-quiz-name-left .schedule-quiz-name-span {
     text-align: left;
 }

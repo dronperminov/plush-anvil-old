@@ -184,6 +184,10 @@ html {
     stroke: var(--interactive-icon-hover-color);
 }
 
+.nw {
+    white-space: nowrap;
+}
+
 @media (min-width: 768px) {
     .content {
         font-size: 20px;
