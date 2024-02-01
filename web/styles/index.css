@@ -186,13 +186,20 @@ h1 {
     border-radius: 5px;
 }
 
+.schedule-quiz-poll {
+    position: absolute;
+    top: 1px;
+    right: 75px;
+}
+
 .schedule-quiz-album {
     position: absolute;
     top: 1px;
     right: 40px;
 }
 
-.schedule-quiz-album:hover svg {
+.schedule-quiz-album:hover svg,
+.schedule-quiz-poll:hover svg {
     fill: #fff;
 }
 

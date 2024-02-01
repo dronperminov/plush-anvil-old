@@ -225,7 +225,7 @@
                                 <label for="short-name-{{loop.index}}" id="short-name-{{loop.index}}-label">Сокращение:</label>
                             </div>
                             <div class="form-row-input">
-                                <input type="text" class="basic-input default-input" id="short-name-{{loop.index}}" value="{{quiz.short_name}}" placeholder="как сокращается квиз?" oninput="ChangeInput('short-name-{{loop.index}}')">
+                                <textarea type="text" class="basic-textarea default-textarea" id="short-name-{{loop.index}}" placeholder="как сокращается квиз?" oninput="ChangeInput('short-name-{{loop.index}}')">{{quiz.short_name}}</textarea>
                             </div>
                         </div>
 
