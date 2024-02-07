@@ -62,11 +62,16 @@ function FixFontSize(foreign, nameSpan) {
     }
 }
 
-function QuizToName(quiz) {
+function QuizToName(quiz, count = 1) {
     let name = quiz.short_name
 
+    if (count < 3)
+        name += "<br>"
+    else
+        name += " "
+
     if (quiz.position > 0)
-        name += `<br><span class='schedule-quiz-position'>${quiz.position} / ${quiz.teams}</span>`
+        name += `<span class='schedule-quiz-position'>${quiz.position} / ${quiz.teams}</span>`
 
     return name
 }
@@ -117,9 +122,10 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
             MakeElement("", svg, {tag: "path", d: `M0 ${y} L100 ${y} L100 ${y + h} L0 ${y + h} Z`, fill: places[cell.quizzes[i].place].color})
             MakeElement("schedule-quiz-time", svg, {tag: "text", x: "96", y: `${y + 2}`, "dominant-baseline": "text-before-edge", "text-anchor": "end", innerHTML: cell.quizzes[i].time})
 
-            let foreign = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y}`, width: "96", height: `${h}`})
+            let dy = cell.quizzes.length > 2 ? h / 2 : 0
+            let foreign = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y + dy}`, width: "96", height: `${h - dy}`})
             let name = MakeElement("schedule-quiz-name schedule-quiz-name-grid", foreign)
-            let nameSpan = MakeElement("", name, {tag: "span", innerHTML: QuizToName(cell.quizzes[i])})
+            let nameSpan = MakeElement("", name, {tag: "span", innerHTML: QuizToName(cell.quizzes[i], cell.quizzes.length)})
             nameSpan.addEventListener("click", () => ShowDetails(`${cell.day}-${i + 1}`))
 
             resizebleBlocks.push({foreign: foreign, nameSpan: nameSpan})
