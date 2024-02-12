@@ -10,21 +10,21 @@
 
         <div class="first-screen-rating">РЕЙТИНГ СМУЗИ: {{ smuzi_rating }}</div>
 
-        {% if next_quiz1 %}
+        {% if next_quizzes1 %}
         <div class="first-screen-quiz">
-            <div class="first-screen-quiz-header">БЛИЖАЙШИЙ КВИЗ</div>
-            <div class="first-screen-quiz-name">{{next_quiz1.name}}</div>
-            <div class="first-screen-quiz-date">{{"%02d" % next_quiz1.date.day}}.{{"%02d" % next_quiz1.date.month}}.{{next_quiz1.date.year}}</div>
-            <div class="first-screen-quiz-time">{{next_quiz1.time}}</div>
+            <div class="first-screen-quiz-header">{{ "БЛИЖАЙШИЙ КВИЗ" if next_quizzes1|length == 1 else "БЛИЖАЙШИЕ КВИЗЫ" }}</div>
+            <div class="first-screen-quiz-name">{{next_quizzes1|map(attribute="name")|join("<br>")}}</div>
+            <div class="first-screen-quiz-date">{{"%02d" % next_quizzes1[0].date.day}}.{{"%02d" % next_quizzes1[0].date.month}}.{{next_quizzes1[0].date.year}}</div>
+            <div class="first-screen-quiz-time">{{next_quizzes1[0].time}}</div>
         </div>
         {% endif %}
 
-        {% if next_quiz2 %}
+        {% if next_quizzes2 %}
         <div class="first-screen-quiz">
-            <div class="first-screen-quiz-header">СЛЕДУЮЩИЙ КВИЗ</div>
-            <div class="first-screen-quiz-name">{{next_quiz2.name}}</div>
-            <div class="first-screen-quiz-date">{{"%02d" % next_quiz2.date.day}}.{{"%02d" % next_quiz2.date.month}}.{{next_quiz2.date.year}}</div>
-            <div class="first-screen-quiz-time">{{next_quiz2.time}}</div>
+            <div class="first-screen-quiz-header">{{ "СЛЕДУЮЩИЙ КВИЗ" if next_quizzes2|length == 1 else "СЛЕДУЮЩИЕ КВИЗЫ" }}</div>
+            <div class="first-screen-quiz-name">{{next_quizzes2|map(attribute="name")|join("<br>")}}</div>
+            <div class="first-screen-quiz-date">{{"%02d" % next_quizzes2[0].date.day}}.{{"%02d" % next_quizzes2[0].date.month}}.{{next_quizzes2[0].date.year}}</div>
+            <div class="first-screen-quiz-time">{{next_quizzes2[0].time}}</div>
         </div>
         {% endif %}
     </div>
