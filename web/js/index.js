@@ -268,9 +268,16 @@ function SwitchSchedule(link, isAdmin) {
     })
 }
 
-function FixFontSizes() {
-    for (let block of resizebleBlocks)
-        FixFontSize(block.foreign, block.nameSpan)
+let prevTime = 0
+
+function FixFontSizes(time) {
+    if (time - prevTime > 100) {
+        console.log(time)
+        prevTime = time
+
+        for (let block of resizebleBlocks)
+            FixFontSize(block.foreign, block.nameSpan)
+    }
 
     window.requestAnimationFrame(FixFontSizes)
 }
