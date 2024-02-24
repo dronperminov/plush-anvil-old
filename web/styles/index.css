@@ -358,6 +358,41 @@ h1 {
     margin-bottom: 8px;
 }
 
+.faq {
+    margin-top: 40px;
+}
+
+.faq h2 {
+    margin-bottom: 10px;
+}
+
+.faq details {
+    margin-bottom: 10px;
+}
+
+.faq summary {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.15em;
+}
+
+.faq details[open] summary, .faq a {
+    color: #ffeb3b;
+}
+
+.faq .term {
+    font-weight: bold;
+    color: #ffeb3b;
+}
+
+.faq ul {
+    padding-left: 20px;
+}
+
+.faq li {
+    margin-bottom: 10px;
+}
+
 @media (max-width: 767px) {
     .schedule {
         display: grid;
