@@ -178,3 +178,13 @@ function SaveParsedQuiz(block, date, quizId = "") {
         block.remove()
     })
 }
+
+function SaveAll() {
+    for (let block of document.getElementById("parsed").children) {
+        if (block.classList.contains("hidden"))
+            continue
+
+        let button = block.getElementsByClassName("save-button")[0]
+        button.click()
+    }
+}

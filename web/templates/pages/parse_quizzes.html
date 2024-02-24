@@ -30,12 +30,18 @@
                 <button class="basic-button default-button" onclick="ParseQuizzes()">Распарсить</button>
             </div>
 
+
             <div class="error" id="parse-error"></div>
         </div>
         <div class="post-quizzes" id="post-quizzes"></div>
 
         <div id="invalid-lines"></div>
-        <h2 class="hidden" id="parsed-result">Результат парсинга</h2>
+        <div class="hidden" id="parsed-result">
+            <h2>Результат парсинга</h2>
+            <div class="save-button margin-bottom">
+                <button class="basic-button default-button" onclick="SaveAll()">Сохранить всё</button>
+            </div>
+        </div>
         <div id="parsed"></div>
     </div>
 
