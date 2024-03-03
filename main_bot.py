@@ -23,7 +23,16 @@ dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def handle_start(message: types.Message) -> None:
-    await message.reply("Привет! Я бот Плюшевой наковальни!")
+    text = "\n".join([
+        "Привет! Я бот Плюшевой наковальни!",
+        "",
+        "Команды, которые я знаю:",
+        "/info - отображение общей информации",
+        "/rating - информация о текущем рейтинге Смузи",
+        "/remind - напоминание про квиз (необходимо ответить на сообщение с опросом)"
+    ])
+
+    await message.reply(text)
 
 
 @dp.message(Command("info"))
