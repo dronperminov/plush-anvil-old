@@ -11,6 +11,8 @@ from aiogram.types import InlineQuery, InlineQueryResultArticle, InputTextMessag
 from src.database import database
 from src.utils.common import get_smuzi_rating
 
+admin_usernames = ["dronperminov", "Sobolyulia", "perminova_sd"]
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
@@ -29,10 +31,12 @@ async def handle_start(message: types.Message) -> None:
         "Команды, которые я знаю:",
         "/info - отображение общей информации",
         "/rating - информация о текущем рейтинге Смузи",
-        "/remind - напоминание про квиз (необходимо ответить на сообщение с опросом)"
+        "/remind - напоминание про квиз (необходимо ответить на сообщение с опросом)",
+        "",
+        "А ещё админы могут создавать опросы про квизы, написав `@plush_anvil_bot poll` и выбрав нужный квиз."
     ])
 
-    await message.reply(text)
+    await message.reply(text, parse_mode="Markdown")
 
 
 @dp.message(Command("info"))
@@ -63,8 +67,11 @@ async def handle_poll(message: types.Message) -> None:
     logger.info(f"Chat title: {message.chat.title}")
 
     await message.delete()
-    poll = await message.answer_poll(question=re.sub(r"^/poll\s*", "", message.text), options=["Пойду", "Не пойду"], is_anonymous=False, allows_multiple_answers=False)
-    await poll.pin(disable_notification=True)
+
+    if message.from_user.username in admin_usernames:
+        title = re.sub(r"^/poll\s*", "", message.text)
+        poll = await message.answer_poll(question=title, options=["Пойду", "Не пойду"], is_anonymous=False, allows_multiple_answers=False)
+        await poll.pin(disable_notification=True)
 
 
 def quiz_to_article_result(quiz: dict, places: Dict[str, dict]) -> InlineQueryResultArticle:
@@ -96,7 +103,7 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 
     results = []
 
-    if query.from_user.username in ["dronperminov", "Sobolyulia", "perminova_sd"]:
+    if query.from_user.username in admin_usernames:
         for quiz in quizzes:
             results.append(quiz_to_article_result(quiz, places))
 
