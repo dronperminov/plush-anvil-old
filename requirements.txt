@@ -1,3 +1,4 @@
+aiogram<4.0
 beautifulsoup4
 fastapi
 Jinja2
