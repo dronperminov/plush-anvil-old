@@ -73,7 +73,8 @@ async def handle_start(message: types.Message) -> None:
         "- создавать картинки с описанием для сториз, написав `@plush_anvil_bot story` и выбрав нужный квиз"
     ])
 
-    await message.reply(text, parse_mode="Markdown")
+    await message.delete()
+    await message.answer(text, parse_mode="Markdown")
 
 
 @dp.message(Command("info"))
@@ -89,13 +90,15 @@ async def handle_info(message: types.Message) -> None:
         '- КМС: <a href="https://movie-quiz.plush-anvil.ru">movie-quiz.plush-anvil.ru</a>'
     ]
 
-    await message.reply("\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
+    await message.delete()
+    await message.answer("\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
 
 
 @dp.message(Command("rating"))
 async def handle_rating(message: types.Message) -> None:
     rating = get_smuzi_rating()
-    await message.reply(f"<b>Рейтинг Смузи</b>: {rating}", parse_mode="HTML")
+    await message.delete()
+    await message.answer(f"<b>Рейтинг Смузи</b>: {rating}", parse_mode="HTML")
 
 
 @dp.message(Command("poll"))
@@ -165,9 +168,8 @@ async def handle_remind(message: types.Message) -> None:
         return await send_error(message, "Команда remind недоступна для этого чата", delete_message=True)
 
     today = datetime.now()
-    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
     end_date = datetime(today.year, today.month, today.day, 23, 59, 59)
-    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+    quizzes = list(database.quizzes.find({"date": {"$gte": today, "$lte": end_date}}))
 
     if not quizzes:
         return await send_error(message, "Слишком рано для напоминания, сегодня нет никаких квизов", delete_message=True)
@@ -227,10 +229,16 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 
     today = datetime.now()
     start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
-    end_date = start_date + timedelta(days=27)
+    end_date = start_date + timedelta(days=7)
     results = []
 
-    for quiz in database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}):
+    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+    created_ids = {message["quiz_id"] for message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
+
+    for quiz in quizzes:
+        if quiz["_id"] in created_ids:
+            continue
+
         quiz_id = str(quiz["_id"])
         quiz = Quiz.from_dict(quiz)
         input_content = InputTextMessageContent(message_text=f"/poll {quiz_id}")
@@ -244,7 +252,7 @@ async def handle_inline_story(query: InlineQuery) -> None:
     logger.info(query.from_user.username)
     today = datetime.now()
     start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
-    end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=27)
+    end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=7)
     results = []
 
     date2quizzes = defaultdict(list)
