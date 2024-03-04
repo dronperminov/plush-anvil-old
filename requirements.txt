@@ -2,6 +2,7 @@ aiogram<4.0
 beautifulsoup4
 fastapi
 Jinja2
+html2image
 Levenshtein
 passlib[bcrypt]
 pymongo

@@ -9,14 +9,14 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Optional
 
-import cv2
-import numpy as np
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters.command import Command
 from aiogram.types import FSInputFile, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
 from bson import ObjectId
 from bson.errors import InvalidId
+from html2image import Html2Image
 
+from src.api import templates
 from src.database import database
 from src.dataclasses.quiz import Quiz
 from src.utils.common import get_places, get_smuzi_rating
@@ -163,13 +163,16 @@ async def handle_story(message: types.Message) -> None:
 
     caption = "\n".join([f'{quiz.name}: {tg_messages[quiz_id]["url"]}' for quiz_id, quiz in zip(quiz_ids, quizzes)])
 
-    # TODO: generate image for quizzes
-    image = np.zeros((1920, 1080, 3), dtype=np.uint8)
-    cv2.rectangle(image, (40, 40), (800, 800), (0, 0, 255), 10)
-    cv2.rectangle(image, (280, 80), (1040, 840), (255, 0, 0), 10)
+    date = quizzes[0].date
+    weekday = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"][date.weekday()]
+    month = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"][date.month - 1]
+
+    template = templates.get_template("pages/story.html")
+    html = template.render(weekday=weekday, date=f"{date.day} {month}", quizzes=quizzes, places=get_places())
 
     with tempfile.TemporaryDirectory() as tmp_dir:
-        cv2.imwrite(os.path.join(tmp_dir, "story.png"), image)
+        hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1080, 1920), output_path=tmp_dir)
+        hti.screenshot(html_str=html, save_as="story.png")
         photo_file = FSInputFile(os.path.join(tmp_dir, "story.png"))
 
         await message.delete()
@@ -253,9 +256,12 @@ async def handle_inline_poll(query: InlineQuery) -> None:
         return
 
     today = datetime.now()
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
+    end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=7)
+
     results = []
 
-    quizzes = list(database.quizzes.find({"date": {"$gte": today, "$lte": today + timedelta(days=7)}}))
+    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
     created_ids = {message["quiz_id"] for message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
 
     for quiz in quizzes:
@@ -282,10 +288,11 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 async def handle_inline_story(query: InlineQuery) -> None:
     logger.info(query.from_user.username)
     today = datetime.now()
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
     end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=7)
 
     date2quizzes = defaultdict(list)
-    for quiz in database.quizzes.find({"date": {"$gte": today, "$lte": end_date}}):
+    for quiz in database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}):
         date2quizzes[f'{quiz["date"].day:02d}.{quiz["date"].month:02d}'].append(quiz)
 
     results = []

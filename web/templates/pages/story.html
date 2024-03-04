@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { background: #fff; }
+        body { width: 1080px; height: 1920px; background: linear-gradient(to bottom right, #d700ff, #8500ff); color: #fff; font-family: Verdana; }
+
+        .weekday { padding-top: 200px; text-align: center; font-size: 80px; }
+        .date { padding-bottom: 160px; text-align: center; font-size: 100px; font-weight: bold; }
+
+        .quiz { display: grid; grid-template-columns: 150px 1fr; margin: 0 auto 48px auto; background: #00000069; border-radius: 38px; padding: 30px; width: 1020px; }
+        .quiz-left { text-align: center; display: grid; align-self: center; }
+        .quiz-right { padding: 0 10px 0 20px; }
+
+        .organizer-logo { width: 142px; margin: 0 auto; }
+        .organizer-logo img { width: 100%; border-radius: 20px; }
+        .time { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+        .name { font-size: 32px; margin-bottom: 4px; font-weight: bold; }
+        .description { font-size: 28px; margin-bottom: 20px; width: 780px; }
+
+        .place-price { margin-bottom: 10px; font-size: 28px; font-weight: bold; }
+        .place { background-color: #00a35c; padding: 6px 10px; margin-right: 16px; border-radius: 12px; }
+        .price { }
+    </style>
+    <div class="weekday">{{weekday}}</div>
+    <div class="date">{{date}}</div>
+    <div class="quizzes">
+        {% for quiz in quizzes %}
+        <div class="quiz">
+            <div class="quiz-left">
+                <div class="organizer-logo">
+                    <img src="https://plush-anvil.ru/images/organizers/{{quiz.organizer}}.png">
+                    <div class="time">{{quiz.time}}</div>
+                </div>
+            </div>
+            <div class="quiz-right">
+                <div class="name">{{quiz.name}}</div>
+                <div class="description">{{quiz.description}}</div>
+                <div class="place-price">
+                    <span class="place">{{quiz.place}} (м. {{places[quiz.place]["metro_station"]}})</span>
+                    <span class="price">{{quiz.cost}}₽</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
