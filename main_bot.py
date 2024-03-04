@@ -51,6 +51,18 @@ async def send_error(message: types.Message, text: str, delete_message: bool = F
     await error.delete()
 
 
+async def unpin_old_polls() -> None:
+    tg_messages = list(database.tg_quiz_messages.find({}))
+    tg_quiz_ids = [tg_message["quiz_id"] for tg_message in tg_messages]
+    quiz_ids = [quiz["_id"] for quiz in database.quizzes.find({"_id": {"$in": tg_quiz_ids}, "date": {"$lt": datetime.now()}}, {"_id": 1})]
+
+    for tg_message in tg_messages:
+        if tg_message["quiz_id"] in quiz_ids:
+            await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
+
+    database.tg_quiz_messages.delete_many({"quiz_id": {"$in": quiz_ids}})
+
+
 @dp.message(Command("get_id"))
 async def log(message: types.Message) -> None:
     logger.info(f"Chat id: {message.chat.id}")
@@ -128,6 +140,7 @@ async def handle_poll(message: types.Message) -> None:
         database.tg_quiz_messages.insert_one({"quiz_id": ObjectId(quiz_id), "message_id": int(poll_url.split("/")[-1]), "url": poll_url})
 
     await poll.pin(disable_notification=True)
+    await unpin_old_polls()
 
 
 @dp.message(Command("story"))
@@ -198,6 +211,17 @@ async def handle_remind(message: types.Message) -> None:
         lines.append("Если ваши планы изменились, переголосуйте, пожалуйста")
         await message.answer(text="\n".join(lines), parse_mode="HTML")
 
+    await unpin_old_polls()
+
+
+@dp.message(Command("clear"))
+async def handle_clear(message: types.Message) -> None:
+    if message.chat.id != target_group_id:
+        return await send_error(message, "Команда clear недоступна для этого чата", delete_message=True)
+
+    await message.delete()
+    await unpin_old_polls()
+
 
 @dp.inline_query(F.query == "info")
 async def handle_inline_info(query: InlineQuery) -> None:
@@ -229,11 +253,9 @@ async def handle_inline_poll(query: InlineQuery) -> None:
         return
 
     today = datetime.now()
-    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
-    end_date = start_date + timedelta(days=7)
     results = []
 
-    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+    quizzes = list(database.quizzes.find({"date": {"$gte": today, "$lte": today + timedelta(days=7)}}))
     created_ids = {message["quiz_id"] for message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
 
     for quiz in quizzes:
@@ -260,15 +282,13 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 async def handle_inline_story(query: InlineQuery) -> None:
     logger.info(query.from_user.username)
     today = datetime.now()
-    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
     end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=7)
-    results = []
 
     date2quizzes = defaultdict(list)
-
-    for quiz in database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}):
+    for quiz in database.quizzes.find({"date": {"$gte": today, "$lte": end_date}}):
         date2quizzes[f'{quiz["date"].day:02d}.{quiz["date"].month:02d}'].append(quiz)
 
+    results = []
     for i, (date, date_quizzes) in enumerate(date2quizzes.items()):
         quiz_ids = ", ".join([str(quiz["_id"]) for quiz in date_quizzes])
         date_quizzes = [Quiz.from_dict(quiz) for quiz in date_quizzes]
