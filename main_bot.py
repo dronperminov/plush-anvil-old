@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import tempfile
+import urllib
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Optional
@@ -241,8 +242,16 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 
         quiz_id = str(quiz["_id"])
         quiz = Quiz.from_dict(quiz)
-        input_content = InputTextMessageContent(message_text=f"/poll {quiz_id}")
-        results.append(InlineQueryResultArticle(id=quiz_id, title=quiz.to_inline_title(), description=quiz.to_inline_description(), input_message_content=input_content))
+
+        results.append(InlineQueryResultArticle(
+            id=quiz_id,
+            title=quiz.to_inline_title(),
+            description=quiz.to_inline_description(),
+            input_message_content=InputTextMessageContent(message_text=f"/poll {quiz_id}"),
+            thumbnail_url=f"https://plush-anvil.ru/images/organizers/{urllib.parse.quote(quiz.organizer)}.png",
+            thumbnail_height=180,
+            thumbnail_width=180
+        ))
 
     await query.answer(results, is_personal=False, cache_time=0)
 
