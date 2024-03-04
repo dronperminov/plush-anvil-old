@@ -8,7 +8,7 @@ from src import constants
 from src.api import templates
 from src.database import database
 from src.utils.auth import get_current_user
-from src.utils.common import get_schedule, get_smuzi_rating, get_static_hash, parse_date, quiz_to_datetime
+from src.utils.common import get_places, get_schedule, get_smuzi_rating, get_static_hash, parse_date, quiz_to_datetime
 
 router = APIRouter()
 
@@ -51,5 +51,5 @@ def schedule(date: str = Body(..., embed=True)) -> JSONResponse:
     return JSONResponse({
         "status": constants.SUCCESS,
         "schedule": get_schedule(parsed_date),
-        "places": {place["name"]: place for place in database.places.find({}, {"_id": 0})}
+        "places": get_places()
     })

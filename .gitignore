@@ -3,4 +3,4 @@ __pycache__
 web/images/profiles
 web/images/albums
 vk_tokens.txt
-bot_token.txt
+bot_config.json

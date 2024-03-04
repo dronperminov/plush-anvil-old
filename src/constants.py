@@ -8,6 +8,7 @@ MONGO_QUIZZES_COLLECTION = "quizzes"
 MONGO_PHOTO_ALBUMS_COLLECTION = "photo_albums"
 MONGO_PHOTOS_COLLECTION = "photos"
 MONGO_METRO_STATIONS_COLLECTION = "metro_stations"
+MONGO_TG_QUIZ_MESSAGES = "tg_quiz_messages"
 
 ERROR = "error"
 SUCCESS = "success"

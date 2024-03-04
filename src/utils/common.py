@@ -6,7 +6,7 @@ import shutil
 import tempfile
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import cv2
 from fastapi import UploadFile
@@ -201,3 +201,8 @@ def get_schedule(schedule_date: datetime) -> dict:
             "top10": top10
         }
     }
+
+
+def get_places() -> Dict[str, dict]:
+    places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
+    return places

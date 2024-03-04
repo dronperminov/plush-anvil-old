@@ -1,26 +1,61 @@
 import asyncio
+import json
 import logging
+import os
 import re
+import tempfile
+from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Dict
+from typing import Optional
 
+import cv2
+import numpy as np
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters.command import Command
-from aiogram.types import InlineQuery, InlineQueryResultArticle, InputTextMessageContent
+from aiogram.types import FSInputFile, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
+from bson import ObjectId
+from bson.errors import InvalidId
 
 from src.database import database
-from src.utils.common import get_smuzi_rating
+from src.dataclasses.quiz import Quiz
+from src.utils.common import get_places, get_smuzi_rating
 
 admin_usernames = ["dronperminov", "Sobolyulia", "perminova_sd"]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-with open("bot_token.txt", "r") as f:
-    token = f.read()
+with open("bot_config.json", "r") as f:
+    config = json.load(f)
 
-bot = Bot(token=token)
+target_group_id = config["group_id"]
+bot = Bot(token=config["token"])
 dp = Dispatcher()
+
+
+def parse_quiz_from_id(quiz_id: str) -> Optional[Quiz]:
+    try:
+        quiz = database.quizzes.find_one({"_id": ObjectId(quiz_id)})
+        return None if quiz is None else Quiz.from_dict(quiz)
+    except InvalidId:
+        return None
+
+
+async def send_error(message: types.Message, text: str, delete_message: bool = False, **kwargs: dict) -> None:
+    if delete_message:
+        await message.delete()
+
+    error = await message.answer(text, **kwargs)
+    await asyncio.sleep(5)
+    await error.delete()
+
+
+@dp.message(Command("get_id"))
+async def log(message: types.Message) -> None:
+    logger.info(f"Chat id: {message.chat.id}")
+    logger.info(f"Chat title: {message.chat.title}")
+    logger.info(f"Chat type: {message.chat.type}")
+    await message.delete()
 
 
 @dp.message(Command("start"))
@@ -31,9 +66,11 @@ async def handle_start(message: types.Message) -> None:
         "Команды, которые я знаю:",
         "/info - отображение общей информации",
         "/rating - информация о текущем рейтинге Смузи",
-        "/remind - напоминание про квиз (необходимо ответить на сообщение с опросом)",
+        "/remind - напоминание про квиз (если в этот день есть квизы)",
         "",
-        "А ещё админы могут создавать опросы про квизы, написав `@plush_anvil_bot poll` и выбрав нужный квиз."
+        "А ещё админы могут:",
+        "- создавать опросы про квизы, написав `@plush_anvil_bot poll` и выбрав нужный квиз"
+        "- создавать картинки с описанием для сториз, написав `@plush_anvil_bot story` и выбрав нужный квиз"
     ])
 
     await message.reply(text, parse_mode="Markdown")
@@ -63,51 +100,100 @@ async def handle_rating(message: types.Message) -> None:
 
 @dp.message(Command("poll"))
 async def handle_poll(message: types.Message) -> None:
-    logger.info(f"Chat id: {message.chat.id}")
-    logger.info(f"Chat title: {message.chat.title}")
+    if message.chat.id != target_group_id:
+        return await send_error(message, "Команда poll недоступна для этого чата", delete_message=True)
+
+    if message.from_user.username not in admin_usernames:
+        return await send_error(message, f"Команда poll недоступна для пользователя @{message.from_user.username}", delete_message=True)
+
+    quiz_id = re.sub(r"^/poll\s*", "", message.text)
+    quiz = parse_quiz_from_id(quiz_id)
+
+    if quiz is None:
+        return await send_error(message, f'Не удалось найти заданный квиз ("{quiz_id}")', delete_message=True)
+
+    if tg_message := database.tg_quiz_messages.find_one({"quiz_id": ObjectId(quiz_id)}):
+        return await send_error(message, "Опрос с этим квизом уже создан", delete_message=True, reply_to_message_id=tg_message["message_id"])
 
     await message.delete()
+    places = get_places()
+    poll = await message.answer_poll(question=quiz.to_poll_title(places), options=["Пойду", "Не пойду"], is_anonymous=False, allows_multiple_answers=False)
+    poll_url = poll.get_url()
 
-    if message.from_user.username in admin_usernames:
-        title = re.sub(r"^/poll\s*", "", message.text)
-        poll = await message.answer_poll(question=title, options=["Пойду", "Не пойду"], is_anonymous=False, allows_multiple_answers=False)
-        await poll.pin(disable_notification=True)
+    if poll_url and re.fullmatch(r"https://t.me/c/\d+/\d+", poll_url):
+        database.tg_quiz_messages.insert_one({"quiz_id": ObjectId(quiz_id), "message_id": int(poll_url.split("/")[-1]), "url": poll_url})
 
-
-def quiz_to_article_result(quiz: dict, places: Dict[str, dict]) -> InlineQueryResultArticle:
-    name, short_name = re.sub(r"\.$", "", quiz["name"]), re.sub(r"\n+", " ", quiz["short_name"])
-    date, time, place, cost = quiz["date"], quiz["time"], quiz["place"], quiz["cost"]
-    weekday = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"][date.weekday()]
-    weekday_description = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"][date.weekday()]
-
-    header_date = f"{date.day:02d}.{date.month:02d} {weekday} {time}"
-    header_place = f'{place} (м. {places[place]["metro_station"]}) {cost} руб.'
-
-    title = f"{date.day:02d}.{date.month:02d} {name}"
-    description = f"{weekday_description}, {time}\n{place} {cost} руб."
-    poll_title = f"{header_date} {name}. {header_place}"
-
-    if len(poll_title) >= 240:
-        poll_title = f"{header_date} {short_name}. {header_place}"
-
-    input_content = InputTextMessageContent(message_text=f"/poll {poll_title}")
-    return InlineQueryResultArticle(id=f'{quiz["_id"]}', title=title, description=description, input_message_content=input_content)
+    await poll.pin(disable_notification=True)
 
 
-@dp.inline_query(F.query == "poll")
-async def handle_inline_poll(query: InlineQuery) -> None:
-    logger.info(query.from_user.username)
+@dp.message(Command("story"))
+async def handle_story(message: types.Message) -> None:
+    if message.chat.id != target_group_id:
+        return await send_error(message, "Команда story недоступна для этого чата", delete_message=True)
+
+    quiz_ids = re.split(r",\s+", re.sub(r"^/story\s*", "", message.text))
+    quizzes = [parse_quiz_from_id(quiz_id) for quiz_id in quiz_ids]
+
+    if none_quizzes := [f'"{quiz_id}"' for quiz_id, quiz in zip(quiz_ids, quizzes) if quiz is None]:
+        return await send_error(message, f'Не удалось найти некоторые квизы ({", ".join(none_quizzes)})', delete_message=True)
+
+    quiz_ids = [ObjectId(quiz_id) for quiz_id in quiz_ids]
+    tg_messages = {tg_info["quiz_id"]: tg_info for tg_info in database.tg_quiz_messages.find({"quiz_id": {"$in": quiz_ids}})}
+
+    if none_messages := [f'- "{quiz.to_inline_title()}"' for quiz_id, quiz in zip(quiz_ids, quizzes) if quiz_id not in tg_messages]:
+        none_text = "\n".join(none_messages)
+        return await send_error(message, f"Не удалось найти опросы для следующих квизов:\n{none_text}", delete_message=True)
+
+    caption = "\n".join([f'{quiz.name}: {tg_messages[quiz_id]["url"]}' for quiz_id, quiz in zip(quiz_ids, quizzes)])
+
+    # TODO: generate image for quizzes
+    image = np.zeros((1920, 1080, 3), dtype=np.uint8)
+    cv2.rectangle(image, (40, 40), (800, 800), (0, 0, 255), 10)
+    cv2.rectangle(image, (280, 80), (1040, 840), (255, 0, 0), 10)
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        cv2.imwrite(os.path.join(tmp_dir, "story.png"), image)
+        photo_file = FSInputFile(os.path.join(tmp_dir, "story.png"))
+
+        await message.delete()
+        await bot.send_document(chat_id=message.from_user.id, document=photo_file, caption=caption)
+
+
+@dp.message(Command("remind"))
+async def handle_remind(message: types.Message) -> None:
+    if message.chat.id != target_group_id:
+        return await send_error(message, "Команда remind недоступна для этого чата", delete_message=True)
+
     today = datetime.now()
-    quizzes = list(database.quizzes.find({"date": {"$gte": today, "$lte": today + timedelta(days=7)}}))
-    places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
+    end_date = datetime(today.year, today.month, today.day, 23, 59, 59)
+    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
 
-    results = []
+    if not quizzes:
+        return await send_error(message, "Слишком рано для напоминания, сегодня нет никаких квизов", delete_message=True)
 
-    if query.from_user.username in admin_usernames:
+    messages = {message["quiz_id"]: message for message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
+    await message.delete()
+
+    if len(quizzes) == 1:
+        quiz = quizzes[0]
+        lines = [
+            f'Напоминаю, что сегодня квиз "{quiz["name"]}" в <b>{quiz["time"]}</b>',
+            f'<b>Место проведения</b>: {quiz["place"]}',
+            f'<b>Стоимость</b>: {quiz["cost"]} руб\n',
+            "Если ваши планы изменились, переголосуйте, пожалуйста"
+        ]
+
+        kwargs = {"reply_to_message_id": messages[quiz["_id"]]["message_id"]} if quiz["_id"] in messages else {}
+        await message.answer(text="\n".join(lines), parse_mode="HTML", **kwargs)
+    else:
+        lines = ["Напоминаю, что сегодня проходят следующие квизы:\n"]
         for quiz in quizzes:
-            results.append(quiz_to_article_result(quiz, places))
+            name = f'<a href="{messages[quiz["_id"]]["url"]}">{quiz["name"]}</a>' if quiz["_id"] in messages else quiz["name"]
+            lines.append(f'- {name} в <b>{quiz["time"]}</b>\n<b>Место проведения</b>: {quiz["place"]}\n<b>Стоимость</b>: {quiz["cost"]} руб\n')
 
-    await query.answer(results, is_personal=False, cache_time=0)
+        lines.append("Если ваши планы изменились, переголосуйте, пожалуйста")
+        await message.answer(text="\n".join(lines), parse_mode="HTML")
 
 
 @dp.inline_query(F.query == "info")
@@ -132,32 +218,49 @@ async def handle_inline_info(query: InlineQuery) -> None:
     await query.answer(results, is_personal=False, cache_time=0)
 
 
-@dp.message(Command("remind"))
-async def handle_remind(message: types.Message) -> None:
-    if not message.reply_to_message or not message.reply_to_message.poll:
-        await message.delete()
-        await message.answer(text="Для напоминания необходимо ответить на сообщение с опросом")
+@dp.inline_query(F.query == "poll")
+async def handle_inline_poll(query: InlineQuery) -> None:
+    logger.info(query.from_user.username)
+
+    if query.from_user.username not in admin_usernames:
         return
 
-    poll = message.reply_to_message.poll
-    match = re.search(r"^(?P<day>\d+)\.(?P<month>\d+) [ПВСЧ][нтрбс] (?P<time>\d+:\d+) (?P<name>.*)\. (?P<place>.*) \(м\. [^)]+\) (?P<cost>\d+) руб.", poll.question)
-
-    if match is None:
-        await message.delete()
-        await message.answer(text="Похоже, опрос не соответствует описанию квиза")
-        return
-
-    day, month, time, name, place = int(match.group("day")), int(match.group("month")), match.group("time"), match.group("name"), match.group("place")
     today = datetime.now()
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
+    end_date = start_date + timedelta(days=27)
+    results = []
 
-    if today.day != day or today.month != month:
-        await message.delete()
-        await message.answer(text=f'Слишком рано для напоминания. Квиз "{name}" будет не сегодня, а {day:02d}.{month:02d}')
-        return
+    for quiz in database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}):
+        quiz_id = str(quiz["_id"])
+        quiz = Quiz.from_dict(quiz)
+        input_content = InputTextMessageContent(message_text=f"/poll {quiz_id}")
+        results.append(InlineQueryResultArticle(id=quiz_id, title=quiz.to_inline_title(), description=quiz.to_inline_description(), input_message_content=input_content))
 
-    text = f'Напоминаю, что сегодня квиз "{name}" в <b>{time}</b>.\n<b>Место проведения</b>: {place}'
-    await message.delete()
-    await message.answer(text=text, parse_mode="HTML", reply_to_message_id=message.reply_to_message.message_id)
+    await query.answer(results, is_personal=False, cache_time=0)
+
+
+@dp.inline_query(F.query == "story")
+async def handle_inline_story(query: InlineQuery) -> None:
+    logger.info(query.from_user.username)
+    today = datetime.now()
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
+    end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=27)
+    results = []
+
+    date2quizzes = defaultdict(list)
+
+    for quiz in database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}):
+        date2quizzes[f'{quiz["date"].day:02d}.{quiz["date"].month:02d}'].append(quiz)
+
+    for i, (date, date_quizzes) in enumerate(date2quizzes.items()):
+        quiz_ids = ", ".join([str(quiz["_id"]) for quiz in date_quizzes])
+        date_quizzes = [Quiz.from_dict(quiz) for quiz in date_quizzes]
+        description = "\n".join(f"{quiz.name} ({quiz.place}, {quiz.time})" for quiz in date_quizzes)
+
+        input_content = InputTextMessageContent(message_text=f"/story {quiz_ids}")
+        results.append(InlineQueryResultArticle(id=f"story_{i}", title=date, description=description, input_message_content=input_content))
+
+    await query.answer(results, is_personal=False, cache_time=0)
 
 
 async def main() -> None:
