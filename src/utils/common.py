@@ -6,7 +6,7 @@ import shutil
 import tempfile
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import cv2
 from fastapi import UploadFile
