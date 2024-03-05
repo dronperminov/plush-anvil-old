@@ -61,11 +61,5 @@ def schedule_get() -> HTMLResponse:
     template = templates.get_template("pages/schedule.html")
     curr_schedule = get_schedule(parsed_date)
     places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
-
-    content = template.render(
-        user=None,
-        version=get_static_hash(),
-        schedule=curr_schedule,
-        places=places
-    )
+    content = template.render(user=None, version=get_static_hash(), schedule=curr_schedule, places=places)
     return HTMLResponse(content=content)
