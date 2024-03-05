@@ -54,7 +54,10 @@ async def send_error(message: types.Message, text: str, delete_message: bool = F
 async def unpin_old_polls() -> None:
     tg_messages = list(database.tg_quiz_messages.find({}))
     tg_quiz_ids = [tg_message["quiz_id"] for tg_message in tg_messages]
-    quiz_ids = [quiz["_id"] for quiz in database.quizzes.find({"_id": {"$in": tg_quiz_ids}, "date": {"$lt": datetime.now()}}, {"_id": 1})]
+    today = datetime.now()
+    end_date = datetime(today.year, today.month, today.day, 0, 0, 0)
+
+    quiz_ids = [quiz["_id"] for quiz in database.quizzes.find({"_id": {"$in": tg_quiz_ids}, "date": {"$lt": end_date}}, {"_id": 1})]
 
     for tg_message in tg_messages:
         if tg_message["quiz_id"] in quiz_ids:
@@ -181,8 +184,9 @@ async def handle_remind(message: types.Message) -> None:
         return await send_error(message, "Команда remind недоступна для этого чата", delete_message=True)
 
     today = datetime.now()
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
     end_date = datetime(today.year, today.month, today.day, 23, 59, 59)
-    quizzes = list(database.quizzes.find({"date": {"$gte": today, "$lte": end_date}}))
+    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
 
     if not quizzes:
         return await send_error(message, "Слишком рано для напоминания, сегодня нет никаких квизов", delete_message=True)
@@ -196,19 +200,19 @@ async def handle_remind(message: types.Message) -> None:
             f'Напоминаю, что сегодня квиз "{quiz["name"]}" в <b>{quiz["time"]}</b>',
             f'<b>Место проведения</b>: {quiz["place"]}',
             f'<b>Стоимость</b>: {quiz["cost"]} руб\n',
-            "Если ваши планы изменились, переголосуйте, пожалуйста"
+            'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
         ]
 
         kwargs = {"reply_to_message_id": messages[quiz["_id"]]["message_id"]} if quiz["_id"] in messages else {}
-        await message.answer(text="\n".join(lines), parse_mode="HTML", **kwargs)
+        await message.answer(text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True, **kwargs)
     else:
         lines = ["Напоминаю, что сегодня проходят следующие квизы:\n"]
         for quiz in quizzes:
             name = f'<a href="{messages[quiz["_id"]]["url"]}">{quiz["name"]}</a>' if quiz["_id"] in messages else quiz["name"]
             lines.append(f'- {name} в <b>{quiz["time"]}</b>\n<b>Место проведения</b>: {quiz["place"]}\n<b>Стоимость</b>: {quiz["cost"]} руб\n')
 
-        lines.append("Если ваши планы изменились, переголосуйте, пожалуйста")
-        await message.answer(text="\n".join(lines), parse_mode="HTML")
+        lines.append('Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>')
+        await message.answer(text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
 
     await unpin_old_polls()
 
