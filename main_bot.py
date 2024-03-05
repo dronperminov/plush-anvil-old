@@ -113,6 +113,8 @@ async def log(message: types.Message) -> None:
 
 @dp.message(Command("start"))
 async def handle_start(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
     text = "\n".join([
         "Привет! Я бот Плюшевой наковальни!",
         "",
@@ -132,6 +134,8 @@ async def handle_start(message: types.Message) -> None:
 
 @dp.message(Command("info"))
 async def handle_info(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
     lines = [
         "<b>Общая информация</b>:",
         '- капитан команды: <a href="https://t.me/Sobolyulia">Борисова Юля</a>',
@@ -149,6 +153,8 @@ async def handle_info(message: types.Message) -> None:
 
 @dp.message(Command("rating"))
 async def handle_rating(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
     rating = get_smuzi_rating()
     await message.delete()
     await message.answer(f"<b>Рейтинг Смузи</b>: {rating}", parse_mode="HTML")
@@ -156,6 +162,8 @@ async def handle_rating(message: types.Message) -> None:
 
 @dp.message(Command("poll"))
 async def handle_poll(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
     if message.chat.id != target_group_id:
         return await send_error(message, "Команда poll недоступна для этого чата", delete_message=True)
 
@@ -185,6 +193,8 @@ async def handle_poll(message: types.Message) -> None:
 
 @dp.message(Command("story"))
 async def handle_story(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
     if message.chat.id not in [target_group_id, message.from_user.id]:
         return await send_error(message, "Команда story недоступна для этого чата", delete_message=True)
 
@@ -217,6 +227,8 @@ async def handle_story(message: types.Message) -> None:
 
 @dp.message(Command("remind"))
 async def handle_remind(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
     if message.chat.id != target_group_id:
         return await send_error(message, "Команда remind недоступна для этого чата", delete_message=True)
 
@@ -231,6 +243,8 @@ async def handle_remind(message: types.Message) -> None:
 
 @dp.message(Command("clear"))
 async def handle_clear(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
     if message.chat.id != target_group_id:
         return await send_error(message, "Команда clear недоступна для этого чата", delete_message=True)
 
@@ -240,7 +254,8 @@ async def handle_clear(message: types.Message) -> None:
 
 @dp.inline_query(F.query == "info")
 async def handle_inline_info(query: InlineQuery) -> None:
-    logger.info(query.from_user.username)
+    logger.info(f"Inline command info from user {query.from_user.username} ({query.from_user.id})")
+
     rating = get_smuzi_rating()
 
     items = [
@@ -262,7 +277,7 @@ async def handle_inline_info(query: InlineQuery) -> None:
 
 @dp.inline_query(F.query == "poll")
 async def handle_inline_poll(query: InlineQuery) -> None:
-    logger.info(query.from_user.username)
+    logger.info(f"Inline command poll from user {query.from_user.username} ({query.from_user.id})")
 
     if query.from_user.username not in admin_usernames:
         return
@@ -298,7 +313,8 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 
 @dp.inline_query(F.query == "story")
 async def handle_inline_story(query: InlineQuery) -> None:
-    logger.info(query.from_user.username)
+    logger.info(f"Inline command story from user {query.from_user.username} ({query.from_user.id})")
+
     today = datetime.now()
     start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
     end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=7)
@@ -319,12 +335,12 @@ async def handle_inline_story(query: InlineQuery) -> None:
     await query.answer(results, is_personal=False, cache_time=0)
 
 
-async def scheduled_send_remind():
+async def scheduled_send_remind() -> None:
     quizzes = get_remind_quizzes()
     await send_remind(quizzes)
 
 
-async def scheduler():
+async def scheduler() -> None:
     aioschedule.every().day.at("10:00").do(scheduled_send_remind)
 
     while True:
@@ -332,7 +348,7 @@ async def scheduler():
         await asyncio.sleep(1)
 
 
-async def run_scheduler():
+async def run_scheduler() -> None:
     asyncio.create_task(scheduler())
 
 
