@@ -155,13 +155,9 @@ async def handle_story(message: types.Message) -> None:
         return await send_error(message, f'Не удалось найти некоторые квизы ({", ".join(none_quizzes)})', delete_message=True)
 
     quiz_ids = [ObjectId(quiz_id) for quiz_id in quiz_ids]
-    tg_messages = {tg_info["quiz_id"]: tg_info for tg_info in database.tg_quiz_messages.find({"quiz_id": {"$in": quiz_ids}})}
+    tg_messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": quiz_ids}})}
 
-    if none_messages := [f'- "{quiz.to_inline_title()}"' for quiz_id, quiz in zip(quiz_ids, quizzes) if quiz_id not in tg_messages]:
-        none_text = "\n".join(none_messages)
-        return await send_error(message, f"Не удалось найти опросы для следующих квизов:\n{none_text}", delete_message=True)
-
-    caption = "\n".join([f'{quiz.name}: {tg_messages[quiz_id]["url"]}' for quiz_id, quiz in zip(quiz_ids, quizzes)])
+    caption = "\n".join([f'{quiz.name}: {tg_messages[quiz_id]["url"] if quiz_id in tg_messages else ""}' for quiz_id, quiz in zip(quiz_ids, quizzes)])
 
     date = quizzes[0].date
     weekday = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"][date.weekday()]
@@ -277,8 +273,8 @@ async def handle_inline_poll(query: InlineQuery) -> None:
             description=quiz.to_inline_description(),
             input_message_content=InputTextMessageContent(message_text=f"/poll {quiz_id}"),
             thumbnail_url=f"https://plush-anvil.ru/images/organizers/{urllib.parse.quote(quiz.organizer)}.png",
-            thumbnail_height=180,
-            thumbnail_width=180
+            thumbnail_height=142,
+            thumbnail_width=142
         ))
 
     await query.answer(results, is_personal=False, cache_time=0)
