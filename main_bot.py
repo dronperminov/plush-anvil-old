@@ -145,7 +145,7 @@ async def handle_poll(message: types.Message) -> None:
 
 @dp.message(Command("story"))
 async def handle_story(message: types.Message) -> None:
-    if message.chat.id != target_group_id:
+    if message.chat.id not in [target_group_id, message.from_user.id]:
         return await send_error(message, "Команда story недоступна для этого чата", delete_message=True)
 
     quiz_ids = re.split(r",\s+", re.sub(r"^/story\s*", "", message.text))
