@@ -7,8 +7,9 @@ import tempfile
 import urllib
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import List, Optional
 
+import aioschedule as aioschedule
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters.command import Command
 from aiogram.types import FSInputFile, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
@@ -64,6 +65,42 @@ async def unpin_old_polls() -> None:
             await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
 
     database.tg_quiz_messages.delete_many({"quiz_id": {"$in": quiz_ids}})
+
+
+def get_remind_quizzes() -> List[dict]:
+    today = datetime.now()
+    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
+    end_date = datetime(today.year, today.month, today.day, 23, 59, 59)
+    return list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+
+
+async def send_remind(quizzes: List[dict]) -> None:
+    if not quizzes:
+        return
+
+    messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
+
+    if len(quizzes) == 1:
+        quiz = quizzes[0]
+        lines = [
+            f'Напоминаю, что сегодня квиз "{quiz["name"]}" в <b>{quiz["time"]}</b>',
+            f'<b>Место проведения</b>: {quiz["place"]}',
+            f'<b>Стоимость</b>: {quiz["cost"]} руб\n',
+            'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
+        ]
+
+        kwargs = {"reply_to_message_id": messages[quiz["_id"]]["message_id"]} if quiz["_id"] in messages else {}
+        await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True, **kwargs)
+    else:
+        lines = ["Напоминаю, что сегодня проходят следующие квизы:\n"]
+        for quiz in quizzes:
+            name = f'<a href="{messages[quiz["_id"]]["url"]}">{quiz["name"]}</a>' if quiz["_id"] in messages else quiz["name"]
+            lines.append(f'- {name} в <b>{quiz["time"]}</b>\n<b>Место проведения</b>: {quiz["place"]}\n<b>Стоимость</b>: {quiz["cost"]} руб\n')
+
+        lines.append('Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>')
+        await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
+
+    await unpin_old_polls()
 
 
 @dp.message(Command("get_id"))
@@ -183,38 +220,13 @@ async def handle_remind(message: types.Message) -> None:
     if message.chat.id != target_group_id:
         return await send_error(message, "Команда remind недоступна для этого чата", delete_message=True)
 
-    today = datetime.now()
-    start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
-    end_date = datetime(today.year, today.month, today.day, 23, 59, 59)
-    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+    quizzes = get_remind_quizzes()
 
     if not quizzes:
         return await send_error(message, "Слишком рано для напоминания, сегодня нет никаких квизов", delete_message=True)
 
-    messages = {message["quiz_id"]: message for message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
     await message.delete()
-
-    if len(quizzes) == 1:
-        quiz = quizzes[0]
-        lines = [
-            f'Напоминаю, что сегодня квиз "{quiz["name"]}" в <b>{quiz["time"]}</b>',
-            f'<b>Место проведения</b>: {quiz["place"]}',
-            f'<b>Стоимость</b>: {quiz["cost"]} руб\n',
-            'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
-        ]
-
-        kwargs = {"reply_to_message_id": messages[quiz["_id"]]["message_id"]} if quiz["_id"] in messages else {}
-        await message.answer(text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True, **kwargs)
-    else:
-        lines = ["Напоминаю, что сегодня проходят следующие квизы:\n"]
-        for quiz in quizzes:
-            name = f'<a href="{messages[quiz["_id"]]["url"]}">{quiz["name"]}</a>' if quiz["_id"] in messages else quiz["name"]
-            lines.append(f'- {name} в <b>{quiz["time"]}</b>\n<b>Место проведения</b>: {quiz["place"]}\n<b>Стоимость</b>: {quiz["cost"]} руб\n')
-
-        lines.append('Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>')
-        await message.answer(text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
-
-    await unpin_old_polls()
+    await send_remind(quizzes)
 
 
 @dp.message(Command("clear"))
@@ -307,8 +319,29 @@ async def handle_inline_story(query: InlineQuery) -> None:
     await query.answer(results, is_personal=False, cache_time=0)
 
 
+async def scheduled_send_remind():
+    quizzes = get_remind_quizzes()
+    await send_remind(quizzes)
+
+
+async def scheduler():
+    aioschedule.every().day.at("10:00").do(scheduled_send_remind)
+
+    while True:
+        await aioschedule.run_pending()
+        await asyncio.sleep(1)
+
+
+async def run_scheduler():
+    asyncio.create_task(scheduler())
+
+
 async def main() -> None:
     database.connect()
+
+    loop = asyncio.get_event_loop()
+    loop.create_task(run_scheduler())
+
     await dp.start_polling(bot)
 
 

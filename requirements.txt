@@ -1,4 +1,5 @@
 aiogram<4.0
+aioschedule==0.5.2
 beautifulsoup4
 fastapi
 Jinja2
