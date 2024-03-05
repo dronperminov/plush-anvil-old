@@ -24,7 +24,7 @@
         .description { font-size: 28px; margin-bottom: 20px; width: 780px; }
 
         .place-price { font-size: 28px; }
-        .place { display: inline-block; background-color: #00a35c; margin-right: 6px; padding: 6px 16px; border-radius: 12px; font-weight: bold; }
+        .place { display: inline-block; margin-right: 6px; padding: 6px 16px; border-radius: 12px; font-weight: bold; }
         .price { display: inline-block; font-weight: bold; padding: 6px 0; text-align: right }
     </style>
     <div class="weekday">{{weekday}}</div>
@@ -42,7 +42,7 @@
                 <div class="name">{{quiz.name}}</div>
                 <div class="description">{{quiz.description}}</div>
                 <div class="place-price">
-                    <span class="place">{{quiz.place}} (м. {{places[quiz.place]["metro_station"]}})</span>
+                    <span class="place" style="background: {{places[quiz.place].color}}">{{quiz.place}} (м. {{places[quiz.place]["metro_station"]}})</span>
                     <span class="price">{{quiz.cost}}₽</span>
                 </div>
             </div>
