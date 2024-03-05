@@ -121,10 +121,11 @@ async def handle_start(message: types.Message) -> None:
         "Команды, которые я знаю:",
         "/info - отображение общей информации",
         "/rating - информация о текущем рейтинге Смузи",
+        "/schedule - получение актуального расписания",
         "/remind - напоминание про квиз (если в этот день есть квизы)",
         "",
         "А ещё админы могут:",
-        "- создавать опросы про квизы, написав `@plush_anvil_bot poll` и выбрав нужный квиз"
+        "- создавать опросы про квизы, написав `@plush_anvil_bot poll` и выбрав нужный квиз",
         "- создавать картинки с описанием для сториз, написав `@plush_anvil_bot story` и выбрав нужный квиз"
     ])
 
@@ -223,6 +224,22 @@ async def handle_story(message: types.Message) -> None:
 
         await message.delete()
         await bot.send_document(chat_id=message.from_user.id, document=photo_file, caption=caption)
+
+
+@dp.message(Command("schedule"))
+async def handle_schedule(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
+    if message.chat.id not in [target_group_id, message.from_user.id]:
+        return await send_error(message, "Команда schedule недоступна для этого чата", delete_message=True)
+
+    await message.delete()
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1280, 1020), output_path=tmp_dir)
+        hti.screenshot(url="https://plush-anvil.ru/schedule", save_as="schedule.png")
+
+        await bot.send_photo(chat_id=message.chat.id, photo=FSInputFile(os.path.join(tmp_dir, "schedule.png")))
 
 
 @dp.message(Command("remind"))

@@ -244,12 +244,14 @@ function BuildScheduleStatistics(schedule) {
     block.innerHTML = text + values.map(v => `<div class="schedule-statistic-row">${v}</div>`).join("")
 }
 
-function BuildSchedule(schedule, places, isAdmin) {
+function BuildSchedule(schedule, places, isAdmin, withStatistic = true) {
     UpdateScheduleMonth(schedule)
     BuildScedulePlaces(schedule, places)
     BuildScheduleCells(schedule, places, isAdmin)
     BuildScheduleDetails(schedule, places, isAdmin)
-    BuildScheduleStatistics(schedule)
+
+    if (withStatistic)
+        BuildScheduleStatistics(schedule)
 }
 
 function SwitchSchedule(link, isAdmin) {
@@ -272,7 +274,6 @@ let prevTime = 0
 
 function FixFontSizes(time) {
     if (time - prevTime > 100) {
-        console.log(time)
         prevTime = time
 
         for (let block of resizebleBlocks)

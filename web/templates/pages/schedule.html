@@ -1,0 +1,43 @@
+{% set title = "Расписание | Плюшевая наковальня" %}
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/index.css?v={{version}}">
+<style>.schedule { max-width: 1400px; } </style>
+</head>
+<body>
+    <div class="content">
+        <h3 class="schedule-month">
+            <svg class="schedule-control-icon hidden" width="25px" height="25px" viewBox="100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-prev-date">
+                <path d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z" />
+            </svg>
+
+            <span class="schedule-date" id="schedule-month"></span>
+
+            <svg class="schedule-control-icon hidden" width="25px" height="25px" viewBox="-100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-next-date">
+                <path d="M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z" />
+            </svg>
+        </h3>
+
+        <div class="error" id="schedule-error"></div>
+
+        <div class="schedule-places" id="schedule-places"></div>
+        <div class="scrollable" id="scrollable">
+            <div class="schedule" id="schedule">
+                <div class="schedule-cell schedule-weekday">Пн</div>
+                <div class="schedule-cell schedule-weekday">Вт</div>
+                <div class="schedule-cell schedule-weekday">Ср</div>
+                <div class="schedule-cell schedule-weekday">Чт</div>
+                <div class="schedule-cell schedule-weekday">Пт</div>
+                <div class="schedule-cell schedule-weekday">Сб</div>
+                <div class="schedule-cell schedule-weekday">Вс</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/fetch.js?v={{version}}"></script>
+    <script src="/js/utils.js?v={{version}}"></script>
+    <script src="/js/index.js?v={{version}}"></script>
+    <script>
+        BuildSchedule({{schedule|tojson()}}, {{places|tojson()}}, false, false)
+    </script>
+</body>
+</html>
