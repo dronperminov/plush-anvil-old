@@ -22,7 +22,6 @@ from src.database import database
 from src.dataclasses.quiz import Quiz
 from src.utils.common import get_places, get_smuzi_rating
 
-admin_usernames = ["dronperminov", "Sobolyulia", "perminova_sd"]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -100,7 +99,29 @@ async def send_remind(quizzes: List[dict]) -> None:
         lines.append('Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>')
         await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
 
-    await unpin_old_polls()
+
+async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: List[int]) -> None:
+    if not quizzes or not chat_ids:
+        return
+
+    tg_messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": quiz_ids}})}
+    caption = "\n".join([f'{quiz.name}: {tg_messages[quiz_id]["url"] if quiz_id in tg_messages else ""}' for quiz_id, quiz in zip(quiz_ids, quizzes)])
+
+    date = quizzes[0].date
+    weekday = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"][date.weekday()]
+    month = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"][date.month - 1]
+
+    template = templates.get_template("pages/story.html")
+    html = template.render(weekday=weekday, date=f"{date.day} {month}", quizzes=quizzes, places=get_places())
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        filename = f"story_{date.day}_{month}.png"
+        hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1080, 1920), output_path=tmp_dir)
+        hti.screenshot(html_str=html, save_as=filename)
+        photo_file = FSInputFile(os.path.join(tmp_dir, filename))
+
+        for chat_id in chat_ids:
+            await bot.send_document(chat_id=chat_id, document=photo_file, caption=caption)
 
 
 @dp.message(Command("get_id"))
@@ -168,7 +189,7 @@ async def handle_poll(message: types.Message) -> None:
     if message.chat.id != target_group_id:
         return await send_error(message, "Команда poll недоступна для этого чата", delete_message=True)
 
-    if message.from_user.username not in admin_usernames:
+    if message.from_user.username not in config["admin_usernames"]:
         return await send_error(message, f"Команда poll недоступна для пользователя @{message.from_user.username}", delete_message=True)
 
     quiz_id = re.sub(r"^/poll\s*", "", message.text)
@@ -205,25 +226,8 @@ async def handle_story(message: types.Message) -> None:
     if none_quizzes := [f'"{quiz_id}"' for quiz_id, quiz in zip(quiz_ids, quizzes) if quiz is None]:
         return await send_error(message, f'Не удалось найти некоторые квизы ({", ".join(none_quizzes)})', delete_message=True)
 
-    quiz_ids = [ObjectId(quiz_id) for quiz_id in quiz_ids]
-    tg_messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": quiz_ids}})}
-
-    caption = "\n".join([f'{quiz.name}: {tg_messages[quiz_id]["url"] if quiz_id in tg_messages else ""}' for quiz_id, quiz in zip(quiz_ids, quizzes)])
-
-    date = quizzes[0].date
-    weekday = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"][date.weekday()]
-    month = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"][date.month - 1]
-
-    template = templates.get_template("pages/story.html")
-    html = template.render(weekday=weekday, date=f"{date.day} {month}", quizzes=quizzes, places=get_places())
-
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1080, 1920), output_path=tmp_dir)
-        hti.screenshot(html_str=html, save_as="story.png")
-        photo_file = FSInputFile(os.path.join(tmp_dir, "story.png"))
-
-        await message.delete()
-        await bot.send_document(chat_id=message.from_user.id, document=photo_file, caption=caption)
+    await message.delete()
+    await send_story(quizzes, [ObjectId(quiz_id) for quiz_id in quiz_ids], [message.from_user.id])
 
 
 @dp.message(Command("schedule"))
@@ -258,17 +262,6 @@ async def handle_remind(message: types.Message) -> None:
     await send_remind(quizzes)
 
 
-@dp.message(Command("clear"))
-async def handle_clear(message: types.Message) -> None:
-    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
-
-    if message.chat.id != target_group_id:
-        return await send_error(message, "Команда clear недоступна для этого чата", delete_message=True)
-
-    await message.delete()
-    await unpin_old_polls()
-
-
 @dp.inline_query(F.query == "info")
 async def handle_inline_info(query: InlineQuery) -> None:
     logger.info(f"Inline command info from user {query.from_user.username} ({query.from_user.id})")
@@ -296,7 +289,7 @@ async def handle_inline_info(query: InlineQuery) -> None:
 async def handle_inline_poll(query: InlineQuery) -> None:
     logger.info(f"Inline command poll from user {query.from_user.username} ({query.from_user.id})")
 
-    if query.from_user.username not in admin_usernames:
+    if query.from_user.username not in config["admin_usernames"]:
         return
 
     today = datetime.now()
@@ -357,8 +350,16 @@ async def scheduled_send_remind() -> None:
     await send_remind(quizzes)
 
 
+async def scheduled_send_story() -> None:
+    quizzes = get_remind_quizzes()
+    await send_story([Quiz.from_dict(quiz) for quiz in quizzes], [quiz["_id"] for quiz in quizzes], config.get("story_user_ids", []))
+    await unpin_old_polls()
+
+
 async def scheduler() -> None:
-    aioschedule.every().day.at("10:00").do(scheduled_send_remind)
+    scheduled_time = config["schedule_time"]
+    aioschedule.every().day.at(scheduled_time["remind"]).do(scheduled_send_remind)
+    aioschedule.every().day.at(scheduled_time["story"]).do(scheduled_send_story)
 
     while True:
         await aioschedule.run_pending()
