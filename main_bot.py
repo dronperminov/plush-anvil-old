@@ -12,7 +12,7 @@ from typing import List, Optional
 import aioschedule as aioschedule
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters.command import Command
-from aiogram.types import FSInputFile, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
+from aiogram.types import FSInputFile, InlineQuery, InlineQueryResultArticle, InputMediaPhoto, InputTextMessageContent
 from bson import ObjectId
 from bson.errors import InvalidId
 from html2image import Html2Image
@@ -122,6 +122,12 @@ async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: Li
 
         for chat_id in chat_ids:
             await bot.send_document(chat_id=chat_id, document=photo_file, caption=caption)
+
+
+def make_schedule_picture(output_path: str) -> str:
+    hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1280, 1020), output_path=output_path)
+    hti.screenshot(url="https://plush-anvil.ru/schedule", save_as="schedule.png")
+    return os.path.join(output_path, "schedule.png")
 
 
 @dp.message(Command("get_id"))
@@ -239,11 +245,11 @@ async def handle_schedule(message: types.Message) -> None:
 
     await message.delete()
 
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1280, 1020), output_path=tmp_dir)
-        hti.screenshot(url="https://plush-anvil.ru/schedule", save_as="schedule.png")
+    if message.chat.id == target_group_id:
+        return await scheduled_update_schedule()
 
-        await bot.send_photo(chat_id=message.chat.id, photo=FSInputFile(os.path.join(tmp_dir, "schedule.png")))
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        await bot.send_photo(chat_id=message.chat.id, photo=FSInputFile(make_schedule_picture(tmp_dir)), caption="Актуальное расписание")
 
 
 @dp.message(Command("remind"))
@@ -356,10 +362,33 @@ async def scheduled_send_story() -> None:
     await unpin_old_polls()
 
 
+async def scheduled_update_schedule() -> None:
+    today = datetime.now()
+    caption = f"Расписание (обновлено {today.day:02}.{today.month:02d}.{today.year} в {today.hour:02d}:{today.minute:02d})"
+    tg_message = database.tg_messages.find_one({"name": "schedule"})
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        photo = FSInputFile(make_schedule_picture(tmp_dir))
+
+        if tg_message:
+            try:
+                await bot.edit_message_media(InputMediaPhoto(media=photo, caption=caption), chat_id=target_group_id, message_id=tg_message["message_id"])
+            except Exception as e:
+                if "message to edit not found" in str(e):
+                    tg_message = None
+                    database.tg_messages.delete_one({"name": "schedule"})
+
+        if not tg_message:
+            message = await bot.send_photo(chat_id=target_group_id, photo=photo, caption=caption)
+            await message.pin()
+            database.tg_messages.insert_one({"name": "schedule", "message_id": message.message_id})
+
+
 async def scheduler() -> None:
     scheduled_time = config["schedule_time"]
     aioschedule.every().day.at(scheduled_time["remind"]).do(scheduled_send_remind)
     aioschedule.every().day.at(scheduled_time["story"]).do(scheduled_send_story)
+    aioschedule.every().day.at(scheduled_time["schedule"]).do(scheduled_update_schedule)
 
     while True:
         await aioschedule.run_pending()
