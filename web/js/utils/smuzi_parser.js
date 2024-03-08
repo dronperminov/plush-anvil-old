@@ -21,7 +21,7 @@ SmuziParser.prototype.GetRegexp = function() {
 SmuziParser.prototype.MatchToQuiz = function(match) {
     let day = match.groups.day.padStart(2, '0')
     let month = `${this.months.indexOf(match.groups.month.toLowerCase()) + 1}`.padStart(2, '0')
-    let name = match.groups.name.replace(/\s*№\s*\d+(\.\d+)?[\.!]?/gi, "").trim()
+    let name = match.groups.name.replace(/\s*№\s*\d+(\.\d+)?[\.!]?|\.\s*$/gi, "").trim()
 
     return {
         line: match[0],
