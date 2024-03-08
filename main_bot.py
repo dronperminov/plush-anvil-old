@@ -127,6 +127,7 @@ async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: Li
 def make_schedule_picture(output_path: str) -> str:
     hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1280, 1020), output_path=output_path)
     hti.screenshot(url="https://plush-anvil.ru/schedule", save_as="schedule.png")
+    hti.screenshot(url="https://plush-anvil.ru/schedule", save_as="schedule.png")
     return os.path.join(output_path, "schedule.png")
 
 
