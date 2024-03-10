@@ -30,12 +30,16 @@ function ParseQuiz(date, quizId = "", withGameResult = false) {
         return null
 
     if (withGameResult) {
-        quizData.position = GetFormatTextField(`position${quizId}`, /^\d*$/g, "", "Позиция команды на квизе введена некорректно")
+        quizData.position = GetFormatTextField(`position${quizId}`, /^\d+$/g, "", "Позиция команды на квизе введена некорректно")
         if (quizData.position === null)
             return null
 
-        quizData.teams = GetFormatTextField(`teams${quizId}`, /^\d*$/g, "", "Количество команд на квизе введено некорректно")
+        quizData.teams = GetFormatTextField(`teams${quizId}`, /^\d+$/g, "", "Количество команд на квизе введено некорректно")
         if (quizData.teams === null)
+            return null
+
+        quizData.players = GetFormatTextField(`players${quizId}`, /^\d+$/g, "", "Количество игроков в команды введено некорректно")
+        if (quizData.players === null)
             return null
     }
 

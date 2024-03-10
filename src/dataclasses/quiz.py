@@ -16,6 +16,7 @@ class Quiz:
     cost: int
     position: int
     teams: int
+    players: int
 
     @classmethod
     def from_dict(cls: "Quiz", data: dict) -> "Quiz":
@@ -29,7 +30,8 @@ class Quiz:
             data["description"],
             data["cost"],
             data["position"],
-            data["teams"]
+            data["teams"],
+            data["players"]
         )
 
     def to_dict(self) -> dict:
@@ -43,7 +45,8 @@ class Quiz:
             "description": self.description,
             "cost": self.cost,
             "position": self.position,
-            "teams": self.teams
+            "teams": self.teams,
+            "players": self.players
         }
 
     def to_inline_title(self) -> str:

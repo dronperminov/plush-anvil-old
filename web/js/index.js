@@ -220,6 +220,9 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
 
                 if (quiz.position > 0)
                     MakeElement("quiz-details-description", content, {innerHTML: `<b>Результат игры:</b> ${quiz.position} / ${quiz.teams}`})
+
+                if (quiz.players > 0)
+                    MakeElement("quiz-details-description", content, {innerHTML: `<b>Количество игроков:</b> ${quiz.players}`})
             }
         }
     }

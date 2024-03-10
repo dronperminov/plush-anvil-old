@@ -28,6 +28,7 @@ class QuizAddForm:
     cost: int = Body(..., embed=True)
     position: int = Body(0, embed=True)
     teams: int = Body(0, embed=True)
+    players: int = Body(0, embed=True)
 
 
 @dataclass
@@ -91,6 +92,9 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
     if quiz_params.position > quiz_params.teams:
         return JSONResponse({"status": constants.ERROR, "message": "Позиция команды не может быть больше, чем количество команд"})
 
+    if quiz_params.players < 0:
+        return JSONResponse({"status": constants.ERROR, "message": "Количество игроков команды не может быть отрицательным"})
+
     quiz = Quiz.from_dict({
         "name": quiz_params.name,
         "short_name": quiz_params.short_name,
@@ -101,7 +105,8 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
         "description": quiz_params.description,
         "cost": quiz_params.cost,
         "position": quiz_params.position,
-        "teams": quiz_params.teams
+        "teams": quiz_params.teams,
+        "players": quiz_params.players
     })
 
     database.quizzes.insert_one(quiz.to_dict())
@@ -141,6 +146,9 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
     if quiz_params.position > quiz_params.teams:
         return JSONResponse({"status": constants.ERROR, "message": "Позиция команды не может быть больше, чем количество команд"})
 
+    if quiz_params.players < 0:
+        return JSONResponse({"status": constants.ERROR, "message": "Количество игроков команды не может быть отрицательным"})
+
     quiz = Quiz.from_dict({
         "name": quiz_params.name,
         "short_name": quiz_params.short_name,
@@ -151,7 +159,8 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
         "description": quiz_params.description,
         "cost": quiz_params.cost,
         "position": quiz_params.position,
-        "teams": quiz_params.teams
+        "teams": quiz_params.teams,
+        "players": quiz_params.players
     })
 
     database.quizzes.update_one({"_id": ObjectId(quiz_params.quiz_id)}, {"$set": quiz.to_dict()})
