@@ -131,6 +131,14 @@ def make_schedule_picture(output_path: str) -> str:
     return os.path.join(output_path, "schedule.png")
 
 
+def get_rating_text(rating: dict) -> str:
+    return "\n".join([
+        f'<b>Рейтинг смузи</b>: {rating["score"]} ({rating["info"]["level"]} уровень, {rating["info"]["name"]})',
+        "",
+        "Пост с рейтингом: https://vk.com/smuzi_msk?w=wall-164592450_73696"
+    ])
+
+
 @dp.message(Command("get_id"))
 async def log(message: types.Message) -> None:
     logger.info(f"Chat id: {message.chat.id}")
@@ -184,9 +192,8 @@ async def handle_info(message: types.Message) -> None:
 async def handle_rating(message: types.Message) -> None:
     logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
 
-    rating = get_smuzi_rating()
     await message.delete()
-    await message.answer(f"<b>Рейтинг Смузи</b>: {rating}", parse_mode="HTML")
+    await message.answer(get_rating_text(get_smuzi_rating()), parse_mode="HTML")
 
 
 @dp.message(Command("poll"))
@@ -277,7 +284,7 @@ async def handle_inline_info(query: InlineQuery) -> None:
 
     items = [
         {"title": "Сайт", "description": "plush-anvil.ru", "text": "<b>Сайт</b>: plush-anvil.ru"},
-        {"title": "Рейтинг смузи", "description": f"{rating}", "text": f"<b>Рейтинг смузи</b>: {rating}"},
+        {"title": "Рейтинг смузи", "description": f'{rating["score"]} ({rating["info"]["name"]})', "text": get_rating_text(rating)},
         {"title": "УМ тренировки", "description": "music-quiz.plush-anvil.ru", "text": "<b>Сайт для УМ тренировок</b>: music-quiz.plush-anvil.ru"},
         {"title": "КМС тренировки", "description": "movie-quiz.plush-anvil.ru", "text": "<b>Сайт для КМС тренировок</b>: movie-quiz.plush-anvil.ru"}
     ]

@@ -8,7 +8,7 @@
     <div class="first-screen">
         <h1>КОМАНДА ПЛЮШЕВАЯ НАКОВАЛЬНЯ</h1>
 
-        <div class="first-screen-rating">РЕЙТИНГ СМУЗИ: {{ smuzi_rating }}</div>
+        <div class="first-screen-rating">РЕЙТИНГ СМУЗИ: {{ smuzi_rating.score }} ({{smuzi_rating.info.level}} уровень, {{smuzi_rating.info.name}})</div>
 
         {% if next_quizzes1 %}
         <div class="first-screen-quiz">

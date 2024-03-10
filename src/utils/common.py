@@ -12,6 +12,7 @@ import cv2
 from fastapi import UploadFile
 
 from src import constants
+from src.constants import SMUZI_POSITION_TO_SCORE, SMUZI_RATING_TO_NAME
 from src.database import database
 
 
@@ -144,11 +145,11 @@ def get_date2quizzes(quizzes: List[dict]) -> Dict[datetime, List[dict]]:
     return date2quizzes
 
 
-def get_smuzi_rating() -> int:
-    position2score = {1: 100, 2: 95, 3: 90, 4: 85, 5: 80, 6: 75, 7: 70, 8: 65, 9: 60, 10: 58, 11: 56, 12: 54, 13: 53, 14: 52, 15: 51}
+def get_smuzi_rating() -> dict:
     quizzes = database.quizzes.find({"date": {"$gte": datetime(2024, 1, 1)}, "position": {"$ne": 0}, "organizer": "Смузи"})
-    rating = sum([position2score.get(quiz["position"], 50) for quiz in quizzes])
-    return rating
+    rating = sum([SMUZI_POSITION_TO_SCORE.get(quiz["position"], 50) for quiz in quizzes])
+    info = max([(info, score) for score, info in SMUZI_RATING_TO_NAME.items() if rating >= score], key=lambda v: v[1], default=(None, 0))[0]
+    return {"score": rating, "info": info}
 
 
 def get_schedule(schedule_date: datetime) -> dict:
