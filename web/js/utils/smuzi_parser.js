@@ -6,6 +6,7 @@ function SmuziParser(places, year) {
 }
 
 SmuziParser.prototype.GetRegexp = function() {
+    let start = "[^\\d]{0,5}"
     let day = "(?<day>\\d\\d?)"
     let month = `(?<month>${this.months.join("|")})`
     let weekday = `(?<weekday>${this.weekdays.join("|")})`
@@ -15,7 +16,7 @@ SmuziParser.prototype.GetRegexp = function() {
     let description = "(?<description>.+?)"
     let questions = "(?<questions>\\d+ вопро[а-я]+)"
     let cost = "((?<cost>\\d+) рублей с (человека|игрока)\\s*)?\\)\\s*.?\\s*"
-    return new RegExp(`^${day}\\s*${month}\\s+\\(?${weekday}\\)\\s+${time}\\s+[/(]${place}[\\)]\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?$`, "gim")
+    return new RegExp(`^${start}${day}\\s*${month}\\s+\\(?${weekday}\\)\\s+${time}\\s+[/(]${place}[\\)]\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?$`, "gim")
 }
 
 SmuziParser.prototype.MatchToQuiz = function(match) {
