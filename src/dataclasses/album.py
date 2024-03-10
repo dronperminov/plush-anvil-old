@@ -20,7 +20,7 @@ class Album:
         album_id = data["album_id"]
         photos = data.get("photos", [])
         date = data["date"]
-        cleared_title = re.sub(r"[ \-]", "_", title)
+        cleared_title = re.sub(r"[ \-/]", "_", title)
         url = data.get("url", f"/albums/{album_id}-{cleared_title}")
         quiz_id = data.get("quiz_id", "")
         preview_url = data.get("preview_url", "")
