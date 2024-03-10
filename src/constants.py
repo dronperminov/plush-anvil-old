@@ -59,15 +59,15 @@ SMUZI_POSITION_TO_SCORE = {
     15: 51
 }
 
-SMUZI_RATING_TO_NAME = {
-    300: {"name": "новички", "level": 1, "color_name": "зелёный"},
-    600: {"name": "любители", "level": 2, "color_name": "жёлтый"},
-    1200: {"name": "мастера", "level": 3, "color_name": "оранжевый"},
-    2500: {"name": "профи", "level": 4, "color_name": "красный"},
-    5000: {"name": "эксперты", "level": 5, "color_name": "фиолетовый"},
-    10000: {"name": "гуру", "level": 6, "color_name": "бронзовый"},
-    15000: {"name": "виртуозы", "level": 7, "color_name": "серебряный"},
-    20000: {"name": "чемпионы", "level": 8, "color_name": "золотой"},
-    30000: {"name": "титаны", "level": 9, "color_name": "чёрный"},
-    50000: {"name": "динозавры", "level": 10, "color_name": "смузи"}
-}
+SMUZI_RATING_TO_NAME = [
+    {"score": 300, "name": "новички", "level": 1, "color_name": "зелёный"},
+    {"score": 600, "name": "любители", "level": 2, "color_name": "жёлтый"},
+    {"score": 1200, "name": "мастера", "level": 3, "color_name": "оранжевый"},
+    {"score": 2500, "name": "профи", "level": 4, "color_name": "красный"},
+    {"score": 5000, "name": "эксперты", "level": 5, "color_name": "фиолетовый"},
+    {"score": 10000, "name": "гуру", "level": 6, "color_name": "бронзовый"},
+    {"score": 15000, "name": "виртуозы", "level": 7, "color_name": "серебряный"},
+    {"score": 20000, "name": "чемпионы", "level": 8, "color_name": "золотой"},
+    {"score": 30000, "name": "титаны", "level": 9, "color_name": "чёрный"},
+    {"score": 50000, "name": "динозавры", "level": 10, "color_name": "смузи"}
+]

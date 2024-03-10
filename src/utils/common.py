@@ -145,11 +145,33 @@ def get_date2quizzes(quizzes: List[dict]) -> Dict[datetime, List[dict]]:
     return date2quizzes
 
 
+def get_word_form(count: int, word_forms: List[str]) -> str:
+    if count % 10 in {0, 5, 6, 7, 8, 9} or count % 100 in {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}:
+        return f"{count} {word_forms[0]}"
+
+    if count % 10 in {2, 3, 4}:
+        return f"{count} {word_forms[1]}"
+
+    return f"{count} {word_forms[2]}"
+
+
 def get_smuzi_rating() -> dict:
-    quizzes = database.quizzes.find({"date": {"$gte": datetime(2024, 1, 1)}, "position": {"$ne": 0}, "organizer": "Смузи"})
-    rating = sum([SMUZI_POSITION_TO_SCORE.get(quiz["position"], 50) for quiz in quizzes])
-    info = max([(info, score) for score, info in SMUZI_RATING_TO_NAME.items() if rating >= score], key=lambda v: v[1], default=(None, 0))[0]
-    return {"score": rating, "info": info}
+    quizzes = list(database.quizzes.find({"date": {"$gte": datetime(2024, 1, 1)}, "position": {"$ne": 0}, "organizer": "Смузи"}).sort("date", 1))
+    rating = 0
+    level = -1
+    players = []
+    history = []
+
+    for quiz in quizzes:
+        rating += SMUZI_POSITION_TO_SCORE.get(quiz["position"], 50)
+        players.append(quiz.get("players", 0))
+
+        if rating >= SMUZI_RATING_TO_NAME[level + 1]["score"]:
+            level += 1
+            history.append({"date": quiz["date"], "score": rating, "players": players, "mean_players": sum(players) / len(players)})
+            players = []
+
+    return {"score": rating, "info": SMUZI_RATING_TO_NAME[level], "players": players, "mean_players": sum(players) / len(players), "history": history}
 
 
 def get_schedule(schedule_date: datetime) -> dict:
