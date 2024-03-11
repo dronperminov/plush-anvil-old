@@ -171,7 +171,7 @@ def get_smuzi_rating() -> dict:
             history.append({"date": quiz["date"], "score": rating, "players": players, "mean_players": sum(players) / len(players)})
             players = []
 
-    return {"score": rating, "info": SMUZI_RATING_TO_NAME[level], "players": players, "mean_players": sum(players) / len(players), "history": history}
+    return {"score": rating, "info": SMUZI_RATING_TO_NAME[level], "players": players, "mean_players": sum(players) / max(len(players), 1), "history": history}
 
 
 def get_schedule(schedule_date: datetime) -> dict:

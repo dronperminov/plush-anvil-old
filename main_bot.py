@@ -140,15 +140,15 @@ def get_rating_text(rating: dict) -> str:
         games = get_word_form(len(info["players"]), ["игр", "игры", "игра"])
         history.append(f'- <b>{level}</b>: достигли {date} с рейтингом {info["score"]} за {games}, игроков в среднем: {info["mean_players"]:.1f}')
 
-    return "\n".join([
-        f'<b>Рейтинг смузи</b>: {rating["score"]} ({rating["info"]["level"]} уровень, {rating["info"]["name"]})',
-        f'<b>Среднее количество игроков</b>: {rating["mean_players"]:.1f} ({get_word_form(len(rating["players"]), ["игр", "игры", "игра"])})',
-        "",
-        "<b>История получения уровней</b>:",
-        *history,
-        "",
-        "Пост с информацией про рейтинг: https://vk.com/smuzi_msk?w=wall-164592450_73696"
-    ])
+    lines = [f'<b>Рейтинг смузи</b>: {rating["score"]} ({rating["info"]["level"]} уровень, {rating["info"]["name"]})']
+
+    if rating["players"]:
+        lines.append(f'<b>Среднее количество игроков</b>: {rating["mean_players"]:.1f} ({get_word_form(len(rating["players"]), ["игр", "игры", "игра"])})')
+
+    lines.append("\n<b>История получения уровней</b>:")
+    lines.extend(history)
+    lines.append("\nПост с информацией про рейтинг: https://vk.com/smuzi_msk?w=wall-164592450_73696")
+    return "\n".join(lines)
 
 
 @dp.message(Command("get_id"))
