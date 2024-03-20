@@ -61,7 +61,10 @@ async def unpin_old_polls() -> None:
 
     for tg_message in tg_messages:
         if tg_message["quiz_id"] in quiz_ids:
-            await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
+            try:
+                await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
+            except Exception as error:
+                logger.info(f"Raised exception during unpin old polls: {error}")
 
     database.tg_quiz_messages.delete_many({"quiz_id": {"$in": quiz_ids}})
 
@@ -78,6 +81,11 @@ async def send_remind(quizzes: List[dict]) -> None:
         return
 
     messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
+    final_line = 'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
+    today = datetime.now()
+
+    if today.year == 2024 and today.month == 3 and 17 <= today.day <= 26:
+        final_line = 'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/dronperminov">Андрею</a>'
 
     if len(quizzes) == 1:
         quiz = quizzes[0]
@@ -85,7 +93,7 @@ async def send_remind(quizzes: List[dict]) -> None:
             f'Напоминаю, что сегодня квиз "{quiz["name"]}" в <b>{quiz["time"]}</b>',
             f'<b>Место проведения</b>: {quiz["place"]}',
             f'<b>Стоимость</b>: {quiz["cost"]} руб\n',
-            'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
+            final_line
         ]
 
         kwargs = {"reply_to_message_id": messages[quiz["_id"]]["message_id"]} if quiz["_id"] in messages else {}
@@ -96,7 +104,7 @@ async def send_remind(quizzes: List[dict]) -> None:
             name = f'<a href="{messages[quiz["_id"]]["url"]}">{quiz["name"]}</a>' if quiz["_id"] in messages else quiz["name"]
             lines.append(f'- {name} в <b>{quiz["time"]}</b>\n<b>Место проведения</b>: {quiz["place"]}\n<b>Стоимость</b>: {quiz["cost"]} руб\n')
 
-        lines.append('Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>')
+        lines.append(final_line)
         await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
 
 
