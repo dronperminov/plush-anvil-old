@@ -50,23 +50,46 @@ class Quiz:
         }
 
     def to_inline_title(self) -> str:
-        name = re.sub(r"\.$", "", self.name)
-        return f"{self.date.day:02d}.{self.date.month:02d} {name}"
+        return f"{self.date.day:02d}.{self.date.month:02d} {self.name}"
 
     def to_inline_description(self) -> str:
         weekday_description = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"][self.date.weekday()]
         return f"{weekday_description}, {self.time}\n{self.place} {self.cost} руб."
 
     def to_poll_title(self, places: Dict[str, dict]) -> str:
-        name, short_name = re.sub(r"\.$", "", self.name), re.sub(r"\n+", " ", self.short_name)
-        weekday = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"][self.date.weekday()]
-
-        header_date = f"{self.date.day:02d}.{self.date.month:02d} {weekday} {self.time}"
+        header_date = self.__get_header_date()
         header_place = f'{self.place} (м. {places[self.place]["metro_station"]}) {self.cost} руб.'
-
-        poll_title = f"{header_date} {name}. {header_place}"
+        poll_title = f"{header_date} {self.name}. {header_place}"
 
         if len(poll_title) >= 240:
-            poll_title = f"{header_date} {short_name}. {header_place}"
+            poll_title = f"{header_date} {self.__clear_short_name()}. {header_place}"
 
         return poll_title
+
+    def to_poll_option(self, places: Dict[str, dict]) -> str:
+        header_date = self.__get_header_date()
+        header_place = f'{self.place} (м. {places[self.place]["metro_station"]})'
+        poll_option = f"{header_date} {self.name}. {header_place}"
+        short_name = self.__clear_short_name()
+
+        if len(poll_option) > 100:
+            poll_option = f"{header_date} {short_name}. {header_place}"
+
+        if len(poll_option) > 100:
+            poll_option = f"{header_date} {short_name}. {self.place}"
+
+        if len(poll_option) > 100:
+            max_len = 95 - len(header_date) - len(self.place)
+            poll_option = f"{header_date} {short_name[:max_len]}... {self.place}"
+
+        return poll_option
+
+    def __get_header_date(self) -> str:
+        weekday = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"][self.date.weekday()]
+        return f"{self.date.day:02d}.{self.date.month:02d} {weekday} {self.time}"
+
+    def __clear_short_name(self) -> str:
+        short_name = re.sub("<br>", " ", self.short_name)
+        short_name = re.sub(r"\s+", " ", short_name)
+        short_name = re.sub(r"</?span[^>]*?>", "", short_name)
+        return short_name

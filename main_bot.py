@@ -1,4 +1,5 @@
 import asyncio
+import calendar
 import json
 import logging
 import os
@@ -7,7 +8,7 @@ import tempfile
 import urllib
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import aioschedule as aioschedule
 from aiogram import Bot, Dispatcher, F, types
@@ -17,6 +18,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from html2image import Html2Image
 
+from src import constants
 from src.api import templates
 from src.constants import SMUZI_RATING_TO_NAME
 from src.database import database
@@ -73,7 +75,22 @@ def get_remind_quizzes() -> List[dict]:
     today = datetime.now()
     start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
     end_date = datetime(today.year, today.month, today.day, 23, 59, 59)
-    return list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+    return list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}).sort([("date", 1), ("time", 1)]))
+
+
+def get_pred_quizzes() -> Tuple[str, List[dict]]:
+    today = datetime.now()
+
+    if today.day <= 10:
+        start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
+    else:
+        _, num_days = calendar.monthrange(today.year, today.month)
+        start_date = datetime(today.year, today.month, 1, 0, 0, 0) + timedelta(days=num_days)
+
+    _, num_days = calendar.monthrange(start_date.year, start_date.month)
+    end_date = datetime(start_date.year, start_date.month, num_days, 23, 59, 59)
+
+    return constants.MONTH_TO_RUS[start_date.month], list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}).sort([("date", 1), ("time", 1)]))
 
 
 async def send_remind(quizzes: List[dict]) -> None:
@@ -294,6 +311,36 @@ async def handle_remind(message: types.Message) -> None:
 
     await message.delete()
     await send_remind(quizzes)
+
+
+@dp.message(Command("pred_poll"))
+async def handle_pred_poll(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
+    if message.chat.id not in [target_group_id, message.from_user.id]:
+        return await send_error(message, "Команда pred_poll недоступна для этого чата", delete_message=True)
+
+    if message.from_user.username not in config["admin_usernames"]:
+        return await send_error(message, f"Команда pred_poll недоступна для пользователя @{message.from_user.username}", delete_message=True)
+
+    month, quizzes = get_pred_quizzes()
+
+    if not quizzes:
+        return await send_error(message, f"Квизы для формирования предварительных опросов на {month} отсутствуют", delete_message=True)
+
+    await message.delete()
+
+    places = get_places()
+    parts = (len(quizzes) + constants.LAST_POLL_OPTION - 1) // constants.LAST_POLL_OPTION
+
+    for part in range(parts):
+        parts_text = f". Часть {part + 1} / {parts}" if parts > 1 else ""
+        question = f"{month.title()}, голосуем за те квизы, куда хотели бы пойти{parts_text}"
+        partial_quizzes = [Quiz.from_dict(quiz) for quiz in quizzes[part * constants.LAST_POLL_OPTION:(part + 1) * constants.LAST_POLL_OPTION]]
+        options = [quiz.to_poll_option(places) for quiz in partial_quizzes] + ["Никуда"]
+
+        poll = await message.answer_poll(question=question, options=options, is_anonymous=False, allows_multiple_answers=True)
+        await poll.pin(disable_notification=True)
 
 
 @dp.inline_query(F.query == "info")

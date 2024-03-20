@@ -15,6 +15,7 @@ ERROR = "error"
 SUCCESS = "success"
 
 CROP_IMAGE_SIZE = 200
+LAST_POLL_OPTION = 9
 
 MONTH_TO_RUS = {
     1: "январь",
