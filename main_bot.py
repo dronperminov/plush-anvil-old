@@ -23,7 +23,7 @@ from src.api import templates
 from src.constants import SMUZI_RATING_TO_NAME
 from src.database import database
 from src.dataclasses.quiz import Quiz
-from src.utils.common import get_places, get_smuzi_rating, get_word_form
+from src.utils.common import get_month_dates, get_places, get_smuzi_rating, get_word_form
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -99,10 +99,6 @@ async def send_remind(quizzes: List[dict]) -> None:
 
     messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
     final_line = 'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
-    today = datetime.now()
-
-    if today.year == 2024 and today.month == 3 and 17 <= today.day <= 26:
-        final_line = 'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/dronperminov">Андрею</a>'
 
     if len(quizzes) == 1:
         quiz = quizzes[0]
@@ -422,6 +418,32 @@ async def handle_inline_story(query: InlineQuery) -> None:
 
         input_content = InputTextMessageContent(message_text=f"/story {quiz_ids}")
         results.append(InlineQueryResultArticle(id=f"story_{i}", title=date, description=description, input_message_content=input_content))
+
+    await query.answer(results, is_personal=False, cache_time=0)
+
+
+@dp.inline_query(F.query == "list")
+async def handke_inline_list(query: InlineQuery) -> None:
+    today = datetime.now()
+    curr_start, curr_end = get_month_dates(today)
+
+    dates = [
+        (datetime(today.year, today.month, today.day, 0, 0, 0), curr_end),
+        get_month_dates(curr_end + timedelta(days=1))
+    ]
+
+    results = []
+    for start_date, end_date in dates:
+        quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}).sort([("date", 1), ("time", 1)])]
+        if not quizzes:
+            continue
+
+        month = constants.MONTH_TO_RUS[start_date.month]
+        title = f"Список квизов на {month}"
+        description = get_word_form(len(quizzes), ["квизов", "квиза", "квиз"])
+        content = "\n".join(quiz.to_inline_title() for quiz in quizzes)
+        input_content = InputTextMessageContent(message_text=f"{title}\n```\n{content}\n```", parse_mode="MarkdownV2")
+        results.append(InlineQueryResultArticle(id=f"list_{month}_{start_date.year}", title=title, description=description, input_message_content=input_content))
 
     await query.answer(results, is_personal=False, cache_time=0)
 

@@ -229,3 +229,10 @@ def get_schedule(schedule_date: datetime) -> dict:
 def get_places() -> Dict[str, dict]:
     places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
     return places
+
+
+def get_month_dates(date: datetime) -> Tuple[datetime, datetime]:
+    _, num_days = calendar.monthrange(date.year, date.month)
+    start_date = datetime(date.year, date.month, 1, 0, 0, 0)
+    end_date = start_date + timedelta(days=num_days)
+    return start_date, end_date
