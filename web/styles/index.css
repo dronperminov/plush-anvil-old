@@ -73,6 +73,19 @@ h1 {
     margin-bottom: 20px;
 }
 
+.schedule-list-icon {
+    stroke: #fff;
+    cursor: pointer;
+}
+
+.schedule-list-icon:hover {
+    stroke: #ffeb3b;
+}
+
+.schedule-list {
+    display: none;
+}
+
 .schedule-month {
     text-align: center;
     display: table;

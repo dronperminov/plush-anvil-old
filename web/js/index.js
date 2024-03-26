@@ -62,6 +62,12 @@ function FixFontSize(foreign, nameSpan) {
     }
 }
 
+function QuizToDate(quiz) {
+    let day = `${quiz.date.day}`.padStart(2, '0')
+    let month = `${quiz.date.month}`.padStart(2, '0')
+    return `${day}.${month}`
+}
+
 function QuizToName(quiz, count = 1) {
     let name = quiz.short_name
 
@@ -177,11 +183,9 @@ function CopyPollHeader(quiz, weekday, places) {
         "воскресенье": "Вс",
     }
 
-    let day = `${quiz.date.day}`.padStart(2, '0')
-    let month = `${quiz.date.month}`.padStart(2, '0')
     let name = quiz.name.replace(/\.$/g, "")
 
-    let headerDate = `${day}.${month} ${weekday2str[weekday]} ${quiz.time}`
+    let headerDate = `${QuizToDate(quiz)} ${weekday2str[weekday]} ${quiz.time}`
     let headerPlace = `${quiz.place} (м. ${places[quiz.place].metro_station}) ${quiz.cost} руб.`
     let headerLength = headerDate.length + headerPlace.length
 
@@ -228,6 +232,18 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
     }
 }
 
+function BuildScheduleList(schedule) {
+    let content = []
+
+    for (let row of schedule.calendar)
+        for (let cell of row)
+            for (let quiz of cell.quizzes)
+                content.push(`${QuizToDate(quiz)} ${quiz.name}`)
+
+    let list = document.getElementById("schedule-list")
+    list.innerHTML = content.join("<br>")
+}
+
 function BuildScheduleStatistics(schedule) {
     let statistics = schedule.statistics
     let values = []
@@ -252,6 +268,7 @@ function BuildSchedule(schedule, places, isAdmin, withStatistic = true) {
     BuildScedulePlaces(schedule, places)
     BuildScheduleCells(schedule, places, isAdmin)
     BuildScheduleDetails(schedule, places, isAdmin)
+    BuildScheduleList(schedule)
 
     if (withStatistic)
         BuildScheduleStatistics(schedule)
@@ -271,6 +288,11 @@ function SwitchSchedule(link, isAdmin) {
         console.log(response)
         BuildSchedule(response.schedule, response.places, isAdmin)
     })
+}
+
+function CopyListSchedule() {
+    let list = document.getElementById("schedule-list")
+    navigator.clipboard.writeText(list.innerHTML.replace(/<br>/gi, "\n"))
 }
 
 let prevTime = 0
