@@ -1,0 +1,144 @@
+{% set title = "Аналитика | Плюшевая наковальня" %}
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/analytics.css?v={{version}}">
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>Аналитика</h1>
+
+        {% if start_date and end_date %}
+        <p class="analytics-period">Показана информация за период с {{"%02d.%02d.%d" % (start_date.day, start_date.month, start_date.year)}} по {{"%02d.%02d.%d" % (end_date.day, end_date.month, end_date.year)}}</p>
+        {% elif start_date %}
+        <p class="analytics-period">Показана информация с {{"%02d.%02d.%d" % (start_date.day, start_date.month, start_date.year)}}</p>
+        {% elif end_date %}
+        <p class="analytics-period">Показана информация по {{"%02d.%02d.%d" % (end_date.day, end_date.month, end_date.year)}}</p>
+        {% else %}
+        <p class="analytics-period">Показана информация за всё время</p>
+        {% endif %}
+
+        {% if data.total.games > 0 %}
+        <div class="analytics-info">
+            <div class="analytics-info-chart">
+                <svg id="analytics-info-chart"></svg>
+            </div>
+            <div class="analytics-info-items">
+                {% if data.total.wins > 0 %}
+                <div class="analytics-info-item">
+                    <span class="analytics-circle analytics-wins"></span>
+                    <span class="analytics-info-item-label">Победы:</span>
+                    <span class="analytics-info-item-value">{{data.total.wins}} ({{(data.total.wins / data.total.games * 100) | round(1)}}%)</span>
+                </div>
+                {% endif %}
+
+                {% if data.total.prizes > 0 %}
+                <div class="analytics-info-item">
+                    <span class="analytics-circle analytics-prizes"></span>
+                    <span class="analytics-info-item-label">Призовые места:</span>
+                    <span class="analytics-info-item-value">{{data.total.prizes}} ({{(data.total.prizes / data.total.games * 100) | round(1)}}%)</span>
+                </div>
+                {% endif %}
+
+                {% if data.total.top10 > 0 %}
+                <div class="analytics-info-item">
+                    <span class="analytics-circle analytics-top10"></span>
+                    <span class="analytics-info-item-label">Вхождение в топ-10:</span>
+                    <span class="analytics-info-item-value">{{data.total.top10}} ({{(data.total.top10 / data.total.games * 100) | round(1)}}%)</span>
+                </div>
+                {% endif %}
+
+                {% if data.total.last > 0 %}
+                <div class="analytics-info-item">
+                    <span class="analytics-info-item-label">Последние места:</span>
+                    <span class="analytics-info-item-value">{{data.total.last}}</span>
+                </div>
+                {% endif %}
+
+                <div class="analytics-info-item">
+                    <span class="analytics-info-item-label">Всего игр:</span>
+                    <span class="analytics-info-item-value">{{data.total.games}}</span>
+                </div>
+            </div>
+        </div>
+
+        <h2>Распределение мест</h2>
+        <div class="analytics-positions">
+            <svg id="analytics-positions-chart"></svg>
+        </div>
+        {% else %}
+        <p>Игр за указанный промежуток времени не было</p>
+        {% endif %}
+
+        {% if data.months_data|length > 1 %}
+        <h2>Аналитика по месяцам</h2>
+        <h3>Результаты игр</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-chart"></svg>
+        </div>
+
+        <h3>Игры</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-games-chart"></svg>
+        </div>
+
+        <h3>Победы</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-wins-chart"></svg>
+        </div>
+
+        <h3>Призовые места</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-prizes-chart"></svg>
+        </div>
+
+        <h3>Вхождение в топ-10</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-top10-chart"></svg>
+        </div>
+
+        <h3>Последние места</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-last-chart"></svg>
+        </div>
+        {% endif %}
+    </div>
+
+    {% include "footer.html" %}
+
+    <script src="/js/utils.js?v={{version}}"></script>
+    <script src="/js/utils/chart.js?v={{version}}"></script>
+    <script src="/js/utils/bar_chart.js?v={{version}}"></script>
+    <script src="/js/analytics.js?v={{version}}"></script>
+    <script>
+        const chart_data = [
+            {value: {{data.total.wins}}, name: "analytics-wins" },
+            {value: {{data.total.prizes}}, name: "analytics-prizes" },
+            {value: {{data.total.top10}}, name: "analytics-top10" },
+            {value: {{data.total.games - data.total.wins - data.total.prizes - data.total.top10}}, name: "analytics-other" },
+        ]
+
+        const positions_data = {{data.total.positions}}
+
+        const months_data = [
+            {% for info in data.months_data %}{
+                games: {{info.games}},
+                wins: {{info.wins}},
+                prizes: {{info.prizes}},
+                top10: {{info.top10}},
+                last: {{info.last}},
+                other: {{info.games - info.wins - info.prizes - info.top10}},
+                date: "{{month2rus[info.date.month]}}\n{{info.date.year}}"
+            },
+            {% endfor %}
+        ]
+
+        PlotAnalyticsChart()
+        PlotPositionsChart()
+
+        {% if data.months_data|length > 1 %}
+        PlotMonthData()
+        {% endif %}
+    </script>
+</body>
+</html>

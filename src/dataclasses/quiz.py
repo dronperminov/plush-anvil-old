@@ -84,6 +84,18 @@ class Quiz:
 
         return poll_option
 
+    def is_win(self) -> bool:
+        return self.position == 1
+
+    def is_prize(self) -> bool:
+        return 2 <= self.position <= 3
+
+    def is_top10(self) -> bool:
+        return 4 <= self.position <= 10
+
+    def is_last(self) -> bool:
+        return self.position == self.teams and self.position > 0
+
     def __get_header_date(self) -> str:
         weekday = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"][self.date.weekday()]
         return f"{self.date.day:02d}.{self.date.month:02d} {weekday} {self.time}"

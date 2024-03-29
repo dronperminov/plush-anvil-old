@@ -6,7 +6,7 @@ import shutil
 import tempfile
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import cv2
 from fastapi import UploadFile
@@ -14,6 +14,7 @@ from fastapi import UploadFile
 from src import constants
 from src.constants import SMUZI_POSITION_TO_SCORE, SMUZI_RATING_TO_NAME
 from src.database import database
+from src.dataclasses.quiz import Quiz
 
 
 def get_hash(filename: str) -> str:
@@ -236,3 +237,54 @@ def get_month_dates(date: datetime) -> Tuple[datetime, datetime]:
     start_date = datetime(date.year, date.month, 1, 0, 0, 0)
     end_date = start_date + timedelta(days=num_days)
     return start_date, end_date
+
+
+def get_dates_query(start_date: Optional[datetime], end_date: Optional[datetime]) -> dict:
+    if start_date is None and end_date is None:
+        return {}
+
+    query = {"date": {}}
+    if start_date is not None:
+        query["date"]["$gte"] = start_date
+
+    if end_date is not None:
+        query["date"]["$lte"] = end_date
+
+    return query
+
+
+def get_analytics_data(quizzes: List[Quiz]) -> dict:
+    positions = {i: 0 for i in range(1, 17)}
+
+    for quiz in quizzes:
+        positions[min(quiz.position, 16)] += 1
+
+    return {
+        "games": len(quizzes),
+        "wins": len([quiz for quiz in quizzes if quiz.is_win()]),
+        "prizes": len([quiz for quiz in quizzes if quiz.is_prize()]),
+        "top10": len([quiz for quiz in quizzes if quiz.is_top10()]),
+        "last": len([quiz for quiz in quizzes if quiz.is_last()]),
+        "positions": {position: count for position, count in positions.items()}
+    }
+
+
+def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime]) -> dict:
+    quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"position": {"$gt": 0}, **get_dates_query(start_date, end_date)})]
+    date2quizzes = defaultdict(list)
+
+    for quiz in quizzes:
+        date2quizzes[(quiz.date.year, quiz.date.month)].append(quiz)
+
+    months_data = []
+
+    for (year, month), month_quizzes in date2quizzes.items():
+        months_data.append({
+            "date": {"year": year, "month": month},
+            **get_analytics_data(month_quizzes)
+        })
+
+    return {
+        "total": get_analytics_data(quizzes),
+        "months_data": sorted(months_data, key=lambda info: (info["date"]["year"], info["date"]["month"])),
+    }

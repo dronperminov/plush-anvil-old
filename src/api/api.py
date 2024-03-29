@@ -8,7 +8,7 @@ from src import constants
 from src.api import templates
 from src.database import database
 from src.utils.auth import get_current_user
-from src.utils.common import get_places, get_schedule, get_smuzi_rating, get_static_hash, parse_date, quiz_to_datetime
+from src.utils.common import get_analytics, get_places, get_schedule, get_smuzi_rating, get_static_hash, parse_date, quiz_to_datetime
 
 router = APIRouter()
 
@@ -62,4 +62,15 @@ def schedule_get() -> HTMLResponse:
     curr_schedule = get_schedule(parsed_date)
     places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
     content = template.render(user=None, version=get_static_hash(), schedule=curr_schedule, places=places)
+    return HTMLResponse(content=content)
+
+
+@router.get("/analytics")
+def analytics(start_date: str = Query(""), end_date: str = Query("")) -> Response:
+    start_date = None if start_date == "" else parse_date(start_date)
+    end_date = None if end_date == "" else parse_date(end_date)
+    analytics_data = get_analytics(start_date, end_date)
+
+    template = templates.get_template("pages/analytics.html")
+    content = template.render(user=None, version=get_static_hash(), start_date=start_date, end_date=end_date, data=analytics_data, month2rus=constants.MONTH_TO_RUS)
     return HTMLResponse(content=content)
