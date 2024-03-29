@@ -82,6 +82,11 @@
         </div>
 
         <h2>Распределение мест</h2>
+        <div class="analytics-info-item">
+            <span class="analytics-info-item-label">Средняя позиция:</span>
+            <span class="analytics-info-item-value">{{"%.1f" % data.total.mean_position}}</span>
+        </div>
+
         <div class="analytics-positions">
             <svg id="analytics-positions-chart"></svg>
         </div>
@@ -120,6 +125,11 @@
         <div class="analytics-months-info">
             <svg id="analytics-months-info-last-chart"></svg>
         </div>
+
+        <h3>Средняя позиция</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-mean_position-chart"></svg>
+        </div>
         {% endif %}
     </div>
 
@@ -151,6 +161,7 @@
                 prizes: {{info.prizes}},
                 top10: {{info.top10}},
                 last: {{info.last}},
+                mean_position: {{"%.1f" % info.mean_position}},
                 other: {{info.games - info.wins - info.prizes - info.top10}},
                 date: "{{month2rus[info.date.month]}}\n{{info.date.year}}"
             },

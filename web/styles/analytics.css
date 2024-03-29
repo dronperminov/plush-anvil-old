@@ -98,7 +98,7 @@ h3 {
     fill: #cccccc;
 }
 
-.analytics-fill-games, .analytics-fill-last {
+.analytics-fill-games, .analytics-fill-last, .analytics-fill-mean_position {
     fill: #478bb3;
 }
 
