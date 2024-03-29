@@ -139,6 +139,22 @@
                 </div>
             </div>
 
+            <div class="form-row form-row-top">
+                <div class="form-row-icon" id="category-icon">
+                    <svg class="form-row-fill-icon" width="22px" height="22px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M24,2a2.1,2.1,0,0,0-1.7,1L13.2,17a2.3,2.3,0,0,0,0,2,1.9,1.9,0,0,0,1.7,1H33a2.1,2.1,0,0,0,1.7-1,1.8,1.8,0,0,0,0-2l-9-14A1.9,1.9,0,0,0,24,2Z"/>
+                      <path d="M43,43H29a2,2,0,0,1-2-2V27a2,2,0,0,1,2-2H43a2,2,0,0,1,2,2V41A2,2,0,0,1,43,43Z"/>
+                      <path d="M13,24A10,10,0,1,0,23,34,10,10,0,0,0,13,24Z"/>
+                    </svg>
+                </div>
+                <div class="form-row-label">
+                    <label for="category" id="category-label">Категория:</label>
+                </div>
+                <div class="form-row-input">
+                    <input type="text" list="categories" class="basic-input default-input" id="category" placeholder="какой тип игры?" oninput="InputError('category')">
+                </div>
+            </div>
+
             <div class="form-row">
                 <div class="form-row-icon" id="cost-icon">
                     <svg class="form-row-fill-icon" width="25px" height="25px" viewBox="-2 -3.5 52 52" xmlns="http://www.w3.org/2000/svg">
@@ -179,6 +195,10 @@
         <datalist id="costs">
             <option value="600"></option>
             <option value="700"></option>
+        </datalist>
+
+        <datalist id="categories">
+            {% for category in categories %}<option value="{{category}}"></option>{% endfor %}
         </datalist>
 
         <div class="quizzes">
@@ -314,6 +334,22 @@
                             </div>
                             <div class="form-row-input">
                                 <textarea type="text" class="basic-textarea default-textarea" id="description-{{loop.index}}" placeholder="что это за квиз вообще?" oninput="ChangeInput('description-{{loop.index}}')" rows="3">{{quiz.description}}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-row-icon" id="category-{{loop.index}}-icon">
+                                <svg class="form-row-fill-icon" width="22px" height="22px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M24,2a2.1,2.1,0,0,0-1.7,1L13.2,17a2.3,2.3,0,0,0,0,2,1.9,1.9,0,0,0,1.7,1H33a2.1,2.1,0,0,0,1.7-1,1.8,1.8,0,0,0,0-2l-9-14A1.9,1.9,0,0,0,24,2Z"/>
+                                    <path d="M43,43H29a2,2,0,0,1-2-2V27a2,2,0,0,1,2-2H43a2,2,0,0,1,2,2V41A2,2,0,0,1,43,43Z"/>
+                                    <path d="M13,24A10,10,0,1,0,23,34,10,10,0,0,0,13,24Z"/>
+                                </svg>
+                            </div>
+                            <div class="form-row-label">
+                                <label for="category-{{loop.index}}" id="category-{{loop.index}}-label">Категория:</label>
+                            </div>
+                            <div class="form-row-input">
+                                <input type="text" list="categories" class="basic-input default-input" id="category-{{loop.index}}" value="{{quiz.category}}" placeholder="какой тип игры?" oninput="ChangeInput('category-{{loop.index}}')">
                             </div>
                         </div>
 

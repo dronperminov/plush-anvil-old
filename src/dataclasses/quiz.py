@@ -13,6 +13,7 @@ class Quiz:
     place: str
     organizer: str
     description: str
+    category: str
     cost: int
     position: int
     teams: int
@@ -28,6 +29,7 @@ class Quiz:
             data["place"],
             data["organizer"],
             data["description"],
+            data["category"],
             data["cost"],
             data["position"],
             data["teams"],
@@ -43,6 +45,7 @@ class Quiz:
             "place": self.place,
             "organizer": self.organizer,
             "description": self.description,
+            "category": self.category,
             "cost": self.cost,
             "position": self.position,
             "teams": self.teams,

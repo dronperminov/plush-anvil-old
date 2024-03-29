@@ -25,6 +25,10 @@ function ParseQuiz(date, quizId = "", withGameResult = false) {
     if (quizData.description === null)
         return null
 
+    quizData.category = GetDatalistTextField(`category${quizId}`, "categories", "Тип игры не выбран", "Необходимо выбрать тип игры из имеющихся")
+    if (quizData.category === null)
+        return null
+
     quizData.cost = GetFormatTextField(`cost${quizId}`, /^\d+$/g, "Стоимость квиза не указана", "Стоимость квиза введена некорректно")
     if (quizData.cost === null)
         return null

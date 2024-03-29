@@ -25,6 +25,7 @@ class QuizAddForm:
     place: str = Body(..., embed=True)
     organizer: str = Body(..., embed=True)
     description: str = Body(..., embed=True)
+    category: str = Body(..., embed=True)
     cost: int = Body(..., embed=True)
     position: int = Body(0, embed=True)
     teams: int = Body(0, embed=True)
@@ -52,7 +53,18 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
     organizers = [organizer["name"] for organizer in database.organizers.find({})]
     quizzes = list(database.quizzes.find({"date": date}))
 
-    content = template.render(user=user, page="quizzes", version=get_static_hash(), quizzes=quizzes, places=places, organizers=organizers, date=date, weekday=weekday)
+    content = template.render(
+        user=user,
+        page="quizzes",
+        version=get_static_hash(),
+        quizzes=quizzes,
+        categories=constants.CATEGORIES,
+        places=places,
+        organizers=organizers,
+        date=date,
+        weekday=weekday
+    )
+
     return HTMLResponse(content=content)
 
 
@@ -89,6 +101,9 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
     if not database.organizers.find_one({"name": quiz_params.organizer}):
         return JSONResponse({"status": constants.ERROR, "message": f'Организатора квизов с названием "{quiz_params.organizer}" не существует'})
 
+    if quiz_params.category not in constants.CATEGORIES:
+        return JSONResponse({"status": constants.ERROR, "message": f'Неизвестная категория "{quiz_params.category}"'})
+
     if quiz_params.position > quiz_params.teams:
         return JSONResponse({"status": constants.ERROR, "message": "Позиция команды не может быть больше, чем количество команд"})
 
@@ -103,6 +118,7 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
         "place": quiz_params.place,
         "organizer": quiz_params.organizer,
         "description": quiz_params.description,
+        "category": quiz_params.category,
         "cost": quiz_params.cost,
         "position": quiz_params.position,
         "teams": quiz_params.teams,
@@ -143,6 +159,9 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
     if not database.places.find_one({"name": quiz_params.place}):
         return JSONResponse({"status": constants.ERROR, "message": f'Места проведения квиза с названием "{quiz_params.place}" не существует'})
 
+    if quiz_params.category not in constants.CATEGORIES:
+        return JSONResponse({"status": constants.ERROR, "message": f'Неизвестная категория "{quiz_params.category}"'})
+
     if quiz_params.position > quiz_params.teams:
         return JSONResponse({"status": constants.ERROR, "message": "Позиция команды не может быть больше, чем количество команд"})
 
@@ -157,6 +176,7 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
         "place": quiz_params.place,
         "organizer": quiz_params.organizer,
         "description": quiz_params.description,
+        "category": quiz_params.category,
         "cost": quiz_params.cost,
         "position": quiz_params.position,
         "teams": quiz_params.teams,
