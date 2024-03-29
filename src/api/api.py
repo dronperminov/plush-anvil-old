@@ -72,5 +72,13 @@ def analytics(start_date: str = Query(""), end_date: str = Query("")) -> Respons
     analytics_data = get_analytics(start_date, end_date)
 
     template = templates.get_template("pages/analytics.html")
-    content = template.render(user=None, version=get_static_hash(), start_date=start_date, end_date=end_date, data=analytics_data, month2rus=constants.MONTH_TO_RUS)
+    content = template.render(
+        user=None,
+        version=get_static_hash(),
+        start_date=start_date,
+        end_date=end_date,
+        data=analytics_data,
+        categories=constants.CATEGORIES,
+        month2rus=constants.MONTH_TO_RUS
+    )
     return HTMLResponse(content=content)

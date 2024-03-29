@@ -255,9 +255,19 @@ def get_dates_query(start_date: Optional[datetime], end_date: Optional[datetime]
 
 def get_analytics_data(quizzes: List[Quiz]) -> dict:
     positions = {i: 0 for i in range(1, 17)}
+    categories = {category: 0 for category in constants.CATEGORIES}
+    categories_wins = {category: 0 for category in constants.CATEGORIES}
+    categories_prizes = {category: 0 for category in constants.CATEGORIES}
 
     for quiz in quizzes:
         positions[min(quiz.position, 16)] += 1
+        categories[quiz.category] += 1
+
+        if quiz.is_win():
+            categories_wins[quiz.category] += 1
+
+        if quiz.is_prize():
+            categories_prizes[quiz.category] += 1
 
     return {
         "games": len(quizzes),
@@ -265,7 +275,10 @@ def get_analytics_data(quizzes: List[Quiz]) -> dict:
         "prizes": len([quiz for quiz in quizzes if quiz.is_prize()]),
         "top10": len([quiz for quiz in quizzes if quiz.is_top10()]),
         "last": len([quiz for quiz in quizzes if quiz.is_last()]),
-        "positions": {position: count for position, count in positions.items()}
+        "positions": positions,
+        "categories": sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"])),
+        "categories_wins": categories_wins,
+        "categories_prizes": categories_prizes
     }
 
 

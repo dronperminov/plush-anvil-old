@@ -4,6 +4,12 @@ function PlotAnalyticsChart() {
     chart.Plot(svg, chart_data)
 }
 
+function PlotCategoriesChart() {
+    let svg = document.getElementById("analytics-categories-chart")
+    let chart = new Chart()
+    chart.Plot(svg, categories_data)
+}
+
 function PlotPositionsChart() {
     let svg = document.getElementById("analytics-positions-chart")
     let chart = new BarChart('positions', 5, 18, 25, 32, 45)
