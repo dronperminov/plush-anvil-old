@@ -74,6 +74,12 @@ const DESCRIPTION_ICON = `<svg class="form-row-stroke-icon" width="25px" height=
     <path d="M5 17H12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`
 
+const CATEGORY_ICON = `<svg class="form-row-fill-icon" width="22px" height="22px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <path d="M24,2a2.1,2.1,0,0,0-1.7,1L13.2,17a2.3,2.3,0,0,0,0,2,1.9,1.9,0,0,0,1.7,1H33a2.1,2.1,0,0,0,1.7-1,1.8,1.8,0,0,0,0-2l-9-14A1.9,1.9,0,0,0,24,2Z"/>
+  <path d="M43,43H29a2,2,0,0,1-2-2V27a2,2,0,0,1,2-2H43a2,2,0,0,1,2,2V41A2,2,0,0,1,43,43Z"/>
+  <path d="M13,24A10,10,0,1,0,23,34,10,10,0,0,0,13,24Z"/>
+</svg>`
+
 const COST_ICON = `<svg class="form-row-fill-icon" width="25px" height="25px" viewBox="-2 -3.5 52 52" xmlns="http://www.w3.org/2000/svg">
     <path id="coins" d="M320.857,468.479c-4.328-1.088-6.981-2.637-7.673-4.478H313v-7a3.265,3.265,0,0,1,1-2.257V450.1a4.711,4.711,0,0,1-1.816-2.1H312v-7
     c0-1.619,1.345-3.033,4-4.2V432c0-4.6,11.068-7,22-7s22,2.4,22,7v7h-.181c-.448,1.205-1.727,2.278-3.819,3.2v2.7a3.9,3.9,0,0,1,2,3.1v7h-.185a3.856,3.856,

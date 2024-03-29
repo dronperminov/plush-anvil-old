@@ -80,7 +80,16 @@ def parse_quizzes(user: Optional[dict] = Depends(get_current_user)) -> Response:
     organizers = [organizer["name"] for organizer in database.organizers.find({})]
 
     template = templates.get_template("pages/parse_quizzes.html")
-    content = template.render(user=user, page="parse_quizzes", version=get_static_hash(), places=places, organizers=organizers, year=datetime.now().year)
+    content = template.render(
+        user=user,
+        page="parse_quizzes",
+        version=get_static_hash(),
+        places=places,
+        organizers=organizers,
+        categories=constants.CATEGORIES,
+        year=datetime.now().year
+    )
+
     return HTMLResponse(content=content)
 
 

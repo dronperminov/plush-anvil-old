@@ -11,8 +11,9 @@ function AddParsedQuiz(parsed) {
     MakeFormRow(quizFields, `short-name-${index}`, NAME_ICON, "Сокрашение", "basic-input default-input", {tag: "input", type: "text", value: parsed.name, placeholder: "как сокращается квиз?"})
     MakeFormRow(quizFields, `place-${index}`, PLACE_ICON, "Место", "basic-input default-input", {tag: "input", type: "text", value: parsed.place, placeholder: "где будет проходить квиз?", list: "places"})
     MakeFormRow(quizFields, `organizer-${index}`, ORGANIZER_ICON, "Организатор", "basic-input default-input", {tag: "input", type: "text", value: parsed.organizer, placeholder: "кто организует квиз?", list: "organizers"})
-    MakeFormRow(quizFields, `time-${index}`, ORGANIZER_ICON, "Время", "basic-input default-input", {tag: "input", type: "text", value: parsed.time, placeholder: "во сколько начнётся квиз?", list: "times"})
+    MakeFormRow(quizFields, `time-${index}`, TIME_ICON, "Время", "basic-input default-input", {tag: "input", type: "text", value: parsed.time, placeholder: "во сколько начнётся квиз?", list: "times"})
     MakeFormRow(quizFields, `description-${index}`, DESCRIPTION_ICON, "Описание", "basic-textarea default-textarea", {tag: "textarea", innerText: parsed.description, placeholder: "что это за квиз вообще?", rows: 5})
+    MakeFormRow(quizFields, `category-${index}`, CATEGORY_ICON, "Категория", "basic-input default-input", {tag: "input", type: "text", value: parsed.category, placeholder: "какой тип игры?", list: "categories"})
     MakeFormRow(quizFields, `cost-${index}`, COST_ICON, "Стоимость", "basic-input default-input", {tag: "input", type: "text", value: parsed.cost, placeholder: "сколько стоит квиз?", list: "costs", inputmode: "numeric"})
 
     let quizIcons = MakeElement("quiz-icons", quizData)

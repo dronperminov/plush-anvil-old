@@ -65,6 +65,10 @@
         <option value="700"></option>
     </datalist>
 
+    <datalist id="categories">
+        {% for category in categories %}<option value="{{category}}"></option>{% endfor %}
+    </datalist>
+
     <script src="/js/fetch.js?v={{version}}"></script>
     <script src="/js/utils.js?v={{version}}"></script>
     <script src="/js/icons/quiz_icons.js?v={{version}}"></script>

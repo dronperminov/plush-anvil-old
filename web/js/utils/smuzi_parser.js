@@ -33,6 +33,7 @@ SmuziParser.prototype.MatchToQuiz = function(match) {
         place: this.GetPlace(match.groups.place),
         name: name,
         description: match.groups.description,
+        category: this.GetCategory(name),
         questions: match.groups.questions === undefined ? 0 : +match.groups.questions,
         cost: +match.groups.cost,
         organizer: "Смузи"
@@ -84,4 +85,28 @@ SmuziParser.prototype.GetPlace = function(parsedPlace) {
 
 SmuziParser.prototype.PrepareParsedPlace = function(place) {
     return place.replace(/бар|restobar|«|»/gi, "").trim()
+}
+
+SmuziParser.prototype.GetCategory = function(name) {
+    name = name.toLowerCase().replace(/[.,!]/gi, "").replace(/\s+/g, " ")
+
+    if (name.match(/гарри поттер|^гп /gi))
+        return "ГП"
+
+    if (name.match(/медиа-микс|кино и музыка|музыка и кино/gi))
+        return "медиа-микс"
+
+    if (name.match(/\bкмс\b|кино мультфильмы сериалы|мультфильм|угадай фильм|сериалы|топовые фильмы|кинохиты|киномания/gi))
+        return "КМС"
+
+    if (name.match(/ум[ :]|угадай мелодию/gi))
+        return "УМ"
+
+    if (name.match(/караоке/gi))
+        return "караоке"
+
+    if (name.match(/музыкальный (мега|квиз|риск)|музыка\b|танцуем и поём|русский рок/gi))
+        return "музыка"
+
+    return "прочее"
 }
