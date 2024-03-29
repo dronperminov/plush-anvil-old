@@ -69,6 +69,7 @@
             </div>
             <div class="analytics-info-items">
                 {% for category_info in data.total.categories %}
+                {% if category_info.value > 0 %}
                 <div class="analytics-info-item">
                     <span class="analytics-circle category-{{loop.index}}"></span>
                     <span class="analytics-info-item-label">{{category_info.name}}:</span>
@@ -77,6 +78,7 @@
                         -->{% if data.total.categories_prizes[category_info.name] > 0 %}, <b>в призах</b>: {{data.total.categories_prizes[category_info.name]}}{% endif %}<!--
                     -->)</span>
                 </div>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>
