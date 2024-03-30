@@ -71,6 +71,13 @@ def analytics(start_date: str = Query(""), end_date: str = Query("")) -> Respons
     end_date = None if end_date == "" else parse_date(end_date)
     analytics_data = get_analytics(start_date, end_date)
 
+    today = datetime.now()
+    dates = {
+        "last-year": [datetime(today.year - 1, 1, 1).strftime("%Y-%m-%d"), datetime(today.year - 1, 12, 31).strftime("%Y-%m-%d")],
+        "year": [datetime(today.year, 1, 1).strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d")],
+        "month": [datetime(today.year, today.month, 1).strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d")]
+    }
+
     template = templates.get_template("pages/analytics.html")
     content = template.render(
         user=None,
@@ -78,6 +85,7 @@ def analytics(start_date: str = Query(""), end_date: str = Query("")) -> Respons
         start_date=start_date,
         end_date=end_date,
         data=analytics_data,
+        dates=dates,
         categories=constants.CATEGORIES,
         month2rus=constants.MONTH_TO_RUS
     )

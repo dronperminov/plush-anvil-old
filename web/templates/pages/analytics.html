@@ -18,6 +18,13 @@
         <p class="analytics-period">Показана информация за всё время</p>
         {% endif %}
 
+        <p class="analytics-links"><b>Показать за</b>
+            <a href="/analytics">всё время</a>,
+            <a href="/analytics?start_date={{dates['last-year'][0]}}&end_date={{dates['last-year'][1]}}">прошлый год</a>,
+            <a href="/analytics?start_date={{dates['year'][0]}}&end_date={{dates['year'][1]}}">текущий год</a>,
+            <a href="/analytics?start_date={{dates['month'][0]}}&end_date={{dates['month'][1]}}">текущий месяц</a>
+        </p>
+
         {% if data.total.games > 0 %}
         <div class="analytics-info">
             <div class="analytics-info-chart">
@@ -183,9 +190,11 @@
             {% endfor %}
         ]
 
+        {% if data.total.games > 0 %}
         PlotAnalyticsChart()
         PlotCategoriesChart()
         PlotPositionsChart()
+        {% endif %}
 
         {% if data.months_data|length > 1 %}
         PlotMonthData()
