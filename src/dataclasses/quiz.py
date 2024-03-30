@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict
 
+from src.constants import SMUZI_POSITION_TO_SCORE
+
 
 @dataclass
 class Quiz:
@@ -86,6 +88,12 @@ class Quiz:
             poll_option = f"{header_date} {short_name[:max_len]}... {self.place}"
 
         return poll_option
+
+    def smuzi_rating(self) -> int:
+        if self.date < datetime(2024, 1, 1) or self.position == 0 or self.organizer != "Смузи":
+            return 0
+
+        return SMUZI_POSITION_TO_SCORE.get(self.position, 50)
 
     def is_win(self) -> bool:
         return self.position == 1

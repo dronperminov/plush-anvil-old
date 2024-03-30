@@ -59,6 +59,13 @@
                     <span class="analytics-info-item-label">Всего игр:</span>
                     <span class="analytics-info-item-value">{{data.total.games}}</span>
                 </div>
+
+                {% if data.total.rating > 0 %}
+                <div class="analytics-info-item">
+                    <span class="analytics-info-item-label">Рейтинг смузи:</span>
+                    <span class="analytics-info-item-value">{{data.total.rating}}</span>
+                </div>
+                {% endif %}
             </div>
         </div>
 
@@ -132,6 +139,11 @@
         <div class="analytics-months-info">
             <svg id="analytics-months-info-mean_position-chart"></svg>
         </div>
+
+        <h3>Смузи рейтинг</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-rating-chart"></svg>
+        </div>
         {% endif %}
     </div>
 
@@ -164,6 +176,7 @@
                 top10: {{info.top10}},
                 last: {{info.last}},
                 mean_position: {{"%.1f" % info.mean_position}},
+                rating: {{info.rating}},
                 other: {{info.games - info.wins - info.prizes - info.top10}},
                 date: "{{month2rus[info.date.month]}}\n{{info.date.year}}"
             },

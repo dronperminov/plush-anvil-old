@@ -275,6 +275,7 @@ def get_analytics_data(quizzes: List[Quiz]) -> dict:
         "prizes": len([quiz for quiz in quizzes if quiz.is_prize()]),
         "top10": len([quiz for quiz in quizzes if quiz.is_top10()]),
         "last": len([quiz for quiz in quizzes if quiz.is_last()]),
+        "rating": sum(quiz.smuzi_rating() for quiz in quizzes),
         "positions": positions,
         "mean_position": sum(quiz.position for quiz in quizzes) / max(1, len(quizzes)),
         "categories": sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"])),

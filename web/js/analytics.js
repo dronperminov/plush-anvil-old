@@ -26,7 +26,7 @@ function PlotMonthData() {
     let chart = new BarChart()
     chart.Plot(svg, months_data, ["wins", "prizes", "top10", "other"], "date", "games", "")
 
-    for (let key of ["wins", "prizes", "top10", "games", "last", "mean_position"]) {
+    for (let key of ["wins", "prizes", "top10", "games", "last", "mean_position", "rating"]) {
         let keySvg = document.getElementById(`analytics-months-info-${key}-chart`)
         let keyChart = new BarChart()
         keyChart.Plot(keySvg, months_data, [key], "date", key, "")
