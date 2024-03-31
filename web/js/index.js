@@ -248,6 +248,9 @@ function BuildScheduleStatistics(schedule) {
     let statistics = schedule.statistics
     let values = []
 
+    if (statistics.games > 0)
+        values.push(`<b>${statistics.games}</b> ${GetWordForm(statistics.games, ['игр', 'игры', 'игру'])} сыграли`)
+
     if (statistics.wins > 0)
         values.push(`<b>${statistics.wins}</b> ${GetWordForm(statistics.wins, ['раз', 'раза', 'раз'])} победили`)
 
@@ -256,6 +259,12 @@ function BuildScheduleStatistics(schedule) {
 
     if (statistics.top10 > 0)
         values.push(`<b>${statistics.top10}</b> ${GetWordForm(statistics.top10, ['раз', 'раза', 'раз'])} вошли в топ-10`)
+
+    if (statistics.last > 0)
+        values.push(`<b>${statistics.last}</b> ${GetWordForm(statistics.last, ['раз', 'раза', 'раз'])} заняли последнее место`)
+
+    if (statistics.games > 0)
+        values.push(`<b>${Math.round(statistics.mean_position * 10) / 10}</b> средняя занимаемая позиция`)
 
     let text = values.length > 0 ? `<div class="schedule-statistic-header">Статистика:</div>` : ""
 
