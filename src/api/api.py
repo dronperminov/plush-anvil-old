@@ -66,7 +66,7 @@ def schedule_get() -> HTMLResponse:
 
 
 @router.get("/analytics")
-def analytics(start_date: str = Query(""), end_date: str = Query("")) -> Response:
+def analytics(user: Optional[dict] = Depends(get_current_user), start_date: str = Query(""), end_date: str = Query("")) -> Response:
     start_date = None if start_date == "" else parse_date(start_date)
     end_date = None if end_date == "" else parse_date(end_date)
     analytics_data = get_analytics(start_date, end_date)
@@ -80,7 +80,7 @@ def analytics(start_date: str = Query(""), end_date: str = Query("")) -> Respons
 
     template = templates.get_template("pages/analytics.html")
     content = template.render(
-        user=None,
+        user=user,
         version=get_static_hash(),
         start_date=start_date,
         end_date=end_date,
