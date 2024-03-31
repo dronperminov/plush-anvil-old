@@ -375,7 +375,7 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 
     results = []
 
-    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
+    quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}).sort([("date", 1), ("time", 1)]))
     created_ids = {message["quiz_id"] for message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
 
     for quiz in quizzes:
@@ -407,7 +407,7 @@ async def handle_inline_story(query: InlineQuery) -> None:
     end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=7)
 
     date2quizzes = defaultdict(list)
-    for quiz in database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}):
+    for quiz in database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}).sort([("date", 1), ("time", 1)]):
         date2quizzes[f'{quiz["date"].day:02d}.{quiz["date"].month:02d}'].append(quiz)
 
     results = []
