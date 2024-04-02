@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from bson import ObjectId
-from bson.errors import InvalidId
-from fastapi import APIRouter, Body, Depends, Query
+from fastapi import APIRouter, Body, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import constants
@@ -13,7 +12,6 @@ from src.database import database
 from src.dataclasses.quiz import Quiz
 from src.utils.auth import get_current_user
 from src.utils.common import get_static_hash, parse_date
-from src.utils.users import get_participant_users
 
 router = APIRouter()
 
@@ -37,12 +35,6 @@ class QuizAddForm:
 @dataclass
 class QuizUpdateForm(QuizAddForm):
     quiz_id: str = Body(..., embed=True)
-
-
-@dataclass
-class QuizParticipantsForm:
-    quiz_id: str = Body(..., embed=True)
-    participants: List[dict] = Body(..., embed=True)
 
 
 @router.get("/quizzes/{date}")
@@ -215,44 +207,3 @@ def get_vk_post(user: Optional[dict] = Depends(get_current_user), post_id: str =
         return JSONResponse({"status": constants.ERROR, "message": "Не удалось получить текст поста"})
 
     return JSONResponse({"status": constants.SUCCESS, "text": post_text})
-
-
-@router.get("/quiz-participants")
-def quiz_participants(user: Optional[dict] = Depends(get_current_user), quiz_id: str = Query(...)) -> Response:
-    if not user:
-        return RedirectResponse(url=f"/login?back_url=/quiz-participants%3Fquiz_id={quiz_id}")
-
-    if user["role"] != "owner":
-        return make_error(message="Эта страница доступна только администраторам.", user=user)
-
-    try:
-        quiz = database.quizzes.find_one({"_id": ObjectId(quiz_id)})
-    except InvalidId:
-        return make_error(message="Указанного квиза не существует.", user=user)
-
-    if quiz is None:
-        return make_error(message="Указанного квиза не существует.", user=user)
-
-    template = templates.get_template("pages/quiz_participants.html")
-    content = template.render(user=user, page="quiz_participants", version=get_static_hash(), quiz=quiz, users=get_participant_users(), year=datetime.now().year)
-
-    return HTMLResponse(content=content)
-
-
-@router.post("/update-quiz-participants")
-def update_quiz_participants(user: Optional[dict] = Depends(get_current_user), params: QuizParticipantsForm = Depends()) -> JSONResponse:
-    if not user:
-        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
-
-    if user["role"] != "owner":
-        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не является администратором"})
-
-    if not database.quizzes.find_one({"_id": ObjectId(params.quiz_id)}):
-        return JSONResponse({"status": constants.ERROR, "message": "Указанного квиза не существует, возможно, он был удалён ранее"})
-
-    for participant in params.participants:
-        if database.users.find_one({"username": participant["username"]}) is None:
-            return JSONResponse({"status": constants.ERROR, "message": f'Участник с ником "@{participant["username"]}" отсутствует в базе'})
-
-    database.quizzes.update_one({"_id": ObjectId(params.quiz_id)}, {"$set": {"participants": params.participants}})
-    return JSONResponse({"status": constants.SUCCESS})

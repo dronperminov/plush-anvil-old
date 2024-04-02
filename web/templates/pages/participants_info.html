@@ -1,0 +1,37 @@
+{% set title = "Аналитика проходок | Плюшевая наковальня" %}
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/participants_info.css?v={{version}}">
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>Аналитика проходок</h1>
+
+        {% if not participants %}
+        <p>Игр у смузи ещё не было</p>
+        {% endif %}
+
+        <div class="participants">
+            {% for participant in participants %}
+            <div class="participant">
+                <img class="participant-avatar" src="{{participant.image_src}}">
+                <div class="participant-name">
+                    {{participant.fullname}} ({{participant.paid_games_text}})
+                </div>
+            </div>
+            <div class="participant-games">
+                {% for game in participant.games %}
+                <div class="participant-game">
+                    <div class="participant-game-cell {% if game.paid %}participant-game-fill-cell{% endif %}"></div>
+                    <div class="participant-game-date">{{"%02d.%02d.%d" % (game.date.day, game.date.month, game.date.year)}}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+</body>
+</html>

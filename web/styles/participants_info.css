@@ -1,0 +1,49 @@
+.participant {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.participant-avatar {
+    width: 100%;
+    border-radius: 100%;
+    border: 2px solid #fff;
+}
+
+.participant-name {
+    padding: 5px;
+}
+
+.participant-games {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(auto-fit, 25px);
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.participant-game {
+    display: grid;
+    grid-template-rows: 20px 1fr;
+    grid-template-columns: 15px;
+}
+
+.participant-game-cell {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #fff;
+    border-radius: 100%;
+}
+
+.participant-game-fill-cell {
+    background: #fff;
+}
+
+.participant-game-date {
+    font-size: 0.5em;
+    writing-mode: vertical-lr;
+    text-align: left;
+    justify-self: center;
+}
