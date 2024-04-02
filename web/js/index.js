@@ -6,6 +6,18 @@ const POLL_ICON = `<svg width="25px" height="25px" viewBox="0 0 24 24" xmlns="ht
     <path d="M7 11h7v2H7zm0-4h10.97v2H7zm0 8h13v2H7zM4 4h2v16H4z"/>
 </svg>`
 
+const PLAYERS_ICON = `<svg class="form-row-fill-icon" width="22px" height="22px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <path d="M36.31,176c0.674,0.386 24.255,13.789 43.69,13.789c19.435,0 43.826,-13.403 44.524,-13.789l9.047,0c14.641,0.044 26.429,11.859 26.429,26.429l0,101.571c0,17.673
+    -14.327,32 -32,32l0,120c0,13.255 -10.745,24 -24,24l-48,0c-13.255,0 -24,-10.745 -24,-24l0,-120c-17.673,0 -32,-14.327 -32,-32l0,-100.738c0,-15.028 12.16,-27.216 27.262,
+    -27.262l9.048,0Zm176,0c0.674,0.386 24.256,13.789 43.69,13.789c19.434,0 43.826,-13.403 44.524,-13.789l9.047,0c14.641,0.044 26.429,11.859 26.429,26.429l0,101.571c0,17.673
+    -14.327,32 -32,32l0,120c0,13.255 -10.745,24 -24,24l-48,0c-13.255,0 -24,-10.745 -24,-24l0,-120c-17.673,0 -32,-14.327 -32,-32l0,-100.738c0,-15.028 12.16,-27.216 27.262,
+    -27.262l9.048,0Zm243.69,304l-48,0c-13.255,0 -24,-10.745 -24,-24l0,-120c-17.673,0 -32,-14.327 -32,-32l0,-100.738c0,-15.056 12.206,-27.262 27.262,-27.262l9.048,0c0,0
+    23.978,13.789 43.69,13.789c19.712,0 44.524,-13.789 44.524,-13.789l9.047,0c14.597,0 26.429,11.832 26.429,26.429l0,101.571c0,17.673 -14.327,32 -32,32l0,120c0,13.222
+    -10.691,23.946 -24,24Zm-376,-320c35.346,0 64,-28.654 64,-64c0,-35.346 -28.654,-64 -64,-64c-35.346,0 -64,28.654 -64,64c0,35.346 28.654,64 64,64Zm176,0c35.346,0 64,
+    -28.654 64,-64c0,-35.346 -28.654,-64 -64,-64c-35.346,0 -64,28.654 -64,64c0,35.346 28.654,64 64,64Zm240,-64c0,35.346 -28.654,64 -64,64c-35.346,0 -64,-28.654 -64,-64c0,
+    -35.346 28.654,-64 64,-64c35.346,0 64,28.654 64,64Z"></path>
+</svg>`
+
 function CloseAllDetails() {
     for (let details of document.getElementsByClassName("quiz-details"))
         details.classList.add("hidden")
@@ -213,6 +225,8 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
                     icon.addEventListener("click", () => location.href = `/quiz-album/${quiz._id}`)
                     let poll = MakeElement("schedule-quiz-poll interactive-fill-icon", content, {innerHTML: POLL_ICON})
                     poll.addEventListener("click", () => CopyPollHeader(quiz, cell.weekday, places))
+                    let players = MakeElement("schedule-quiz-players interactive-fill-icon", content, {innerHTML: PLAYERS_ICON})
+                    players.addEventListener("click", () => location.href=`/quiz-participants?quiz_id=${quiz._id}`)
                 }
 
                 MakeElement("quiz-details-name", content, {innerText: quiz.name})

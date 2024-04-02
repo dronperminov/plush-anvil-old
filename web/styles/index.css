@@ -205,6 +205,12 @@ h1 {
     right: 75px;
 }
 
+.schedule-quiz-players {
+    position: absolute;
+    top: 1px;
+    right: 110px;
+}
+
 .schedule-quiz-album {
     position: absolute;
     top: 1px;
@@ -212,7 +218,8 @@ h1 {
 }
 
 .schedule-quiz-album:hover svg,
-.schedule-quiz-poll:hover svg {
+.schedule-quiz-poll:hover svg,
+.schedule-quiz-players:hover svg {
     fill: #fff;
 }
 

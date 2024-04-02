@@ -1,0 +1,52 @@
+{% set title = 'Игроки квиза {{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}} "{{quiz.name}}" | Плюшевая наковальня' %}
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/user-select.css?v={{version}}">
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <div class="content">
+        <h1>Игроки квиза {{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}} "{{quiz.name}}"</h1>
+
+        <div id="users"></div>
+
+        <button id="save-btn" class="basic-button default-button hidden" onclick="SaveUsers()">Сохранить</button>
+        <div class="error" id="error"></div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <script src="/js/utils.js?v={{version}}"></script>
+    <script src="/js/fetch.js?v={{version}}"></script>
+    <script src="/js/utils/user_select.js?v={{version}}"></script>
+    <script>
+        const users = {{users}}
+
+        function SaveUsers() {
+            let btn = document.getElementById("save-btn")
+            let error = document.getElementById("error")
+            error.innerText = ""
+
+            SendRequest("/update-quiz-participants", {"quiz_id": "{{quiz._id}}", "participants": userSelect.GetSelected()}).then(response => {
+                if (response.status != SUCCESS_STATUS) {
+                    error.innerText = response.message
+                    return
+                }
+
+                btn.classList.add("hidden")
+            })
+        }
+
+        function ShowBtn() {
+            let btn = document.getElementById("save-btn")
+            btn.classList.remove("hidden")
+        }
+
+        let userSelect = new UserSelect(users, "users", {{"true" if quiz.organizer == "Смузи" else "false"}}, ShowBtn)
+
+        {% for participant in quiz.participants %}
+        userSelect.SelectUser("{{participant.username}}", {{"true" if participant.paid else "false"}})
+        {% endfor %}
+    </script>
+</body>
+</html>

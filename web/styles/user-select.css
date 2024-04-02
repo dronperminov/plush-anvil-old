@@ -1,0 +1,79 @@
+.user-select-hidden {
+    display: none !important;
+}
+
+.user-select {
+    margin-bottom: 15px;
+}
+
+.user-select-input {
+    background: #ffffff;
+    color: #555555;
+
+    border-radius: 10px;
+    user-select: none;
+    margin-bottom: 15px;
+}
+
+/******************* QUERY *******************/
+.user-select-query {
+    padding: 5px;
+}
+
+.user-select-query-input {
+    color: #555555;
+}
+
+/******************* USERS *******************/
+.user-select-users {
+    max-height: 180px;
+    overflow: auto;
+}
+
+.user-select-user {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    align-items: center;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.user-select-users .user-select-user:hover {
+    background: #ddd;
+}
+
+.user-select-user-name {
+    padding-left: 10px;
+}
+
+.user-select-user-avatar {
+    border-radius: 100%;
+    width: 100%;
+    border: 2px solid #555555;
+}
+
+.user-select-no-matches {
+    color: #888;
+    padding: 5px;
+    font-size: 0.9em;
+}
+
+/****************** RESULTS ******************/
+.user-select-results {
+}
+
+.user-select-results-header {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.user-select-no-results {
+    padding: 5px;
+    color: #888;
+    font-size: 0.9em;
+}
+
+.user-select-results .user-select-user:hover {
+    background: #888;
+}

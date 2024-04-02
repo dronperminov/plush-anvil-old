@@ -1,10 +1,9 @@
 import os
 import re
 import uuid
-from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends, File, Form, Query, UploadFile
@@ -16,6 +15,7 @@ from src.database import database
 from src.dataclasses.album import Album
 from src.utils.auth import get_current_user
 from src.utils.common import get_static_hash, preview_image, save_image
+from src.utils.users import get_markup_users
 
 
 @dataclass
@@ -75,17 +75,6 @@ def get_album(album_id: int, user: Optional[dict] = Depends(get_current_user)) -
 
     album = Album.from_dict(album)
     return RedirectResponse(album.url)
-
-
-def get_markup_users() -> Dict[str, dict]:
-    user2count = defaultdict(int)
-    for album in database.photo_albums.find({}):
-        for photo in album["photos"]:
-            for markup in photo["markup"]:
-                user2count[markup["username"]] += 1
-
-    users = sorted(database.users.find({}, {"username": 1, "fullname": 1, "image_src": 1, "_id": 0}), key=lambda user: -user2count[user["username"]])
-    return {user["username"]: user for user in users}
 
 
 def render_album(user: Optional[dict], title: str, page_name: str, photos: List[dict], is_owner: bool, usernames: Optional[List[str]] = None) -> HTMLResponse:
