@@ -27,8 +27,10 @@ def profile(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if not user:
         return RedirectResponse(url="/login?back_url=/profile")
 
+    games = list(database.quizzes.find({"position": {"$ne": 0}, "participants.username": user["username"]}, {"_id": 0}).sort([("date", -1), ("time", -1)]))
+
     template = templates.get_template("pages/profile.html")
-    content = template.render(user=user, page="profile", version=get_static_hash())
+    content = template.render(user=user, page="profile", version=get_static_hash(), games=games)
     return HTMLResponse(content=content)
 
 

@@ -105,3 +105,18 @@ h2 {
 .content li {
     margin-bottom: 10px;
 }
+
+.visited-quizzes {
+    overflow-x: auto;
+}
+
+.visited-quizzes table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.visited-quizzes td, th {
+    font-size: 0.8em;
+    padding: 5px;
+    border: 1px solid #aaa;
+}

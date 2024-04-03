@@ -55,6 +55,21 @@
             <li><a href="/change-password">Сменить пароль</a></li>
             <li><a href="#" onclick="Logout()">Выйти из аккаунта</a></li>
         </ul>
+
+        {% if games %}
+        <h2>Посещённые квизы ({{games|length}})</h2>
+        <div class="visited-quizzes">
+            <table>
+                <tr><th>Дата</th><th>Название</th></tr>
+                {% for quiz in games %}
+                <tr>
+                    <td>{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
+                    <td>{{quiz.name}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
     </div>
 
     <script src="/js/fetch.js?v={{version}}"></script>
