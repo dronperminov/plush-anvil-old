@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 
 from src.constants import SMUZI_POSITION_TO_SCORE
 
@@ -20,6 +20,7 @@ class Quiz:
     position: int
     teams: int
     players: int
+    participants: List[dict]
 
     @classmethod
     def from_dict(cls: "Quiz", data: dict) -> "Quiz":
@@ -35,7 +36,8 @@ class Quiz:
             data["cost"],
             data["position"],
             data["teams"],
-            data["players"]
+            data["players"],
+            data["participants"]
         )
 
     def to_dict(self) -> dict:
@@ -51,7 +53,8 @@ class Quiz:
             "cost": self.cost,
             "position": self.position,
             "teams": self.teams,
-            "players": self.players
+            "players": self.players,
+            "participants": self.participants
         }
 
     def to_inline_title(self) -> str:

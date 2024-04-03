@@ -131,7 +131,8 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
         "cost": quiz_params.cost,
         "position": quiz_params.position,
         "teams": quiz_params.teams,
-        "players": quiz_params.players
+        "players": quiz_params.players,
+        "participants": []
     })
 
     database.quizzes.insert_one(quiz.to_dict())
@@ -177,22 +178,23 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
     if quiz_params.players < 0:
         return JSONResponse({"status": constants.ERROR, "message": "Количество игроков команды не может быть отрицательным"})
 
-    quiz = Quiz.from_dict({
-        "name": quiz_params.name,
-        "short_name": quiz_params.short_name,
-        "date": quiz_params.date,
-        "time": quiz_params.time,
-        "place": quiz_params.place,
-        "organizer": quiz_params.organizer,
-        "description": quiz_params.description,
-        "category": quiz_params.category,
-        "cost": quiz_params.cost,
-        "position": quiz_params.position,
-        "teams": quiz_params.teams,
-        "players": quiz_params.players
+    database.quizzes.update_one({"_id": ObjectId(quiz_params.quiz_id)}, {
+        "$set": {
+            "name": quiz_params.name,
+            "short_name": quiz_params.short_name,
+            "date": quiz_params.date,
+            "time": quiz_params.time,
+            "place": quiz_params.place,
+            "organizer": quiz_params.organizer,
+            "description": quiz_params.description,
+            "category": quiz_params.category,
+            "cost": quiz_params.cost,
+            "position": quiz_params.position,
+            "teams": quiz_params.teams,
+            "players": quiz_params.players
+        }
     })
 
-    database.quizzes.update_one({"_id": ObjectId(quiz_params.quiz_id)}, {"$set": quiz.to_dict()})
     return JSONResponse({"status": constants.SUCCESS})
 
 
