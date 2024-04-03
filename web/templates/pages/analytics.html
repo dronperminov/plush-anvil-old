@@ -111,7 +111,13 @@
         {% for player in data.total.top_players[:7] %}
         <div class="analytics-player">
             <img class="analytics-player-avatar" src="{{player.image_src}}">
-            <div class="analytics-player-name">{{player.fullname}} - {{player.count_text}}</div>
+            <div class="analytics-player-name">
+                {{player.fullname}} - {{player.count_text}}
+                <div class="analytics-player-categories">
+                    <b>Топ категорий</b>:
+                {% for category, count in player.categories[:3] %}{% if loop.index > 1 %}, {% endif %}{{category}} ({{count}}){% endfor %}
+                </div>
+            </div>
         </div>
         {% endfor %}
         {% if data.total.top_players|length > 7 %}
@@ -120,7 +126,13 @@
             {% for player in data.total.top_players[7:] %}
             <div class="analytics-player">
                 <img class="analytics-player-avatar" src="{{player.image_src}}">
-                <div class="analytics-player-name">{{player.fullname}} - {{player.count_text}}</div>
+                <div class="analytics-player-name">
+                    {{player.fullname}} - {{player.count_text}}
+                    <div class="analytics-player-categories">
+                        <b>Топ категорий</b>:
+                    {% for category, count in player.categories[:3] %}{% if loop.index > 1 %}, {% endif %}{{category}} ({{count}}){% endfor %}
+                    </div>
+                </div>
             </div>
             {% endfor %}
         </details>

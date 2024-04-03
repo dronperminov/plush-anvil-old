@@ -56,7 +56,7 @@ h3 {
 .analytics-player {
     display: grid;
     grid-template-columns: 50px 1fr;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     align-items: center;
 }
 
@@ -68,6 +68,11 @@ h3 {
 
 .analytics-player-name {
     padding-left: 10px;
+}
+
+.analytics-player-categories {
+    font-size: 0.7em;
+    margin-top: 5px;
 }
 
 .analytics-details {
