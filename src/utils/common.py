@@ -189,11 +189,19 @@ def get_dates_query(start_date: Optional[datetime], end_date: Optional[datetime]
     return query
 
 
+def get_top_players(username2count: dict) -> List[dict]:
+    usernames = [username for username in username2count]
+    users = {user["username"]: user for user in database.users.find({"username": {"$in": usernames}}, {"_id": 0})}
+    top_players = sorted([{**users[username], "count": count} for username, count in username2count.items()], key=lambda player: (-player["count"], player["fullname"]))
+    return [{**player, "count_text": get_word_form(player["count"], ["игр", "игры", "игра"])} for player in top_players]
+
+
 def get_analytics_data(quizzes: List[Quiz]) -> dict:
     positions = {i: 0 for i in range(1, 17)}
     categories = {category: 0 for category in constants.CATEGORIES}
     categories_wins = {category: 0 for category in constants.CATEGORIES}
     categories_prizes = {category: 0 for category in constants.CATEGORIES}
+    username2count = defaultdict(int)
 
     for quiz in quizzes:
         positions[min(quiz.position, 16)] += 1
@@ -204,6 +212,9 @@ def get_analytics_data(quizzes: List[Quiz]) -> dict:
 
         if quiz.is_prize():
             categories_prizes[quiz.category] += 1
+
+        for participant in quiz.participants:
+            username2count[participant["username"]] += 1
 
     return {
         "games": len(quizzes),
@@ -216,7 +227,8 @@ def get_analytics_data(quizzes: List[Quiz]) -> dict:
         "mean_position": sum(quiz.position for quiz in quizzes) / max(1, len(quizzes)),
         "categories": sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"])),
         "categories_wins": categories_wins,
-        "categories_prizes": categories_prizes
+        "categories_prizes": categories_prizes,
+        "top_players": get_top_players(username2count)
     }
 
 

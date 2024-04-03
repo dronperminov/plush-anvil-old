@@ -106,6 +106,26 @@
         <div class="analytics-positions">
             <svg id="analytics-positions-chart"></svg>
         </div>
+
+        <h2>Топ активных игроков</h2>
+        {% for player in data.total.top_players[:7] %}
+        <div class="analytics-player">
+            <img class="analytics-player-avatar" src="{{player.image_src}}">
+            <div class="analytics-player-name">{{player.fullname}} - {{player.count_text}}</div>
+        </div>
+        {% endfor %}
+        {% if data.total.top_players|length > 7 %}
+        <details class="analytics-details">
+            <summary><span>Показать остальных</span></summary>
+            {% for player in data.total.top_players[7:] %}
+            <div class="analytics-player">
+                <img class="analytics-player-avatar" src="{{player.image_src}}">
+                <div class="analytics-player-name">{{player.fullname}} - {{player.count_text}}</div>
+            </div>
+            {% endfor %}
+        </details>
+        {% endif %}
+
         {% else %}
         <p>Игр за указанный промежуток времени не было</p>
         {% endif %}

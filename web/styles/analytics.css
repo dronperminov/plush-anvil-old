@@ -53,6 +53,38 @@ h3 {
     height: 300px;
 }
 
+.analytics-player {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    margin-bottom: 5px;
+    align-items: center;
+}
+
+.analytics-player-avatar {
+    width: 100%;
+    border: 2px solid #fff;
+    border-radius: 100%;
+}
+
+.analytics-player-name {
+    padding-left: 10px;
+}
+
+.analytics-details {
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.analytics-details summary {
+    margin-bottom: 10px;
+}
+
+.analytics-details summary span {
+    font-weight: bold;
+    cursor: pointer;
+    border-bottom: 2px dashed #fff;
+}
+
 .chart-divider {
     stroke: #e1e1e1;
 }
