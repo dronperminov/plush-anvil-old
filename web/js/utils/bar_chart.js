@@ -58,6 +58,7 @@ BarChart.prototype.AppendBar = function(svg, x, y, rectWidth, rectHeight, data, 
 
     let coords = []
     let total = 0
+    let wasStart = false
 
     for (let key of keys)
         total += data[key]
@@ -66,8 +67,11 @@ BarChart.prototype.AppendBar = function(svg, x, y, rectWidth, rectHeight, data, 
         let partHeight = data[keys[i]] / total * rectHeight
         svg.appendChild(this.MakeBar(x, y, rectWidth, partHeight, `${this.barClass}-${keys[i]}`))
 
-        if (i > 0)
+        if (wasStart && partHeight > 0)
             coords.push(y)
+
+        if (partHeight > 0)
+            wasStart = true
 
         y += partHeight
     }
