@@ -111,7 +111,7 @@
         {% for category_info in data.total.categories %}
         {% if data.total.category_positions[category_info.name].values()|sum > 0 %}
         <details class="analytics-details">
-            <summary><b class="analytics-circle category-{{loop.index}}"></b> <span>{{category_info.name}}</span> <small>(средняя позиция - {{"%.1f" % data.total.category_positions[category_info.name].mean}})</small></summary>
+            <summary><b class="analytics-circle category-{{loop.index}}"></b> <span>{{category_info.name}}</span> <small>(средняя позиция: {{"%.1f" % data.total.category_positions[category_info.name].mean}})</small></summary>
 
             <div class="analytics-positions">
                 <svg id="analytics-category-{{loop.index}}-positions-chart"></svg>
