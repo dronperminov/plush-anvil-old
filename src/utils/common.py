@@ -216,7 +216,7 @@ def get_top_players(username2quizzes: Dict[str, List[Quiz]]) -> List[dict]:
     return sorted(top_players, key=lambda player: (-player["count"], player["fullname"]))
 
 
-def get_analytics_data(quizzes: List[Quiz]) -> dict:
+def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
     positions = {i: 0 for i in range(1, 17)}
     category_positions = {category: {i: 0 for i in range(1, 17)} for category in constants.CATEGORIES}
     categories = get_categories_count(quizzes)
@@ -237,24 +237,29 @@ def get_analytics_data(quizzes: List[Quiz]) -> dict:
         for participant in quiz.participants:
             username2quizzes[participant["username"]].append(quiz)
 
-    for category, cat_positions in category_positions.items():
+    for cat_positions in category_positions.values():
         cat_positions["mean"] = sum(position * count for position, count in cat_positions.items()) / max(1, sum(cat_positions.values()))
 
-    return {
+    data = {
         "games": len(quizzes),
         "wins": len([quiz for quiz in quizzes if quiz.is_win()]),
         "prizes": len([quiz for quiz in quizzes if quiz.is_prize()]),
         "top10": len([quiz for quiz in quizzes if quiz.is_top10()]),
         "last": len([quiz for quiz in quizzes if quiz.is_last()]),
         "rating": sum(quiz.smuzi_rating() for quiz in quizzes),
-        "positions": positions,
-        "category_positions": category_positions,
         "mean_position": sum(quiz.position for quiz in quizzes) / max(1, len(quizzes)),
-        "categories": sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"])),
-        "categories_wins": categories_wins,
-        "categories_prizes": categories_prizes,
-        "top_players": get_top_players(username2quizzes)
+        "mean_players": sum(quiz.players for quiz in quizzes) / max(1, len(quizzes))
     }
+
+    if not only_main:
+        data["positions"] = positions
+        data["category_positions"] = category_positions
+        data["categories"] = sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"]))
+        data["categories_wins"] = categories_wins
+        data["categories_prizes"] = categories_prizes
+        data["top_players"] = get_top_players(username2quizzes)
+
+    return data
 
 
 def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime]) -> dict:
@@ -286,7 +291,7 @@ def get_schedule(schedule_date: datetime) -> dict:
     next_date = end_date + timedelta(days=1)
 
     quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}))
-    statistics = get_analytics_data([Quiz.from_dict(quiz) for quiz in quizzes if quiz["position"] != 0])
+    statistics = get_analytics_data([Quiz.from_dict(quiz) for quiz in quizzes if quiz["position"] != 0], only_main=True)
 
     date_quizzes = get_date2quizzes(quizzes)
     places = sorted({quiz["place"] for quizzes in date_quizzes.values() for quiz in quizzes})

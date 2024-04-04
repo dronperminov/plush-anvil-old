@@ -192,6 +192,11 @@
             <svg id="analytics-months-info-mean_position-chart"></svg>
         </div>
 
+        <h3>Среднее число игроков</h3>
+        <div class="analytics-months-info">
+            <svg id="analytics-months-info-mean_players-chart"></svg>
+        </div>
+
         <h3>Смузи рейтинг</h3>
         <div class="analytics-months-info">
             <svg id="analytics-months-info-rating-chart"></svg>
@@ -234,6 +239,7 @@
                 top10: {{info.top10}},
                 last: {{info.last}},
                 mean_position: {{"%.1f" % info.mean_position}},
+                mean_players: {{"%.1f" % info.mean_players}},
                 rating: {{info.rating}},
                 other: {{info.games - info.wins - info.prizes - info.top10}},
                 date: "{{month2rus[info.date.month]}}\n{{info.date.year}}"
