@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import List, Optional
 
 from bson import ObjectId
@@ -55,9 +56,10 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
     users = {user["username"]: user for user in database.users.find({})}
     user2games = {username: [] for username in users}
 
-    for quiz in database.quizzes.find({"organizer": "Смузи", "participants": {"$exists": True}}):
+    for quiz in database.quizzes.find({"organizer": "Смузи", "participants": {"$exists": True}, "date": {"$gte": datetime(2024, 4, 1)}}):
         for participant in quiz["participants"]:
-            user2games[participant["username"]].append({"date": quiz["date"], "time": quiz["time"], "paid": participant["paid"]})
+            if not users[participant["username"]].get("ignore_paid", False):
+                user2games[participant["username"]].append({"date": quiz["date"], "time": quiz["time"], "paid": participant["paid"]})
 
     participants = []
 

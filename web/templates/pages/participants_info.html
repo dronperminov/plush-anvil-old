@@ -20,13 +20,15 @@
                     {{participant.fullname}} ({{participant.paid_games_text}})
                 </div>
             </div>
-            <div class="participant-games">
-                {% for game in participant.games %}
-                <div class="participant-game">
-                    <div class="participant-game-cell {% if game.paid %}participant-game-fill-cell{% endif %}"></div>
-                    <div class="participant-game-date">{{"%02d.%02d.%d" % (game.date.day, game.date.month, game.date.year)}}</div>
+            <div class="scrollable">
+                <div class="participant-games">
+                    {% for game in participant.games %}
+                    <div class="participant-game">
+                        <div class="participant-game-cell {% if game.paid %}participant-game-fill-cell{% endif %}"></div>
+                        <div class="participant-game-date">{{"%02d.%02d.%d" % (game.date.day, game.date.month, game.date.year)}}</div>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
             {% endfor %}
         </div>

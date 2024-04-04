@@ -3,6 +3,7 @@
     grid-template-columns: 50px 1fr;
     align-items: center;
     margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .participant-avatar {
@@ -16,17 +17,17 @@
 }
 
 .participant-games {
-    display: grid;
+    display: inline-grid;
     grid-auto-flow: column;
-    grid-template-columns: repeat(auto-fit, 25px);
     overflow-x: auto;
-    margin-bottom: 20px;
+    padding-bottom: 5px;
 }
 
 .participant-game {
     display: grid;
     grid-template-rows: 20px 1fr;
     grid-template-columns: 15px;
+    width: 25px;
 }
 
 .participant-game-cell {
