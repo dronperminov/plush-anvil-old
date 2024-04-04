@@ -10,13 +10,13 @@ function PlotCategoriesChart() {
     chart.Plot(svg, categories_data)
 }
 
-function PlotPositionsChart() {
-    let svg = document.getElementById("analytics-positions-chart")
+function PlotPositionsChart(svgId, positions) {
+    let svg = document.getElementById(svgId)
     let chart = new BarChart('positions', 5, 18, 25, 32, 45)
     let data = []
 
     for (let position = 1; position <= 16; position++)
-        data.push({"position": position, "position-label": position <= 15 ? `${position}` : "ниже", "count": positions_data[position]})
+        data.push({"position": position, "position-label": position <= 15 ? `${position}` : "ниже", "count": positions[position]})
 
     chart.Plot(svg, data, ["position"], "position-label", "count", "")
 }

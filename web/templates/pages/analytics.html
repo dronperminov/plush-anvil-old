@@ -107,6 +107,19 @@
             <svg id="analytics-positions-chart"></svg>
         </div>
 
+        <h2>Распределение мест по категориям</h2>
+        {% for category_info in data.total.categories %}
+        {% if data.total.category_positions[category_info.name].values()|sum > 0 %}
+        <details class="analytics-details">
+            <summary><b class="analytics-circle category-{{loop.index}}"></b> <span>{{category_info.name}}</span> <small>(средняя позиция - {{"%.1f" % data.total.category_positions[category_info.name].mean}})</small></summary>
+
+            <div class="analytics-positions">
+                <svg id="analytics-category-{{loop.index}}-positions-chart"></svg>
+            </div>
+        </details>
+        {% endif %}
+        {% endfor %}
+
         <h2>Топ активных игроков</h2>
         {% for player in data.total.top_players[:7] %}
         <div class="analytics-player">
@@ -207,6 +220,12 @@
             {% endfor %}
         ]
 
+        const categories_positions_data = [
+            {% for category_info in data.total.categories %}
+            {{data.total.category_positions[category_info.name]}},
+            {% endfor %}
+        ]
+
         const months_data = [
             {% for info in data.months_data %}{
                 games: {{info.games}},
@@ -225,7 +244,14 @@
         {% if data.total.games > 0 %}
         PlotAnalyticsChart()
         PlotCategoriesChart()
-        PlotPositionsChart()
+        PlotPositionsChart("analytics-positions-chart", positions_data)
+
+        {% for category_info in data.total.categories %}
+        {% if data.total.category_positions[category_info.name].values()|sum > 0 %}
+        PlotPositionsChart("analytics-category-{{loop.index}}-positions-chart", categories_positions_data[{{loop.index0}}])
+        {% endif %}
+        {% endfor %}
+
         {% endif %}
 
         {% if data.months_data|length > 1 %}

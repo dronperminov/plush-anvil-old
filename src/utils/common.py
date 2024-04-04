@@ -218,6 +218,7 @@ def get_top_players(username2quizzes: Dict[str, List[Quiz]]) -> List[dict]:
 
 def get_analytics_data(quizzes: List[Quiz]) -> dict:
     positions = {i: 0 for i in range(1, 17)}
+    category_positions = {category: {i: 0 for i in range(1, 17)} for category in constants.CATEGORIES}
     categories = get_categories_count(quizzes)
     categories_wins = {category: 0 for category in constants.CATEGORIES}
     categories_prizes = {category: 0 for category in constants.CATEGORIES}
@@ -225,6 +226,7 @@ def get_analytics_data(quizzes: List[Quiz]) -> dict:
 
     for quiz in quizzes:
         positions[min(quiz.position, 16)] += 1
+        category_positions[quiz.category][min(quiz.position, 16)] += 1
 
         if quiz.is_win():
             categories_wins[quiz.category] += 1
@@ -235,6 +237,9 @@ def get_analytics_data(quizzes: List[Quiz]) -> dict:
         for participant in quiz.participants:
             username2quizzes[participant["username"]].append(quiz)
 
+    for category, cat_positions in category_positions.items():
+        cat_positions["mean"] = sum(position * count for position, count in cat_positions.items()) / max(1, sum(cat_positions.values()))
+
     return {
         "games": len(quizzes),
         "wins": len([quiz for quiz in quizzes if quiz.is_win()]),
@@ -243,6 +248,7 @@ def get_analytics_data(quizzes: List[Quiz]) -> dict:
         "last": len([quiz for quiz in quizzes if quiz.is_last()]),
         "rating": sum(quiz.smuzi_rating() for quiz in quizzes),
         "positions": positions,
+        "category_positions": category_positions,
         "mean_position": sum(quiz.position for quiz in quizzes) / max(1, len(quizzes)),
         "categories": sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"])),
         "categories_wins": categories_wins,
