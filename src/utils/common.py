@@ -217,6 +217,20 @@ def get_top_players(username2quizzes: Dict[str, List[Quiz]]) -> List[dict]:
 
 
 def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
+    data = {
+        "games": len(quizzes),
+        "wins": len([quiz for quiz in quizzes if quiz.is_win()]),
+        "prizes": len([quiz for quiz in quizzes if quiz.is_prize()]),
+        "top10": len([quiz for quiz in quizzes if quiz.is_top10()]),
+        "last": len([quiz for quiz in quizzes if quiz.is_last()]),
+        "rating": sum(quiz.smuzi_rating() for quiz in quizzes),
+        "mean_position": sum(quiz.position for quiz in quizzes) / max(1, len(quizzes)),
+        "mean_players": sum(quiz.players for quiz in quizzes) / max(1, len(quizzes))
+    }
+
+    if only_main:
+        return data
+
     positions = {i: 0 for i in range(1, 17)}
     category_positions = {category: {i: 0 for i in range(1, 17)} for category in constants.CATEGORIES}
     categories = get_categories_count(quizzes)
@@ -240,24 +254,12 @@ def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
     for cat_positions in category_positions.values():
         cat_positions["mean"] = sum(position * count for position, count in cat_positions.items()) / max(1, sum(cat_positions.values()))
 
-    data = {
-        "games": len(quizzes),
-        "wins": len([quiz for quiz in quizzes if quiz.is_win()]),
-        "prizes": len([quiz for quiz in quizzes if quiz.is_prize()]),
-        "top10": len([quiz for quiz in quizzes if quiz.is_top10()]),
-        "last": len([quiz for quiz in quizzes if quiz.is_last()]),
-        "rating": sum(quiz.smuzi_rating() for quiz in quizzes),
-        "mean_position": sum(quiz.position for quiz in quizzes) / max(1, len(quizzes)),
-        "mean_players": sum(quiz.players for quiz in quizzes) / max(1, len(quizzes))
-    }
-
-    if not only_main:
-        data["positions"] = positions
-        data["category_positions"] = category_positions
-        data["categories"] = sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"]))
-        data["categories_wins"] = categories_wins
-        data["categories_prizes"] = categories_prizes
-        data["top_players"] = get_top_players(username2quizzes)
+    data["positions"] = positions
+    data["category_positions"] = category_positions
+    data["categories"] = sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"]))
+    data["categories_wins"] = categories_wins
+    data["categories_prizes"] = categories_prizes
+    data["top_players"] = get_top_players(username2quizzes)
 
     return data
 
