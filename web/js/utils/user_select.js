@@ -20,6 +20,11 @@ UserSelect.prototype.Build = function(blockId) {
 
 UserSelect.prototype.BuildQuery = function() {
     let queryBlock = this.MakeElement("user-select-query", this.inputBlock)
+
+    this.clearBlock = this.MakeElement("user-select-query-clear user-select-query-clear-hidden", queryBlock)
+    this.MakeElement("user-select-query-clear-icon", this.clearBlock)
+    this.clearBlock.addEventListener("click", () => this.ClearQuery())
+
     this.queryInput = this.MakeElement("user-select-query-input basic-input default-input", queryBlock, {type: "text", placeholder: "начните вводить"}, "input")
     this.queryInput.addEventListener("input", () => this.FilterUsers())
 }
@@ -89,9 +94,19 @@ UserSelect.prototype.BuildResultUser = function(parent, user, isResult, onclick)
     return {"block": block, "checkbox": checkbox}
 }
 
+UserSelect.prototype.ClearQuery = function() {
+    this.queryInput.value = ""
+    this.FilterUsers()
+}
+
 UserSelect.prototype.FilterUsers = function() {
     let query = this.queryInput.value.toLowerCase().trim()
     let translit = this.Transliterate(query)
+
+    if (query === "")
+        this.clearBlock.classList.add("user-select-query-clear-hidden")
+    else
+        this.clearBlock.classList.remove("user-select-query-clear-hidden")
 
     let haveMatched = false
     let haveSelected = false

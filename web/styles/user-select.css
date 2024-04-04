@@ -18,10 +18,57 @@
 /******************* QUERY *******************/
 .user-select-query {
     padding: 5px;
+    display: table;
+    width: 100%;
+}
+
+.user-select-query-clear {
+    width: 1em;
+    display: table-cell;
+    vertical-align: middle;
+    cursor: pointer;
+    padding-right: 2px;
+}
+
+.user-select-query-clear-icon {
+    display: block;
+    position: relative;
+    width: 1em;
+    height: 2px;
+    transition: all .2s ease-out;
+}
+
+.user-select-query-clear-icon:before, .user-select-query-clear-icon:after {
+    background: #555555;
+    content: "";
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.user-select-query-clear-icon:before {
+    transform: rotate(-45deg);
+}
+
+.user-select-query-clear-icon:after {
+    transform: rotate(45deg);
+}
+
+.user-select-query-clear-hidden {
+    width: 0;
+    transition: all .2s ease-out;
+}
+
+.user-select-query-clear-hidden .user-select-query-clear-icon {
+    display: none;
 }
 
 .user-select-query-input {
+    display: table-cell;
     color: #555555;
+    vertical-align: middle;
 }
 
 /******************* USERS *******************/
