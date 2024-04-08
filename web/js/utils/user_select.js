@@ -43,7 +43,7 @@ UserSelect.prototype.BuildUsers = function() {
 
 UserSelect.prototype.BuildResults = function() {
     let block = this.MakeElement("user-select-results", this.resultsBlock)
-    this.MakeElement("user-select-results-header user-select-hidde", block, {innerText: "Выбранные пользователи"})
+    this.resultsHeader = this.MakeElement("user-select-results-header user-select-hidde", block, {innerText: "Выбранные пользователи"})
 
     for (let user of Object.values(this.users)) {
         let result = this.BuildResultUser(block, user)
@@ -109,14 +109,14 @@ UserSelect.prototype.FilterUsers = function() {
         this.clearBlock.classList.remove("user-select-query-clear-hidden")
 
     let haveMatched = false
-    let haveSelected = false
+    let selectedCount = 0
 
     for (let user of Object.values(this.users)) {
         user.resultCheckbox.checked = user.isPaid
 
         if (user.isSelect) {
             user.resultBlock.classList.remove("user-select-hidden")
-            haveSelected = true
+            selectedCount++
         }
         else
             user.resultBlock.classList.add("user-select-hidden")
@@ -134,10 +134,12 @@ UserSelect.prototype.FilterUsers = function() {
     else
         this.noMatches.classList.remove("user-select-hidden")
 
-    if (haveSelected)
+    if (selectedCount > 0)
         this.noResults.classList.add("user-select-hidden")
     else
         this.noResults.classList.remove("user-select-hidden")
+
+    this.resultsHeader.innerText = "Выбранные пользователи" + (selectedCount > 0 ? ` (${selectedCount})` : "")
 }
 
 UserSelect.prototype.IsUserMatch = function(user, queries) {
