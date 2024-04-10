@@ -59,16 +59,16 @@ async def unpin_old_polls() -> None:
     today = datetime.now()
     end_date = datetime(today.year, today.month, today.day, 0, 0, 0)
 
-    quiz_ids = [quiz["_id"] for quiz in database.quizzes.find({"_id": {"$in": tg_quiz_ids}, "date": {"$lt": end_date}}, {"_id": 1})]
+    safe_quiz_ids = [quiz["_id"] for quiz in database.quizzes.find({"_id": {"$in": tg_quiz_ids}, "date": {"$gte": end_date}}, {"_id": 1})]
 
     for tg_message in tg_messages:
-        if tg_message["quiz_id"] in quiz_ids:
+        if tg_message["quiz_id"] not in safe_quiz_ids:
             try:
                 await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
             except Exception as error:
                 logger.info(f"Raised exception during unpin old polls: {error}")
 
-    database.tg_quiz_messages.delete_many({"quiz_id": {"$in": quiz_ids}})
+    database.tg_quiz_messages.delete_many({"quiz_id": {"$nin": safe_quiz_ids}})
 
 
 def get_remind_quizzes() -> List[dict]:
@@ -99,12 +99,13 @@ async def send_remind(quizzes: List[dict]) -> None:
 
     messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
     final_line = 'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
+    places = get_places()
 
     if len(quizzes) == 1:
         quiz = quizzes[0]
         lines = [
             f'Напоминаю, что сегодня квиз "{quiz["name"]}" в <b>{quiz["time"]}</b>',
-            f'<b>Место проведения</b>: {quiz["place"]}',
+            f'<b>Место проведения</b>: {quiz["place"]} (м. {places[quiz["place"]]["metro_station"]})',
             f'<b>Стоимость</b>: {quiz["cost"]} руб\n',
             final_line
         ]
@@ -115,7 +116,9 @@ async def send_remind(quizzes: List[dict]) -> None:
         lines = ["Напоминаю, что сегодня проходят следующие квизы:\n"]
         for quiz in quizzes:
             name = f'<a href="{messages[quiz["_id"]]["url"]}">{quiz["name"]}</a>' if quiz["_id"] in messages else quiz["name"]
-            lines.append(f'- {name} в <b>{quiz["time"]}</b>\n<b>Место проведения</b>: {quiz["place"]}\n<b>Стоимость</b>: {quiz["cost"]} руб\n')
+            lines.append(f'- {name} в <b>{quiz["time"]}</b>')
+            lines.append(f'<b>Место проведения</b>: {quiz["place"]} (м. {places[quiz["place"]]["metro_station"]})')
+            lines.append(f'<b>Стоимость</b>: {quiz["cost"]} руб\n')
 
         lines.append(final_line)
         await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
