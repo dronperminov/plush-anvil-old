@@ -60,7 +60,7 @@ def get_title_album(album_id: int, title: str, user: Optional[dict] = Depends(ge
     for photo in album["photos"]:
         photo["caption"] = album["title"]
 
-    users = get_markup_users()
+    users = get_markup_users(album.get("quiz_id", ""))
     template = templates.get_template("pages/album.html")
     content = template.render(user=user, page="album", version=get_static_hash(), album=album, users=users, is_owner=user and user["role"] == "owner")
     return HTMLResponse(content=content)
