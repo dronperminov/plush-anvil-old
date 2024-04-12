@@ -60,11 +60,17 @@ async def unpin_old_polls() -> None:
     end_date = datetime(today.year, today.month, today.day, 0, 0, 0)
 
     safe_quiz_ids = [quiz["_id"] for quiz in database.quizzes.find({"_id": {"$in": tg_quiz_ids}, "date": {"$gte": end_date}}, {"_id": 1})]
+    logger.info(f"Start unpin polls (save quiz with date >= {end_date.day:02d}.{end_date.month:02d}.{end_date.year}): {len(safe_quiz_ids)} quizzes")
 
     for tg_message in tg_messages:
         if tg_message["quiz_id"] not in safe_quiz_ids:
             try:
-                await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
+                result = await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
+
+                if result:
+                    logger.info(f'Successfully unpin message {tg_message["message_id"]} for quiz {tg_message["quiz_id"]}')
+                else:
+                    logger.info(f'Unable to unpin message {tg_message["message_id"]} for quiz {tg_message["quiz_id"]}')
             except Exception as error:
                 logger.info(f"Raised exception during unpin old polls: {error}")
 
