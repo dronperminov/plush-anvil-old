@@ -3,7 +3,7 @@
     grid-template-columns: 50px 1fr;
     align-items: center;
     margin-bottom: 10px;
-    margin-top: 20px;
+    cursor: pointer;
 }
 
 .participant-avatar {
@@ -14,6 +14,18 @@
 
 .participant-name {
     padding: 5px;
+}
+
+.participant-name span {
+    border-bottom: 1px dashed #fff;
+}
+
+.participant-name span:hover {
+    border-bottom-style: solid;
+}
+
+details[open] .participant-games {
+    margin-bottom: 20px;
 }
 
 .participant-games {
