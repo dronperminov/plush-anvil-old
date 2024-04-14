@@ -55,6 +55,12 @@
     vertical-align: top;
 }
 
+.form-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 0 5px;
+}
+
 .error-label {
     color: var(--error-color) !important;
 }

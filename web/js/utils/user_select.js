@@ -191,6 +191,24 @@ UserSelect.prototype.GetSelected = function() {
     return selected
 }
 
+UserSelect.prototype.GetSelectedUsernames = function() {
+    let usernames = []
+
+    for (let [username, user] of Object.entries(this.users))
+        if (user.isSelect)
+            usernames.push(username)
+
+    return usernames
+}
+
+UserSelect.prototype.HaveSelected = function() {
+    for (let [username, user] of Object.entries(this.users))
+        if (user.isSelect)
+            return true
+
+    return false
+}
+
 UserSelect.prototype.SetAttributes = function(element, attributes) {
     if (attributes === null)
         return

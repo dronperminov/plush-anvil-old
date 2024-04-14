@@ -1,3 +1,23 @@
+.add-participant-info {
+    margin-bottom: 20px;
+}
+
+.add-participant-info summary {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.add-participant-info summary span {
+    border-bottom: 1px dashed #fff;
+}
+
+.add-participant-form {
+    border: 2px solid #666;
+    border-radius: 10px;
+    padding: 5px;
+}
+
 .participant {
     display: grid;
     grid-template-columns: 50px 1fr;
@@ -52,6 +72,11 @@ details[open] .participant-games {
 
 .participant-game-fill-cell {
     background: #fff;
+}
+
+.participant-game-other-cell {
+    background: #ff9800;
+    border-color: #ffc107;
 }
 
 .participant-game-date {
