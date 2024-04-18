@@ -163,6 +163,27 @@ h3 {
     fill: #00bcd4;
 }
 
+.analytics-quizzes {
+    overflow-x: auto;
+}
+
+.analytics-quizzes table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.analytics-quizzes td, th {
+    font-size: 0.8em;
+    padding: 5px;
+    border: 1px solid #aaa;
+    text-align: center;
+}
+
+.analytics-quizzes td:last-child {
+    text-align: left;
+    min-width: 220px;
+}
+
 .analytics-months-info {
     max-width: 100%;
     overflow: auto;

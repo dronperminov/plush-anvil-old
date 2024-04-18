@@ -151,6 +151,28 @@
         </details>
         {% endif %}
 
+        <h2>Игры по категориям</h2>
+        {% for category_info in data.total.categories %}
+        {% if data.games[category_info.name]|length > 0 %}
+        <details class="analytics-details">
+            <summary><b class="analytics-circle category-{{loop.index}}"></b> <span>{{category_info.name}}</span></summary>
+
+            <div class="analytics-quizzes">
+                <table>
+                    <tr><th>Дата</th><th>Место</th><th>Название</th></tr>
+                    {% for quiz in data.games[category_info.name] %}
+                    <tr>
+                        <td>{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
+                        <td>{{quiz.position}}</td>
+                        <td>{{quiz.name}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </details>
+        {% endif %}
+        {% endfor %}
+
         {% else %}
         <p>Игр за указанный промежуток времени не было</p>
         {% endif %}
