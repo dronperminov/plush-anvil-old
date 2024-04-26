@@ -1,7 +1,11 @@
-function UserSelect(users, blockId, canChangePaid, onChange) {
+const USER_SELECT_PAID_FIXED_MODE = "paid-fixed-mode"
+const USER_SELECT_PAID_CHANGE_MODE = "paid-change-mode"
+const USER_SELECT_COUNT_MODE = "count-mode"
+
+function UserSelect(users, blockId, mode, onChange) {
     this.users = users
     this.onChange = onChange
-    this.canChangePaid = canChangePaid
+    this.mode = mode
 
     this.Build(blockId)
 }
@@ -36,6 +40,7 @@ UserSelect.prototype.BuildUsers = function() {
         user.block = this.BuildUser(usersBlock, user)
         user.isSelect = false
         user.isPaid = true
+        user.count = 1
     }
 
     this.noMatches = this.MakeElement("user-select-no-matches user-select-hidden", this.inputBlock, {innerText: "никого не нашлось"})
@@ -49,6 +54,7 @@ UserSelect.prototype.BuildResults = function() {
         let result = this.BuildResultUser(block, user)
         user.resultBlock = result.block
         user.resultCheckbox = result.checkbox
+        user.resultInput = result.input
     }
 
     this.noResults = this.MakeElement("user-select-no-results", block, {innerText: "нет выбранных пользователей"})
@@ -82,16 +88,26 @@ UserSelect.prototype.BuildResultUser = function(parent, user, isResult, onclick)
     let checkbox = this.MakeElement("", label, {type: "checkbox", checked: true}, "input")
     let span = this.MakeElement("", label, {innerText: " платно"}, "span")
 
-    if (!this.canChangePaid)
+    let count = this.MakeElement("user-select-user-count", name)
+    let input = this.MakeElement("basic-input default-input", count, {type: "number", min: 1, value: 1, step: 1, placeholder: "количество проходок"}, "input")
+
+    if (this.mode != USER_SELECT_PAID_CHANGE_MODE)
         paid.classList.add("user-select-hidden")
+
+    if (this.mode != USER_SELECT_COUNT_MODE)
+        count.classList.add("user-select-hidden")
 
     checkbox.addEventListener("change", () => {
         user.isPaid = checkbox.checked
         this.onChange()
-
     })
 
-    return {"block": block, "checkbox": checkbox}
+    input.addEventListener("change", () => {
+        user.count = +input.value
+        this.onChange()
+    })
+
+    return {"block": block, "checkbox": checkbox, "input": input}
 }
 
 UserSelect.prototype.ClearQuery = function() {
@@ -113,6 +129,7 @@ UserSelect.prototype.FilterUsers = function() {
 
     for (let user of Object.values(this.users)) {
         user.resultCheckbox.checked = user.isPaid
+        user.resultInput.value = user.count
 
         if (user.isSelect) {
             user.resultBlock.classList.remove("user-select-hidden")
@@ -170,6 +187,7 @@ UserSelect.prototype.Transliterate = function(query) {
 UserSelect.prototype.SelectUser = function(username, isPaid = true) {
     this.users[username].isSelect = true
     this.users[username].isPaid = isPaid
+    this.users[username].count = 1
 
     this.FilterUsers()
 }
@@ -177,6 +195,7 @@ UserSelect.prototype.SelectUser = function(username, isPaid = true) {
 UserSelect.prototype.RemoveUser = function(username) {
     this.users[username].isSelect = false
     this.users[username].isPaid = true
+    this.users[username].count = 1
 
     this.FilterUsers()
 }
@@ -184,9 +203,19 @@ UserSelect.prototype.RemoveUser = function(username) {
 UserSelect.prototype.GetSelected = function() {
     let selected = []
 
-    for (let [username, user] of Object.entries(this.users))
-        if (user.isSelect)
-            selected.push({username: username, paid: this.canChangePaid ? user.isPaid : true})
+    for (let [username, user] of Object.entries(this.users)) {
+        if (!user.isSelect)
+            continue
+
+        let value = {username: username}
+
+        if (this.mode == USER_SELECT_COUNT_MODE)
+            value.count = user.count
+        else
+            value.paid = this.mode == USER_SELECT_PAID_CHANGE_MODE ? user.isPaid : true
+
+        selected.push(value)
+    }
 
     return selected
 }

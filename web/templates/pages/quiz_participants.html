@@ -42,7 +42,7 @@
             btn.classList.remove("hidden")
         }
 
-        let userSelect = new UserSelect(users, "users", {{"true" if quiz.organizer == "Смузи" else "false"}}, ShowBtn)
+        let userSelect = new UserSelect(users, "users", {{"USER_SELECT_PAID_CHANGE_MODE" if quiz.organizer == "Смузи" else "USER_SELECT_PAID_FIXED_MODE"}}, ShowBtn)
 
         {% for participant in quiz.participants %}
         userSelect.SelectUser("{{participant.username}}", {{"true" if participant.paid else "false"}})

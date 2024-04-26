@@ -79,7 +79,7 @@
             let btn = document.getElementById("add-btn")
             let error = document.getElementById("error")
             let date = document.getElementById("date").value
-            let users = userSelect.GetSelectedUsernames()
+            let users = userSelect.GetSelected()
             error.innerText = ""
 
             if (!confirm("Вы уверены, что хотите добавить проходку для выбранных пользователей?"))
@@ -95,7 +95,7 @@
             })
         }
 
-        let userSelect = new UserSelect({{users}}, "users", false, ShowButtons)
+        let userSelect = new UserSelect({{users}}, "users", USER_SELECT_COUNT_MODE, ShowButtons)
     </script>
 </body>
 </html>

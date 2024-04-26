@@ -26,7 +26,7 @@ class QuizParticipantsForm:
 @dataclass
 class AddParticipantInfoForm:
     date: datetime = Body(..., embed=True)
-    participants: List[str] = Body(..., embed=True)
+    participants: List[dict] = Body(..., embed=True)
     action: str = Body(..., embed=True)
 
 
@@ -117,10 +117,31 @@ def set_participant_info(user: Optional[dict] = Depends(get_current_user), param
     if params.action not in ["add", "remove"]:
         return JSONResponse({"status": constants.ERROR, "message": 'Поддерживаются только действия "add" и "remove"'})
 
-    for username in params.participants:
+    for participant in params.participants:
+        username, count = participant["username"], participant["count"]
+
+        try:
+            count = int(count)
+        except ValueError:
+            count = 0
+
+        if count < 1 or count > 100:
+            return JSONResponse({"status": constants.ERROR, "message": f'Количество проходок участника с ником "@{username}" задано некорректно ({count})'})
+
         if database.users.find_one({"username": username}) is None:
             return JSONResponse({"status": constants.ERROR, "message": f'Участник с ником "@{username}" отсутствует в базе'})
 
-    command = "$push" if params.action == "add" else "$pull"
-    database.users.update_many({"username": {"$in": params.participants}}, {command: {"participant_dates": params.date}})
+    for participant in params.participants:
+        user = database.users.find_one({"username": participant["username"]}, {"participant_dates": 1})
+        participant_dates = user.get("participant_dates", [])
+
+        if params.action == "add":
+            participant_dates.extend([params.date] * participant["count"])
+        else:
+            without_date = [date for date in participant_dates if date != params.date]
+            count = max(0, len([date for date in participant_dates if date == params.date]) - participant["count"])
+            participant_dates = without_date + [params.date] * count
+
+        database.users.update_one({"username": participant["username"]}, {"$set": {"participant_dates": participant_dates}})
+
     return JSONResponse({"status": constants.SUCCESS})
