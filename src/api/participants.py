@@ -75,7 +75,10 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
             continue
 
         games = sorted(games, key=lambda game: (game["date"], game["time"]))
-        paid_games = len(games) - 1 - max([i for i, game in enumerate(games) if not game["paid"]], default=-1)
+        first_free = min([i for i, game in enumerate(games) if not game["paid"]], default=-1)
+        free_games = sum(1 for game in games if not game["paid"])
+
+        paid_games = len(games) - free_games - (free_games - (1 if 0 <= first_free < 3 else 0)) * 10
         participants.append({**users[username], "games": games[::-1], "paid_games": paid_games, "paid_games_text": get_word_form(paid_games, ["игр", "игры", "игра"])})
 
     participants = sorted(participants, key=lambda participant: -participant["paid_games"])
