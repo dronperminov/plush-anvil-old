@@ -147,10 +147,10 @@ def get_date2quizzes(quizzes: List[dict]) -> Dict[datetime, List[dict]]:
 
 
 def get_word_form(count: int, word_forms: List[str]) -> str:
-    if count % 10 in {0, 5, 6, 7, 8, 9} or count % 100 in {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}:
+    if abs(count) % 10 in {0, 5, 6, 7, 8, 9} or abs(count) % 100 in {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}:
         return f"{count} {word_forms[0]}"
 
-    if count % 10 in {2, 3, 4}:
+    if abs(count) % 10 in {2, 3, 4}:
         return f"{count} {word_forms[1]}"
 
     return f"{count} {word_forms[2]}"

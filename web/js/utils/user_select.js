@@ -1,11 +1,8 @@
-const USER_SELECT_PAID_FIXED_MODE = "paid-fixed-mode"
-const USER_SELECT_PAID_CHANGE_MODE = "paid-change-mode"
-const USER_SELECT_COUNT_MODE = "count-mode"
-
-function UserSelect(users, blockId, mode, onChange) {
+function UserSelect(users, blockId, canPaid, canCount, onChange) {
     this.users = users
     this.onChange = onChange
-    this.mode = mode
+    this.canPaid = canPaid
+    this.canCount = canCount
 
     this.Build(blockId)
 }
@@ -91,10 +88,10 @@ UserSelect.prototype.BuildResultUser = function(parent, user, isResult, onclick)
     let count = this.MakeElement("user-select-user-count", name)
     let input = this.MakeElement("basic-input default-input", count, {type: "number", min: 1, value: 1, step: 1, placeholder: "количество проходок"}, "input")
 
-    if (this.mode != USER_SELECT_PAID_CHANGE_MODE)
+    if (!this.canPaid)
         paid.classList.add("user-select-hidden")
 
-    if (this.mode != USER_SELECT_COUNT_MODE)
+    if (!this.canCount)
         count.classList.add("user-select-hidden")
 
     checkbox.addEventListener("change", () => {
@@ -184,10 +181,10 @@ UserSelect.prototype.Transliterate = function(query) {
     return query.split("").map(c => c in map ? map[c] : c).join("")
 }
 
-UserSelect.prototype.SelectUser = function(username, isPaid = true) {
+UserSelect.prototype.SelectUser = function(username, isPaid = true, count = 1) {
     this.users[username].isSelect = true
     this.users[username].isPaid = isPaid
-    this.users[username].count = 1
+    this.users[username].count = count
 
     this.FilterUsers()
 }
@@ -207,12 +204,10 @@ UserSelect.prototype.GetSelected = function() {
         if (!user.isSelect)
             continue
 
-        let value = {username: username}
+        let value = {username: username, paid: this.canPaid ? user.isPaid : true}
 
-        if (this.mode == USER_SELECT_COUNT_MODE)
+        if (this.canCount)
             value.count = user.count
-        else
-            value.paid = this.mode == USER_SELECT_PAID_CHANGE_MODE ? user.isPaid : true
 
         selected.push(value)
     }

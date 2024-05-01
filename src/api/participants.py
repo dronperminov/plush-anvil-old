@@ -52,6 +52,35 @@ def quiz_participants(user: Optional[dict] = Depends(get_current_user), quiz_id:
     return HTMLResponse(content=content)
 
 
+def get_second_free_game(games: List[dict]) -> int:
+    end_index = -1
+
+    for i, game in enumerate(games):
+        if not game["paid"]:
+            if end_index != -1:
+                return i
+
+            end_index = i
+
+    return end_index
+
+
+def get_paid_games(games: List[dict]) -> int:
+    end_index = get_second_free_game(games)
+
+    if end_index == -1:
+        return len(games)
+
+    paid_games = 0
+    for game in games[:end_index]:
+        if game["paid"]:
+            paid_games += 1
+        else:
+            paid_games -= 10
+
+    return paid_games
+
+
 @router.get("/participants-info")
 def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if not user:
@@ -65,8 +94,12 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
 
     for quiz in database.quizzes.find({"organizer": "Смузи", "participants": {"$exists": True}, "date": {"$gte": datetime(2024, 4, 1)}}):
         for participant in quiz["participants"]:
-            if not users[participant["username"]].get("ignore_paid", False):
-                user2games[participant["username"]].append({"date": quiz["date"], "time": quiz["time"], "paid": participant["paid"]})
+            if users[participant["username"]].get("ignore_paid", False):
+                continue
+
+            count = participant.get("count", 1) - 1
+            user2games[participant["username"]].append({"date": quiz["date"], "time": quiz["time"], "paid": participant["paid"]})
+            user2games[participant["username"]].extend([{"date": quiz["date"], "time": "", "paid": True}] * count)
 
     participants = []
 
@@ -74,12 +107,9 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
         if len(games) == 0:
             continue
 
-        games = sorted(games, key=lambda game: (game["date"], game["time"]))
-        first_free = min([i for i, game in enumerate(games) if not game["paid"]], default=-1)
-        free_games = sum(1 for game in games if not game["paid"])
-
-        paid_games = len(games) - free_games - (free_games - (1 if 0 <= first_free < 3 else 0)) * 10
-        participants.append({**users[username], "games": games[::-1], "paid_games": paid_games, "paid_games_text": get_word_form(paid_games, ["игр", "игры", "игра"])})
+        games = sorted(games, key=lambda game: (game["date"], game["time"]), reverse=True)
+        paid_games = get_paid_games(games)
+        participants.append({**users[username], "games": games, "paid_games": paid_games, "paid_games_text": get_word_form(paid_games, ["игр", "игры", "игра"])})
 
     participants = sorted(participants, key=lambda participant: -participant["paid_games"])
     today = datetime.now()
@@ -102,8 +132,18 @@ def update_quiz_participants(user: Optional[dict] = Depends(get_current_user), p
         return JSONResponse({"status": constants.ERROR, "message": "Указанного квиза не существует, возможно, он был удалён ранее"})
 
     for participant in params.participants:
-        if database.users.find_one({"username": participant["username"]}) is None:
-            return JSONResponse({"status": constants.ERROR, "message": f'Участник с ником "@{participant["username"]}" отсутствует в базе'})
+        username = participant["username"]
+
+        if database.users.find_one({"username": username}) is None:
+            return JSONResponse({"status": constants.ERROR, "message": f'Участник с ником "@{username}" отсутствует в базе'})
+
+        try:
+            count = int(participant["count"])
+        except ValueError:
+            count = 0
+
+        if count < 1 or count > 100:
+            return JSONResponse({"status": constants.ERROR, "message": f'Количество проходок участника с ником "@{username}" задано некорректно ({count})'})
 
     database.quizzes.update_one({"_id": ObjectId(params.quiz_id)}, {"$set": {"participants": params.participants}})
     return JSONResponse({"status": constants.SUCCESS})
