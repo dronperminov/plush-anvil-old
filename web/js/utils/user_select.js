@@ -3,6 +3,7 @@ function UserSelect(users, blockId, canPaid, canCount, onChange) {
     this.onChange = onChange
     this.canPaid = canPaid
     this.canCount = canCount
+    this.selected = []
 
     this.Build(blockId)
 }
@@ -44,17 +45,17 @@ UserSelect.prototype.BuildUsers = function() {
 }
 
 UserSelect.prototype.BuildResults = function() {
-    let block = this.MakeElement("user-select-results", this.resultsBlock)
-    this.resultsHeader = this.MakeElement("user-select-results-header user-select-hidde", block, {innerText: "Выбранные пользователи"})
+    this.resultsHeader = this.MakeElement("user-select-results-header user-select-hidde", this.resultsBlock, {innerText: "Выбранные пользователи"})
+    this.resultsUsersBlock = this.MakeElement("user-select-results", this.resultsBlock)
 
     for (let user of Object.values(this.users)) {
-        let result = this.BuildResultUser(block, user)
+        let result = this.BuildResultUser(this.resultsUsersBlock, user)
         user.resultBlock = result.block
         user.resultCheckbox = result.checkbox
         user.resultInput = result.input
     }
 
-    this.noResults = this.MakeElement("user-select-no-results", block, {innerText: "нет выбранных пользователей"})
+    this.noResults = this.MakeElement("user-select-no-results", this.resultsBlock, {innerText: "нет выбранных пользователей"})
 }
 
 UserSelect.prototype.BuildUser = function(parent, user) {
@@ -104,6 +105,11 @@ UserSelect.prototype.BuildResultUser = function(parent, user, isResult, onclick)
         this.onChange()
     })
 
+    input.addEventListener("input", () => {
+        user.count = +input.value
+        this.onChange()
+    })
+
     return {"block": block, "checkbox": checkbox, "input": input}
 }
 
@@ -120,6 +126,11 @@ UserSelect.prototype.FilterUsers = function() {
         this.clearBlock.classList.add("user-select-query-clear-hidden")
     else
         this.clearBlock.classList.remove("user-select-query-clear-hidden")
+
+    this.resultsUsersBlock.innerHTML = ""
+
+    for (let username of this.selected)
+        this.resultsUsersBlock.appendChild(this.users[username].resultBlock)
 
     let haveMatched = false
     let selectedCount = 0
@@ -182,6 +193,9 @@ UserSelect.prototype.Transliterate = function(query) {
 }
 
 UserSelect.prototype.SelectUser = function(username, isPaid = true, count = 1) {
+    if (!this.users[username].isSelect)
+        this.selected.push(username)
+
     this.users[username].isSelect = true
     this.users[username].isPaid = isPaid
     this.users[username].count = count
@@ -190,6 +204,9 @@ UserSelect.prototype.SelectUser = function(username, isPaid = true, count = 1) {
 }
 
 UserSelect.prototype.RemoveUser = function(username) {
+    if (this.users[username].isSelect)
+        this.selected.splice(this.selected.indexOf(username), 1)
+
     this.users[username].isSelect = false
     this.users[username].isPaid = true
     this.users[username].count = 1
@@ -200,14 +217,11 @@ UserSelect.prototype.RemoveUser = function(username) {
 UserSelect.prototype.GetSelected = function() {
     let selected = []
 
-    for (let [username, user] of Object.entries(this.users)) {
-        if (!user.isSelect)
-            continue
-
-        let value = {username: username, paid: this.canPaid ? user.isPaid : true}
+    for (let username of this.selected) {
+        let value = {username: username, paid: this.canPaid ? this.users[username].isPaid : true}
 
         if (this.canCount)
-            value.count = user.count
+            value.count = this.users[username].count
 
         selected.push(value)
     }
@@ -216,21 +230,11 @@ UserSelect.prototype.GetSelected = function() {
 }
 
 UserSelect.prototype.GetSelectedUsernames = function() {
-    let usernames = []
-
-    for (let [username, user] of Object.entries(this.users))
-        if (user.isSelect)
-            usernames.push(username)
-
-    return usernames
+    return this.selected
 }
 
 UserSelect.prototype.HaveSelected = function() {
-    for (let [username, user] of Object.entries(this.users))
-        if (user.isSelect)
-            return true
-
-    return false
+    return this.selected.length > 0
 }
 
 UserSelect.prototype.SetAttributes = function(element, attributes) {
