@@ -167,7 +167,7 @@ def get_rating_text(rating: dict) -> str:
     for i, info in enumerate(rating["history"]):
         level = SMUZI_RATING_TO_NAME[i]["name"]
         date = f'{info["date"].day:02d}.{info["date"].month:02d}.{info["date"].year}'
-        games = get_word_form(len(info["players"]), ["игр", "игры", "игра"])
+        games = get_word_form(len(info["players"]), ["игр", "игры", "игру"])
         history.append(f'- <b>{level}</b>: достигли {date} с рейтингом {info["score"]} за {games}, игроков в среднем: {info["mean_players"]:.1f}')
 
     lines = [f'<b>Рейтинг смузи</b>: {rating["score"]} ({rating["info"]["level"]} уровень, {rating["info"]["name"]})']
@@ -399,7 +399,7 @@ async def handle_inline_poll(query: InlineQuery) -> None:
             title=quiz.to_inline_title(),
             description=quiz.to_inline_description(),
             input_message_content=InputTextMessageContent(message_text=f"/poll {quiz_id}"),
-            thumbnail_url=f"https://plush-anvil.ru/images/organizers/{urllib.parse.quote(quiz.organizer)}.png",
+            thumbnail_url=f"https://plush-anvil.ru/images/organizers/{urllib.parse.quote(quiz.organizer)}.png?v=3",
             thumbnail_height=142,
             thumbnail_width=142
         ))
