@@ -63,6 +63,9 @@ function BuildScedulePlaces(schedule, places) {
 }
 
 function FixFontSize(foreign, nameSpan) {
+    if (nameSpan.style.fontSize != "")
+        return
+
     for (let fontSize = 1; fontSize > 0.01; fontSize -= 0.01) {
         nameSpan.style.fontSize = `${fontSize}em`
 
@@ -184,30 +187,6 @@ function BuildScheduleCells(schedule, places, isAdmin) {
     }
 }
 
-function CopyPollHeader(quiz, weekday, places) {
-    const weekday2str = {
-        "понедельник": "Пн",
-        "вторник": "Вт",
-        "среда": "Ср",
-        "четверг": "Чт",
-        "пятница": "Пт",
-        "суббота": "Сб",
-        "воскресенье": "Вс",
-    }
-
-    let name = quiz.name.replace(/\.$/g, "")
-
-    let headerDate = `${QuizToDate(quiz)} ${weekday2str[weekday]} ${quiz.time}`
-    let headerPlace = `${quiz.place} (м. ${places[quiz.place].metro_station}) ${quiz.cost} руб.`
-    let headerLength = headerDate.length + headerPlace.length
-
-    if (headerDate.length + headerPlace.length + name.length >= 240)
-        name = quiz.short_name.replace(/\.$/g, "")
-
-    let header = `${headerDate} ${name}. ${headerPlace}`
-    navigator.clipboard.writeText(header)
-}
-
 function BuildScheduleDetails(schedule, places, isAdmin) {
     let scheduleBlock = document.getElementById("schedule")
 
@@ -223,8 +202,6 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
                 if (isAdmin) {
                     let icon = MakeElement("schedule-quiz-album interactive-fill-icon", content, {innerHTML: PHOTO_ICON})
                     icon.addEventListener("click", () => location.href = `/quiz-album/${quiz._id}`)
-                    let poll = MakeElement("schedule-quiz-poll interactive-fill-icon", content, {innerHTML: POLL_ICON})
-                    poll.addEventListener("click", () => CopyPollHeader(quiz, cell.weekday, places))
                     let players = MakeElement("schedule-quiz-players interactive-fill-icon", content, {innerHTML: PLAYERS_ICON})
                     players.addEventListener("click", () => location.href=`/quiz-participants?quiz_id=${quiz._id}`)
                 }
@@ -244,18 +221,6 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
             }
         }
     }
-}
-
-function BuildScheduleList(schedule) {
-    let content = []
-
-    for (let row of schedule.calendar)
-        for (let cell of row)
-            for (let quiz of cell.quizzes)
-                content.push(`${QuizToDate(quiz)} ${quiz.name}`)
-
-    let list = document.getElementById("schedule-list")
-    list.innerHTML = content.join("<br>")
 }
 
 function BuildScheduleStatistics(schedule) {
@@ -291,7 +256,6 @@ function BuildSchedule(schedule, places, isAdmin, withStatistic = true) {
     BuildScedulePlaces(schedule, places)
     BuildScheduleCells(schedule, places, isAdmin)
     BuildScheduleDetails(schedule, places, isAdmin)
-    BuildScheduleList(schedule)
 
     if (withStatistic)
         BuildScheduleStatistics(schedule)
@@ -313,11 +277,6 @@ function SwitchSchedule(link, isAdmin) {
     })
 }
 
-function CopyListSchedule() {
-    let list = document.getElementById("schedule-list")
-    navigator.clipboard.writeText(list.innerHTML.replace(/<br>/gi, "\n"))
-}
-
 let prevTime = 0
 
 function FixFontSizes(time) {
@@ -331,4 +290,6 @@ function FixFontSizes(time) {
     window.requestAnimationFrame(FixFontSizes)
 }
 
-FixFontSizes()
+window.addEventListener("load", (event) => {
+    FixFontSizes()
+});
