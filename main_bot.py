@@ -62,17 +62,27 @@ async def unpin_old_polls() -> None:
     safe_quiz_ids = [quiz["_id"] for quiz in database.quizzes.find({"_id": {"$in": tg_quiz_ids}, "date": {"$gte": end_date}}, {"_id": 1})]
     logger.info(f"Start unpin polls (save quiz with date >= {end_date.day:02d}.{end_date.month:02d}.{end_date.year}): {len(safe_quiz_ids)} quizzes")
 
-    for tg_message in tg_messages:
-        if tg_message["quiz_id"] not in safe_quiz_ids:
-            try:
-                result = await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
+    remind_ids = set()
 
-                if result:
-                    logger.info(f'Successfully unpin message {tg_message["message_id"]} for quiz {tg_message["quiz_id"]}')
-                else:
-                    logger.info(f'Unable to unpin message {tg_message["message_id"]} for quiz {tg_message["quiz_id"]}')
-            except Exception as error:
-                logger.info(f"Raised exception during unpin old polls: {error}")
+    for tg_message in tg_messages:
+        if tg_message["quiz_id"] in safe_quiz_ids:
+            continue
+
+        if "remind_message_id" in tg_message:
+            remind_ids.add(tg_message["remind_message_id"])
+
+        try:
+            result = await bot.unpin_chat_message(target_group_id, tg_message["message_id"])
+            logger.info(f'{"Successfully" if result else "Unable to"} unpin message {tg_message["message_id"]} for quiz {tg_message["quiz_id"]}')
+        except Exception as error:
+            logger.info(f"Raised exception during unpin old polls: {error}")
+
+    for message_id in remind_ids:
+        try:
+            result = await bot.delete_message(target_group_id, message_id)
+            logger.info(f'{"Successfully" if result else "Unable to"} remove remind message {message_id}')
+        except Exception as error:
+            logger.info(f"Raised exception during remove remind message: {error}")
 
     database.tg_quiz_messages.delete_many({"quiz_id": {"$nin": safe_quiz_ids}})
 
@@ -117,7 +127,7 @@ async def send_remind(quizzes: List[dict]) -> None:
         ]
 
         kwargs = {"reply_to_message_id": messages[quiz["_id"]]["message_id"]} if quiz["_id"] in messages else {}
-        await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True, **kwargs)
+        message = await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True, **kwargs)
     else:
         lines = ["Напоминаю, что сегодня проходят следующие квизы:\n"]
         for quiz in quizzes:
@@ -127,7 +137,10 @@ async def send_remind(quizzes: List[dict]) -> None:
             lines.append(f'<b>Стоимость</b>: {quiz["cost"]} руб\n')
 
         lines.append(final_line)
-        await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
+        message = await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
+
+    for quiz in quizzes:
+        database.tg_quiz_messages.update_one({"quiz_id": quiz["_id"]}, {"$set": {"remind_message_id": message.message_id}})
 
 
 async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: List[int]) -> None:
@@ -200,7 +213,6 @@ async def handle_start(message: types.Message) -> None:
         "/info - отображение общей информации",
         "/rating - информация о текущем рейтинге Смузи",
         "/schedule - получение актуального расписания",
-        "/remind - напоминание про квиз (если в этот день есть квизы)",
         "",
         "А ещё админы могут:",
         "- создавать опросы про квизы, написав `@plush_anvil_bot poll` и выбрав нужный квиз",
@@ -300,22 +312,6 @@ async def handle_schedule(message: types.Message) -> None:
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         await bot.send_photo(chat_id=message.chat.id, photo=FSInputFile(make_schedule_picture(tmp_dir)), caption="Актуальное расписание")
-
-
-@dp.message(Command("remind"))
-async def handle_remind(message: types.Message) -> None:
-    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
-
-    if message.chat.id != target_group_id:
-        return await send_error(message, "Команда remind недоступна для этого чата", delete_message=True)
-
-    quizzes = get_remind_quizzes()
-
-    if not quizzes:
-        return await send_error(message, "Слишком рано для напоминания, сегодня нет никаких квизов", delete_message=True)
-
-    await message.delete()
-    await send_remind(quizzes)
 
 
 @dp.message(Command("pred_poll"))
