@@ -52,21 +52,23 @@ def quiz_participants(user: Optional[dict] = Depends(get_current_user), quiz_id:
     return HTMLResponse(content=content)
 
 
-def get_second_free_game(games: List[dict]) -> int:
-    end_index = -1
+def get_third_free_game(games: List[dict]) -> int:
+    free_indices = [-1]
 
     for i, game in enumerate(games):
-        if not game["paid"]:
-            if end_index != -1:
-                return i
+        if game["paid"]:
+            continue
 
-            end_index = i
+        if len(free_indices) == 3:
+            return i
 
-    return end_index
+        free_indices.append(i)
+
+    return free_indices[-1]
 
 
 def get_paid_games(games: List[dict]) -> int:
-    end_index = get_second_free_game(games)
+    end_index = get_third_free_game(games)
 
     if end_index == -1:
         return len(games)
