@@ -250,6 +250,25 @@ async def handle_rating(message: types.Message) -> None:
     await message.answer(get_rating_text(get_smuzi_rating()), parse_mode="HTML", disable_web_page_preview=True)
 
 
+async def make_quiz_poll(quiz_id: str, message: types.Message) -> None:
+    quiz = parse_quiz_from_id(quiz_id)
+
+    if quiz is None:
+        return await send_error(message, f'Не удалось найти заданный квиз ("{quiz_id}")', delete_message=True)
+
+    if tg_message := database.tg_quiz_messages.find_one({"quiz_id": ObjectId(quiz_id)}):
+        return await send_error(message, "Опрос с этим квизом уже создан", delete_message=True, reply_to_message_id=tg_message["message_id"])
+
+    places = get_places()
+    poll = await message.answer_poll(question=quiz.to_poll_title(places), options=["Пойду", "Не пойду"], is_anonymous=False, allows_multiple_answers=False)
+    poll_url = poll.get_url()
+
+    if poll_url and re.fullmatch(r"https://t.me/c/\d+/\d+", poll_url):
+        database.tg_quiz_messages.insert_one({"quiz_id": ObjectId(quiz_id), "message_id": int(poll_url.split("/")[-1]), "url": poll_url})
+
+    await poll.pin(disable_notification=True)
+
+
 @dp.message(Command("poll"))
 async def handle_poll(message: types.Message) -> None:
     logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
@@ -260,24 +279,15 @@ async def handle_poll(message: types.Message) -> None:
     if message.from_user.username not in config["admin_usernames"]:
         return await send_error(message, f"Команда poll недоступна для пользователя @{message.from_user.username}", delete_message=True)
 
-    quiz_id = re.sub(r"^/poll\s*", "", message.text)
-    quiz = parse_quiz_from_id(quiz_id)
+    quiz_ids = re.split(r"\s+", re.sub(r"^/poll\s*", "", message.text))
 
-    if quiz is None:
-        return await send_error(message, f'Не удалось найти заданный квиз ("{quiz_id}")', delete_message=True)
-
-    if tg_message := database.tg_quiz_messages.find_one({"quiz_id": ObjectId(quiz_id)}):
-        return await send_error(message, "Опрос с этим квизом уже создан", delete_message=True, reply_to_message_id=tg_message["message_id"])
+    for quiz_id in quiz_ids:
+        try:
+            await make_quiz_poll(quiz_id, message)
+        except Exception as error:
+            logger.info(f"Unable to make poll for quiz {quiz_id} - {error}")
 
     await message.delete()
-    places = get_places()
-    poll = await message.answer_poll(question=quiz.to_poll_title(places), options=["Пойду", "Не пойду"], is_anonymous=False, allows_multiple_answers=False)
-    poll_url = poll.get_url()
-
-    if poll_url and re.fullmatch(r"https://t.me/c/\d+/\d+", poll_url):
-        database.tg_quiz_messages.insert_one({"quiz_id": ObjectId(quiz_id), "message_id": int(poll_url.split("/")[-1]), "url": poll_url})
-
-    await poll.pin(disable_notification=True)
     await unpin_old_polls()
 
 
@@ -382,6 +392,7 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 
     quizzes = list(database.quizzes.find({"date": {"$gte": start_date, "$lte": end_date}}).sort([("date", 1), ("time", 1)]))
     created_ids = {message["quiz_id"] for message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
+    lost_quiz_ids = []
 
     for quiz in quizzes:
         if quiz["_id"] in created_ids:
@@ -389,6 +400,7 @@ async def handle_inline_poll(query: InlineQuery) -> None:
 
         quiz_id = str(quiz["_id"])
         quiz = Quiz.from_dict(quiz)
+        lost_quiz_ids.append(quiz_id)
 
         results.append(InlineQueryResultArticle(
             id=quiz_id,
@@ -399,6 +411,16 @@ async def handle_inline_poll(query: InlineQuery) -> None:
             thumbnail_height=142,
             thumbnail_width=142
         ))
+
+    if len(lost_quiz_ids) > 1:
+        result = InlineQueryResultArticle(
+            id="all_quizzes",
+            title=f'Все {get_word_form(len(lost_quiz_ids), ["квизов", "квиза", "квиз"])}',
+            description="",
+            input_message_content=InputTextMessageContent(message_text=f'/poll {" ".join(lost_quiz_ids)}')
+        )
+
+        results = [result] + results
 
     await query.answer(results, is_personal=False, cache_time=0)
 
