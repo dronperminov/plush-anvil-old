@@ -57,6 +57,11 @@
         </ul>
 
         {% if games %}
+        <h2>Количество посещённых квизов по месяцам</h2>
+        <div class="quizzes-chart">
+            <svg id="quizzes-chart"></svg>
+        </div>
+
         <h2>Посещённые квизы ({{games|length}})</h2>
         <div class="visited-quizzes">
             <table>
@@ -76,8 +81,20 @@
     <script src="/js/utils.js?v={{version}}"></script>
     <script src="/js/utils/image_cropper.js?v={{version}}"></script>
     <script src="/js/profile.js?v={{version}}"></script>
+    <script src="/js/utils/bar_chart.js?v={{version}}"></script>
     <script>
         let cropper = new ImageCropper("cropper")
+        let MONTH2GAMES = [
+            {% for (year, month, count) in month2games %}{
+                games: {{count}},
+                date: "{{month2rus[month]}}\n{{year}}"
+            },
+            {% endfor %}
+        ]
+
+        let svg = document.getElementById("quizzes-chart")
+        let chart = new BarChart('profile-fill', 5, 18, 25, 48, 60, 2, 5)
+        chart.Plot(svg, MONTH2GAMES, ["games"], "date", "games", "")
     </script>
     {% include "footer.html" %}
 </body>

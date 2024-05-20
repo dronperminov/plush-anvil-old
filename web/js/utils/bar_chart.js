@@ -1,4 +1,4 @@
-function BarChart(barClass = 'analytics-fill', padding = 5, topPadding = 18, bottomPadding = 25, minRectWidth=48, maxRectWidth = 60, gap = 2) {
+function BarChart(barClass = 'analytics-fill', padding = 5, topPadding = 18, bottomPadding = 25, minRectWidth=48, maxRectWidth = 60, gap = 2, radius=0) {
     this.barClass = barClass
 
     this.padding = padding
@@ -7,6 +7,7 @@ function BarChart(barClass = 'analytics-fill', padding = 5, topPadding = 18, bot
     this.minRectWidth = minRectWidth
     this.maxRectWidth = maxRectWidth
     this.gap = gap
+    this.radius = radius
 }
 
 BarChart.prototype.GetMaxValue = function(data, key) {
@@ -40,6 +41,7 @@ BarChart.prototype.MakeBar = function(x, y, rectWidth, rectHeight, className) {
     bar.setAttribute("y", y)
     bar.setAttribute("width", rectWidth)
     bar.setAttribute("height", rectHeight)
+    bar.setAttribute("rx", Math.min(this.radius, rectHeight / 4))
     bar.setAttribute("class", className)
     return bar
 }

@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 from dataclasses import dataclass
 from typing import Optional
 
@@ -28,9 +29,15 @@ def profile(user: Optional[dict] = Depends(get_current_user)) -> Response:
         return RedirectResponse(url="/login?back_url=/profile")
 
     games = list(database.quizzes.find({"position": {"$ne": 0}, "participants.username": user["username"]}, {"_id": 0}).sort([("date", -1), ("time", -1)]))
+    month2games = defaultdict(int)
+
+    for game in games:
+        month2games[(game["date"].year, game["date"].month)] += 1
+
+    month2games = sorted([(year, month, games) for (year, month), games in month2games.items()], key=lambda item: (item[0], item[1]))
 
     template = templates.get_template("pages/profile.html")
-    content = template.render(user=user, page="profile", version=get_static_hash(), games=games)
+    content = template.render(user=user, page="profile", version=get_static_hash(), games=games, month2games=month2games, month2rus=constants.MONTH_TO_RUS)
     return HTMLResponse(content=content)
 
 
