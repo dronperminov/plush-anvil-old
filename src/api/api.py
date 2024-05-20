@@ -87,6 +87,8 @@ def analytics(user: Optional[dict] = Depends(get_current_user), start_date: str 
         data=analytics_data,
         dates=dates,
         categories=constants.CATEGORIES,
-        month2rus=constants.MONTH_TO_RUS
+        month2rus=constants.MONTH_TO_RUS,
+        category2color=constants.CATEGORY2COLOR,
+        colors=constants.ANALYTICS_COLORS
     )
     return HTMLResponse(content=content)

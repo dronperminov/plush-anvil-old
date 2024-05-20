@@ -12,7 +12,7 @@ function PlotCategoriesChart() {
 
 function PlotPositionsChart(svgId, positions) {
     let svg = document.getElementById(svgId)
-    let chart = new BarChart({barClass: 'positions', minRectWidth: 32, maxRectWidth: 45})
+    let chart = new BarChart({barColor: colors.positions, minRectWidth: 32, maxRectWidth: 45})
     let data = []
 
     for (let position = 1; position <= 16; position++)
@@ -22,13 +22,9 @@ function PlotPositionsChart(svgId, positions) {
 }
 
 function PlotMonthData() {
-    let svg = document.getElementById("analytics-months-info-chart")
-    let chart = new BarChart()
-    chart.Plot(svg, months_data, ["wins", "prizes", "top10", "other"], "date", "games", "")
-
     for (let key of ["wins", "prizes", "top10", "games", "last", "mean_position", "mean_players", "rating"]) {
         let keySvg = document.getElementById(`analytics-months-info-${key}-chart`)
-        let keyChart = new BarChart()
+        let keyChart = new BarChart({barColor: colors[key]})
         keyChart.Plot(keySvg, months_data, [key], "date", key, "")
     }
 }

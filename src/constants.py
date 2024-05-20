@@ -82,3 +82,26 @@ CATEGORIES = [
     "ГП",
     "прочее"
 ]
+
+CATEGORY2COLOR = {
+    "КМС": "#ec6b56",
+    "УМ": "#ffc154",
+    "ГП": "#478bb3",
+    "музыка": "#47b39c",
+    "караоке": "#6347b3",
+    "медиа-микс": "#b347a4",
+    "прочее": "#cccccc"
+}
+
+ANALYTICS_COLORS = {
+    "wins": "#ec6b56",
+    "prizes": "#ffc154",
+    "top10": "#47b39c",
+    "other": "#cccccc",
+    "games": "#478bb3",
+    "last": "#478bb3",
+    "mean_position": "#478bb3",
+    "mean_players": "#47b36b",
+    "rating": "#ffc154",
+    "position": "#00bcd4"
+}

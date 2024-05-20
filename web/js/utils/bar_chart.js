@@ -2,14 +2,16 @@ function BarChart(config = null) {
     if (config === null)
         config = {}
 
-    this.barClass = config.barClass || 'analytics-fill'
     this.padding = config.padding || 5
     this.topPadding = config.topPadding || 18
     this.bottomPadding = config.bottomPadding || 25
     this.minRectWidth = config.minRectWidth || 48
     this.maxRectWidth = config.maxRectWidth || 60
     this.gap = config.gap || 2
-    this.radius = config.radius || 0
+    this.radius = config.radius || 5
+    this.barColor = config.barColor || "#00bcd4"
+    this.labelColor = config.labelColor || "#fff"
+    this.labelSize = config.labelSize || 10
 }
 
 BarChart.prototype.GetMaxValue = function(data, key) {
@@ -31,20 +33,21 @@ BarChart.prototype.AppendLabel = function(svg, x, y, labelText, baseline = "midd
         label.setAttribute("y", y)
         label.setAttribute("alignment-baseline", baseline)
         label.setAttribute("text-anchor", "middle")
-        label.setAttribute("class", "bar-chart-label")
+        label.setAttribute("fill", this.labelColor)
+        label.setAttribute("font-size", this.labelSize)
         svg.appendChild(label)
         y += label.getBBox().height
     }
 }
 
-BarChart.prototype.MakeBar = function(x, y, rectWidth, rectHeight, className) {
+BarChart.prototype.MakeBar = function(x, y, rectWidth, rectHeight, color) {
     let bar = document.createElementNS('http://www.w3.org/2000/svg', "rect")
     bar.setAttribute("x", x)
     bar.setAttribute("y", y)
     bar.setAttribute("width", rectWidth)
     bar.setAttribute("height", rectHeight)
     bar.setAttribute("rx", Math.min(this.radius, rectHeight / 4))
-    bar.setAttribute("class", className)
+    bar.setAttribute("fill", color)
     return bar
 }
 
@@ -69,7 +72,7 @@ BarChart.prototype.AppendBar = function(svg, x, y, rectWidth, rectHeight, data, 
 
     for (let i = 0; i < keys.length; i++) {
         let partHeight = data[keys[i]] / total * rectHeight
-        svg.appendChild(this.MakeBar(x, y, rectWidth, partHeight, `${this.barClass}-${keys[i]}`))
+        svg.appendChild(this.MakeBar(x, y, rectWidth, partHeight, this.barColor))
 
         if (wasStart && partHeight > 0)
             coords.push(y)

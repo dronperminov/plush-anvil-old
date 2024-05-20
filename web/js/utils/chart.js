@@ -1,8 +1,12 @@
-function Chart(radius = 25, size = 25, gap=2, initAngle = -90) {
-    this.radius = radius
-    this.size = size
-    this.gap = gap
-    this.initAngle = initAngle
+function Chart(config = null) {
+    if (config === null)
+        config = {}
+
+    this.radius = config.radius || 25
+    this.size = config.size || 25
+    this.gap = config.gap || 2
+    this.initAngle = config.initAngle || -90
+    this.dividerColor = config.dividerColor || "#e1e1e1"
 }
 
 Chart.prototype.GetAngles = function(values) {
@@ -18,7 +22,7 @@ Chart.prototype.GetAngles = function(values) {
     return angles
 }
 
-Chart.prototype.MakeSegment = function(svg, startAngle, endAngle, className) {
+Chart.prototype.MakeSegment = function(svg, startAngle, endAngle, color) {
     let circle = document.createElementNS('http://www.w3.org/2000/svg', "circle")
     let radius = this.radius + this.size / 2
 
@@ -26,7 +30,7 @@ Chart.prototype.MakeSegment = function(svg, startAngle, endAngle, className) {
     circle.setAttribute("cy", 0)
     circle.setAttribute("r", radius)
 
-    circle.setAttribute("class", className)
+    circle.setAttribute("stroke", color)
     circle.setAttribute("stroke-width", this.size)
     circle.setAttribute("fill", "none")
     circle.setAttribute("stroke-dasharray", `${radius * (endAngle - startAngle)}, ${radius * 2 * Math.PI}`)
@@ -34,7 +38,7 @@ Chart.prototype.MakeSegment = function(svg, startAngle, endAngle, className) {
     svg.appendChild(circle)
 }
 
-Chart.prototype.MakeDivider = function(svg, startAngle, endAngle, className) {
+Chart.prototype.MakeDivider = function(svg, startAngle, endAngle) {
     if (endAngle >= Math.PI * 2)
         endAngle = 0
 
@@ -50,7 +54,7 @@ Chart.prototype.MakeDivider = function(svg, startAngle, endAngle, className) {
     let x2 = (this.radius + this.size) * Math.cos(angle)
     let y2 = (this.radius + this.size) * Math.sin(angle)
 
-    path.setAttribute("class", className)
+    path.setAttribute("stroke", this.dividerColor)
     path.setAttribute("stroke-width", this.gap)
     path.setAttribute("d", `M${x1} ${y1} L${x2} ${y2}`)
     svg.appendChild(path)
@@ -63,9 +67,9 @@ Chart.prototype.Plot = function(svg, values) {
     let angles = this.GetAngles(values.map(value => value.value))
 
     for (let i = 0; i < angles.length; i++)
-        this.MakeSegment(svg, i > 0 ? angles[i - 1] : 0, angles[i], values[i].name)
+        this.MakeSegment(svg, i > 0 ? angles[i - 1] : 0, angles[i], values[i].color)
 
     for (let i = 0; i < angles.length; i++)
         if (values[i].value > 0)
-            this.MakeDivider(svg, i > 0 ? angles[i - 1] : 0, angles[i], `chart-divider`)
+            this.MakeDivider(svg, i > 0 ? angles[i - 1] : 0, angles[i])
 }

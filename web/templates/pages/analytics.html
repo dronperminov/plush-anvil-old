@@ -33,7 +33,7 @@
             <div class="analytics-info-items">
                 {% if data.total.wins > 0 %}
                 <div class="analytics-info-item">
-                    <span class="analytics-circle analytics-wins"></span>
+                    <span class="analytics-circle" style="background: {{colors.wins}}"></span>
                     <span class="analytics-info-item-label">Победы:</span>
                     <span class="analytics-info-item-value">{{data.total.wins}} ({{(data.total.wins / data.total.games * 100) | round(1)}}%)</span>
                 </div>
@@ -41,7 +41,7 @@
 
                 {% if data.total.prizes > 0 %}
                 <div class="analytics-info-item">
-                    <span class="analytics-circle analytics-prizes"></span>
+                    <span class="analytics-circle" style="background: {{colors.prizes}}"></span>
                     <span class="analytics-info-item-label">Призовые места:</span>
                     <span class="analytics-info-item-value">{{data.total.prizes}} ({{(data.total.prizes / data.total.games * 100) | round(1)}}%)</span>
                 </div>
@@ -49,7 +49,7 @@
 
                 {% if data.total.top10 > 0 %}
                 <div class="analytics-info-item">
-                    <span class="analytics-circle analytics-top10"></span>
+                    <span class="analytics-circle" style="background: {{colors.top10}}"></span>
                     <span class="analytics-info-item-label">Вхождение в топ-10:</span>
                     <span class="analytics-info-item-value">{{data.total.top10}} ({{(data.total.top10 / data.total.games * 100) | round(1)}}%)</span>
                 </div>
@@ -85,7 +85,7 @@
                 {% for category_info in data.total.categories %}
                 {% if category_info.value > 0 %}
                 <div class="analytics-info-item">
-                    <span class="analytics-circle category-{{loop.index}}"></span>
+                    <span class="analytics-circle" style="background: {{category2color[category_info.name]}}"></span>
                     <span class="analytics-info-item-label">{{category_info.name}}:</span>
                     <span class="analytics-info-item-value">{{category_info.value}} ({{(category_info.value / data.total.games * 100) | round(1)}}%<!--
                         -->{% if data.total.categories_wins[category_info.name] > 0 %}, <b>побед</b>: {{data.total.categories_wins[category_info.name]}}{% endif %}<!--
@@ -111,7 +111,7 @@
         {% for category_info in data.total.categories %}
         {% if data.total.category_positions[category_info.name].values()|sum > 0 %}
         <details class="analytics-details">
-            <summary><b class="analytics-circle category-{{loop.index}}"></b> <span>{{category_info.name}}</span> <small>(средняя позиция: {{"%.1f" % data.total.category_positions[category_info.name].mean}})</small></summary>
+            <summary><b class="analytics-circle" style="background: {{category2color[category_info.name]}}"></b> <span>{{category_info.name}}</span> <small>(средняя позиция: {{"%.1f" % data.total.category_positions[category_info.name].mean}})</small></summary>
 
             <div class="analytics-positions">
                 <svg id="analytics-category-{{loop.index}}-positions-chart"></svg>
@@ -155,7 +155,7 @@
         {% for category_info in data.total.categories %}
         {% if data.games[category_info.name]|length > 0 %}
         <details class="analytics-details">
-            <summary><b class="analytics-circle category-{{loop.index}}"></b> <span>{{category_info.name}}</span></summary>
+            <summary><b class="analytics-circle" style="background: {{category2color[category_info.name]}}"></b> <span>{{category_info.name}}</span></summary>
 
             <div class="analytics-quizzes">
                 <table>
@@ -179,11 +179,6 @@
 
         {% if data.months_data|length > 1 %}
         <h2>Аналитика по месяцам</h2>
-        <h3>Результаты игр</h3>
-        <div class="analytics-months-info">
-            <svg id="analytics-months-info-chart"></svg>
-        </div>
-
         <h3>Игры</h3>
         <div class="analytics-months-info">
             <svg id="analytics-months-info-games-chart"></svg>
@@ -233,17 +228,21 @@
     <script src="/js/utils/bar_chart.js?v={{version}}"></script>
     <script src="/js/analytics.js?v={{version}}"></script>
     <script>
+        const colors = {
+            {% for name, color in colors.items() %}"{{name}}": "{{color}}",{% endfor %}
+        }
+
         const chart_data = [
-            {value: {{data.total.wins}}, name: "analytics-wins" },
-            {value: {{data.total.prizes}}, name: "analytics-prizes" },
-            {value: {{data.total.top10}}, name: "analytics-top10" },
-            {value: {{data.total.games - data.total.wins - data.total.prizes - data.total.top10}}, name: "analytics-other" },
+            {value: {{data.total.wins}}, color: "{{colors.wins}}" },
+            {value: {{data.total.prizes}}, color: "{{colors.prizes}}" },
+            {value: {{data.total.top10}}, color: "{{colors.top10}}" },
+            {value: {{data.total.games - data.total.wins - data.total.prizes - data.total.top10}}, color: "{{colors.other}}" },
         ]
 
         const positions_data = {{data.total.positions}}
         const categories_data = [
             {% for category_info in data.total.categories %}
-            {value: {{category_info.value}}, name: "category-{{loop.index}}"},
+            {value: {{category_info.value}}, color: "{{category2color[category_info.name]}}"},
             {% endfor %}
         ]
 

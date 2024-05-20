@@ -94,73 +94,12 @@ h3 {
     border-bottom: 2px dashed #fff;
 }
 
-.chart-divider {
-    stroke: #e1e1e1;
-}
-
-.bar-chart-label {
-    fill: #fff;
-    font-size: 10px;
-}
-
 .analytics-circle {
     display: inline-block;
     width: 0.6em;
     height: 0.6em;
     border-radius: 100%;
     margin-right: 2px;
-}
-
-.analytics-wins {
-    background: #ec6b56;
-    stroke: #ec6b56;
-}
-
-.analytics-prizes {
-    background: #ffc154;
-    stroke: #ffc154;
-}
-
-.analytics-top10 {
-    background: #47b39c;
-    stroke: #47b39c;
-}
-
-.analytics-other {
-    background: #cccccc;
-    stroke: #cccccc;
-}
-
-.analytics-fill-wins {
-    fill: #ec6b56;
-}
-
-.analytics-fill-prizes {
-    fill: #ffc154;
-}
-
-.analytics-fill-top10 {
-    fill: #47b39c;
-}
-
-.analytics-fill-other {
-    fill: #cccccc;
-}
-
-.analytics-fill-games, .analytics-fill-last, .analytics-fill-mean_position {
-    fill: #478bb3;
-}
-
-.analytics-fill-mean_players {
-    fill: #47b36b
-}
-
-.analytics-fill-rating {
-    fill: #ffc154;
-}
-
-.positions-position {
-    fill: #00bcd4;
 }
 
 .analytics-quizzes {
@@ -194,41 +133,6 @@ h3 {
 .analytics-months-info svg {
     width: 100%;
     height: 250px;
-}
-
-.category-1 {
-    background: #ec6b56;
-    stroke: #ec6b56;
-}
-
-.category-2 {
-    background: #ffc154;
-    stroke: #ffc154;
-}
-
-.category-3 {
-    background: #478bb3;
-    stroke: #478bb3;
-}
-
-.category-4 {
-    background: #47b39c;
-    stroke: #47b39c;
-}
-
-.category-5 {
-    background: #6347b3;
-    stroke: #6347b3;
-}
-
-.category-6 {
-    background: #b347a4;
-    stroke: #b347a4;
-}
-
-.category-7 {
-    background: #cccccc;
-    stroke: #cccccc;
 }
 
 @media (max-width: 767px) {
