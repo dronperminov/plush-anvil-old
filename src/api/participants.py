@@ -64,6 +64,9 @@ def get_third_free_game(games: List[dict]) -> int:
 
         free_indices.append(i)
 
+    if len(free_indices) == 2 and len(games) - free_indices[-1] > 10:
+        return len(games)
+
     return free_indices[-1]
 
 
