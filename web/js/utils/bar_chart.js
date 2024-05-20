@@ -1,13 +1,15 @@
-function BarChart(barClass = 'analytics-fill', padding = 5, topPadding = 18, bottomPadding = 25, minRectWidth=48, maxRectWidth = 60, gap = 2, radius=0) {
-    this.barClass = barClass
+function BarChart(config = null) {
+    if (config === null)
+        config = {}
 
-    this.padding = padding
-    this.topPadding = topPadding
-    this.bottomPadding = bottomPadding
-    this.minRectWidth = minRectWidth
-    this.maxRectWidth = maxRectWidth
-    this.gap = gap
-    this.radius = radius
+    this.barClass = config.barClass || 'analytics-fill'
+    this.padding = config.padding || 5
+    this.topPadding = config.topPadding || 18
+    this.bottomPadding = config.bottomPadding || 25
+    this.minRectWidth = config.minRectWidth || 48
+    this.maxRectWidth = config.maxRectWidth || 60
+    this.gap = config.gap || 2
+    this.radius = config.radius || 0
 }
 
 BarChart.prototype.GetMaxValue = function(data, key) {

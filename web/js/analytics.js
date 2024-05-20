@@ -12,7 +12,7 @@ function PlotCategoriesChart() {
 
 function PlotPositionsChart(svgId, positions) {
     let svg = document.getElementById(svgId)
-    let chart = new BarChart('positions', 5, 18, 25, 32, 45)
+    let chart = new BarChart({barClass: 'positions', minRectWidth: 32, maxRectWidth: 45})
     let data = []
 
     for (let position = 1; position <= 16; position++)
