@@ -22,9 +22,14 @@ function PlotPositionsChart(svgId, positions) {
 }
 
 function PlotMonthData() {
-    for (let key of ["wins", "prizes", "top10", "games", "last", "mean_position", "mean_players", "rating"]) {
+    for (let key of ["wins", "prizes", "top10", "games", "last", "mean_position", "mean_players"]) {
         let keySvg = document.getElementById(`analytics-months-info-${key}-chart`)
         let keyChart = new BarChart({barColor: colors[key]})
         keyChart.Plot(keySvg, months_data, "date", key)
     }
+
+    let start = months_data.map(data => data["date"]).indexOf("январь\n2024")
+    let svg = document.getElementById(`analytics-months-info-rating-chart`)
+    let chart = new BarChart({barColor: colors["rating"]})
+    chart.Plot(svg, months_data, "date", "rating", start)
 }
