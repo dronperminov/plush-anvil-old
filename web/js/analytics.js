@@ -18,13 +18,13 @@ function PlotPositionsChart(svgId, positions) {
     for (let position = 1; position <= 16; position++)
         data.push({"position": position, "position-label": position <= 15 ? `${position}` : "ниже", "count": positions[position]})
 
-    chart.Plot(svg, data, ["position"], "position-label", "count", "")
+    chart.Plot(svg, data, "position-label", "count")
 }
 
 function PlotMonthData() {
     for (let key of ["wins", "prizes", "top10", "games", "last", "mean_position", "mean_players", "rating"]) {
         let keySvg = document.getElementById(`analytics-months-info-${key}-chart`)
         let keyChart = new BarChart({barColor: colors[key]})
-        keyChart.Plot(keySvg, months_data, [key], "date", key, "")
+        keyChart.Plot(keySvg, months_data, "date", key)
     }
 }

@@ -40,54 +40,22 @@ BarChart.prototype.AppendLabel = function(svg, x, y, labelText, baseline = "midd
     }
 }
 
-BarChart.prototype.MakeBar = function(x, y, rectWidth, rectHeight, color) {
+BarChart.prototype.AppendBar = function(svg, x, y, rectWidth, rectHeight) {
+    if (rectHeight <= 0)
+        return
+
     let bar = document.createElementNS('http://www.w3.org/2000/svg', "rect")
     bar.setAttribute("x", x)
     bar.setAttribute("y", y)
     bar.setAttribute("width", rectWidth)
     bar.setAttribute("height", rectHeight)
     bar.setAttribute("rx", Math.min(this.radius, rectHeight / 4))
-    bar.setAttribute("fill", color)
-    return bar
+    bar.setAttribute("fill", this.barColor)
+
+    svg.appendChild(bar)
 }
 
-BarChart.prototype.MakeDivider = function(x, y, width) {
-    let path = document.createElementNS('http://www.w3.org/2000/svg', "path")
-    path.setAttribute("d", `M${x} ${y} l${width} 0`)
-    path.setAttribute("stroke-width", this.gap)
-    path.setAttribute("class", 'chart-divider')
-    return path
-}
-
-BarChart.prototype.AppendBar = function(svg, x, y, rectWidth, rectHeight, data, keys) {
-    if (rectHeight == 0)
-        return []
-
-    let coords = []
-    let total = 0
-    let wasStart = false
-
-    for (let key of keys)
-        total += data[key]
-
-    for (let i = 0; i < keys.length; i++) {
-        let partHeight = data[keys[i]] / total * rectHeight
-        svg.appendChild(this.MakeBar(x, y, rectWidth, partHeight, this.barColor))
-
-        if (wasStart && partHeight > 0)
-            coords.push(y)
-
-        if (partHeight > 0)
-            wasStart = true
-
-        y += partHeight
-    }
-
-    for (let coord of coords)
-        svg.appendChild(this.MakeDivider(x, coord, rectWidth))
-}
-
-BarChart.prototype.Plot = function(svg, data, keys, axisKey, labelKey, labelUnit) {
+BarChart.prototype.Plot = function(svg, data, axisKey, labelKey) {
     let width = svg.clientWidth
     let height = svg.clientHeight
     let rectWidth = width / data.length - this.padding
@@ -110,8 +78,7 @@ BarChart.prototype.Plot = function(svg, data, keys, axisKey, labelKey, labelUnit
         let x = this.padding / 2 + i * (this.padding + rectWidth)
         let y = height - this.bottomPadding - rectHeight
 
-        this.AppendBar(svg, x, y, rectWidth, rectHeight, data[i], keys)
-
+        this.AppendBar(svg, x, y, rectWidth, rectHeight)
         this.AppendLabel(svg, x + rectWidth / 2, height - this.bottomPadding, data[i][axisKey], "before-edge")
 
         if (data[i][labelKey] == 0)
