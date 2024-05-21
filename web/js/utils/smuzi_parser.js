@@ -15,7 +15,7 @@ SmuziParser.prototype.GetRegexp = function() {
     let name = "(?<name>[^№\\n]+?№\\s*\\d+(\\.\\d+)?(\\s*\\([^\\)]+\\))?(\\s*:[^.!\\n]+?[\\.\\!]|[\\.\\!])?|[^\\.\\!\\n]+?[\\.\\!])"
     let description = "(?<description>.+?)"
     let questions = "(?<questions>\\d+ вопро[а-я]+)"
-    let cost = "((?<cost>\\d+) рублей с (человека|игрока)\\s*)?\\)\\s*.?\\s*"
+    let cost = "((?<cost>\\d+) рублей с (чел|человека|игрока)\\s*)?\\)\\s*.?\\s*"
     return new RegExp(`^${start}${day}\\s*${month}\\s+\\(?${weekday}\\)\\s+${time}\\s+[/(]${place}[\\)]\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?$`, "gim")
 }
 
