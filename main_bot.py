@@ -164,7 +164,7 @@ async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: Li
         photo_file = FSInputFile(os.path.join(tmp_dir, filename))
 
         for chat_id in chat_ids:
-            await bot.send_document(chat_id=chat_id, document=photo_file, caption=f"```\n{caption}\n```", parse_mode="Markdown")
+            await bot.send_document(chat_id=chat_id, document=photo_file, caption=caption)
 
 
 def make_schedule_picture(output_path: str) -> str:
