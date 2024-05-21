@@ -233,6 +233,7 @@ def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
 
     positions = {i: 0 for i in range(1, 17)}
     category_positions = {category: {i: 0 for i in range(1, 17)} for category in constants.CATEGORIES}
+    category2positions = {category: [] for category in constants.CATEGORIES}
     categories = get_categories_count(quizzes)
     categories_wins = {category: 0 for category in constants.CATEGORIES}
     categories_prizes = {category: 0 for category in constants.CATEGORIES}
@@ -241,6 +242,7 @@ def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
     for quiz in quizzes:
         positions[min(quiz.position, 16)] += 1
         category_positions[quiz.category][min(quiz.position, 16)] += 1
+        category2positions[quiz.category].append(quiz.position)
 
         if quiz.is_win():
             categories_wins[quiz.category] += 1
@@ -251,8 +253,8 @@ def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
         for participant in quiz.participants:
             username2quizzes[participant["username"]].append(quiz)
 
-    for cat_positions in category_positions.values():
-        cat_positions["mean"] = sum(position * count for position, count in cat_positions.items()) / max(1, sum(cat_positions.values()))
+    for category, cat_positions in category_positions.items():
+        cat_positions["mean"] = sum(category2positions[category]) / max(1, len(category2positions[category]))
 
     data["positions"] = positions
     data["category_positions"] = category_positions
