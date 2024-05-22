@@ -3,7 +3,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Optional
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Query, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import constants
@@ -24,11 +24,19 @@ class AvatarForm:
 
 
 @router.get("/profile")
-def profile(user: Optional[dict] = Depends(get_current_user)) -> Response:
+def profile(user: Optional[dict] = Depends(get_current_user), username: str = Query("")) -> Response:
     if not user:
         return RedirectResponse(url="/login?back_url=/profile")
 
-    games = list(database.quizzes.find({"position": {"$ne": 0}, "participants.username": user["username"]}, {"_id": 0}).sort([("date", -1), ("time", -1)]))
+    show_user = database.users.find_one({"username": {"$regex": f"^{username}$", "$options": "i"}}) if username else user
+
+    if show_user is None or username.lower() == user["username"].lower():
+        return RedirectResponse(url="/profile")
+
+    if show_user != user and show_user["username"] != username:
+        return RedirectResponse(url=f'/profile?username={show_user["username"]}')
+
+    games = list(database.quizzes.find({"position": {"$ne": 0}, "participants.username": show_user["username"]}, {"_id": 0}).sort([("date", -1), ("time", -1)]))
     month2games = defaultdict(int)
 
     for game in games:
@@ -37,7 +45,16 @@ def profile(user: Optional[dict] = Depends(get_current_user)) -> Response:
     month2games = sorted([(year, month, games) for (year, month), games in month2games.items()], key=lambda item: (item[0], item[1]))
 
     template = templates.get_template("pages/profile.html")
-    content = template.render(user=user, page="profile", version=get_static_hash(), games=games, month2games=month2games, month2rus=constants.MONTH_TO_RUS)
+    content = template.render(
+        user=user,
+        show_user=show_user,
+        page="profile",
+        version=get_static_hash(),
+        games=games,
+        month2games=month2games,
+        month2rus=constants.MONTH_TO_RUS
+    )
+
     return HTMLResponse(content=content)
 
 

@@ -125,7 +125,7 @@
         <div class="analytics-player">
             <img class="analytics-player-avatar" src="{{player.image_src}}">
             <div class="analytics-player-name">
-                {{player.fullname}} - {{player.count_text}}
+                <a href="/profile?username={{player.username}}">{{player.fullname}}</a> - {{player.count_text}}
                 <div class="analytics-player-categories">
                     <b>Топ категорий</b>:
                 {% for category, count in player.categories[:3] %}{% if loop.index > 1 %}, {% endif %}{{category}} ({{count}}){% endfor %}
@@ -140,7 +140,7 @@
             <div class="analytics-player">
                 <img class="analytics-player-avatar" src="{{player.image_src}}">
                 <div class="analytics-player-name">
-                    {{player.fullname}} - {{player.count_text}}
+                    <a href="/profile?username={{player.username}}">{{player.fullname}}</a> - {{player.count_text}}
                     <div class="analytics-player-categories">
                         <b>Топ категорий</b>:
                     {% for category, count in player.categories[:3] %}{% if loop.index > 1 %}, {% endif %}{{category}} ({{count}}){% endfor %}
