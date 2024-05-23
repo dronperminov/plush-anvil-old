@@ -116,11 +116,16 @@ h3 {
     padding: 5px;
     border: 1px solid #aaa;
     text-align: center;
+    vertical-align: middle;
 }
 
-.analytics-quizzes td:last-child {
+.analytics-quizzes .quiz-name {
     text-align: left;
-    min-width: 220px;
+    min-width: 180px;
+}
+
+.analytics-quizzes .quiz-organizer img {
+    width: 25px;
 }
 
 .analytics-months-info {

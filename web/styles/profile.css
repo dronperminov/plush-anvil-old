@@ -119,6 +119,15 @@ h2 {
     font-size: 0.8em;
     padding: 5px;
     border: 1px solid #aaa;
+    vertical-align: middle;
+}
+
+.visited-quizzes .quiz-organizer {
+    text-align: center;
+}
+
+.visited-quizzes .quiz-organizer img {
+    width: 25px;
 }
 
 .quizzes-chart {

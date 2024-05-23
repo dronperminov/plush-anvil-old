@@ -77,11 +77,12 @@
         <h2>Посещённые квизы ({{games|length}})</h2>
         <div class="visited-quizzes">
             <table>
-                <tr><th>Дата</th><th>Название</th></tr>
+                <tr><th>Дата</th><th colspan="2">Игра</th></tr>
                 {% for quiz in games %}
                 <tr>
                     <td>{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
-                    <td>{{quiz.name}}</td>
+                    <td class="quiz-name">{{quiz.name}}</td>
+                    <td class="quiz-organizer"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"></td>
                 </tr>
                 {% endfor %}
             </table>
