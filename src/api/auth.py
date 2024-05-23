@@ -77,15 +77,15 @@ def validate(user: Optional[dict] = Depends(auth.get_current_user)) -> JSONRespo
 
 
 @router.post("/change-password")
-def change_password(user: Optional[dict] = Depends(auth.get_current_user), curr_pass: str = Body(..., embed=True), new_pass: str = Body(..., embed=True)) -> JSONResponse:
+def change_password(user: Optional[dict] = Depends(auth.get_current_user), curr_password: str = Body(..., embed=True), password: str = Body(..., embed=True)) -> JSONResponse:
     if not user:
         return JSONResponse({"status": constants.ERROR, "message": "Пользователь не залогинен"})
 
-    if not auth.validate_password(curr_pass, user["password_hash"]):
+    if not auth.validate_password(curr_password, user["password_hash"]):
         return JSONResponse({"status": "error", "message": "Текущий пароль введён неверно"})
 
-    if curr_pass == new_pass:
+    if curr_password == password:
         return JSONResponse({"status": "error", "message": "Текущий пароль совпадает с новым"})
 
-    database.users.update_one({"username": user["username"]}, {"$set": {"password_hash": auth.get_password_hash(new_pass)}})
+    database.users.update_one({"username": user["username"]}, {"$set": {"password_hash": auth.get_password_hash(password)}})
     return JSONResponse({"status": constants.SUCCESS})
