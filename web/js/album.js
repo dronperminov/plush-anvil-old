@@ -36,14 +36,17 @@ function UploadImage(file, albumId) {
     data.append("image", file)
     data.append("album_id", albumId)
 
+    let photoBlock = MakeElement("photo", null)
+    block.prepend(photoBlock)
+
     return SendRequest("/upload-photo", data).then(response => {
         if (response.status != SUCCESS_STATUS) {
             error.innerText = "некоторые фотографии не удалось загрузить"
+            block.removeChild(photoBlock)
             return false
         }
 
         if (response.added) {
-            let photoBlock = MakeElement("photo", block)
             let remove = MakeElement("interactive-fill-icon photo-remove", photoBlock, {innerHTML: DELETE_ICON})
             remove.children[0].addEventListener("click", () => DeletePhoto(remove.children[0], albumId, response.src))
             let starStroke = MakeElement("interactive-fill-icon photo-preview", photoBlock, {innerHTML: STAR_STROKE_ICON})
@@ -53,8 +56,11 @@ function UploadImage(file, albumId) {
             let img = MakeElement("gallery-source", photoBlock, {tag: "img", "src": response.preview_src, "data-src": response.src, "data-album-id": albumId})
             let error = MakeElement("error", photoBlock)
             gallery.AddPhoto(img, [])
-            photoBlock.scrollIntoView({behaviors: "smooth"})
+            block.scrollIntoView({behaviors: "smooth"})
             noPhotos.classList.add("hidden")
+        }
+        else {
+            block.removeChild(photoBlock)
         }
 
         return true
