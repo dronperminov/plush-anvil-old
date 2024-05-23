@@ -28,7 +28,10 @@ function PlotMonthData() {
         keyChart.Plot(keySvg, months_data, "date", key)
     }
 
-    let start = months_data.map(data => data["date"]).indexOf("январь\n2024")
+    if (+months_data[months_data.length - 1]["date"].split("\n")[1] < 2024)
+        return
+
+    let start = months_data.map(data => data["date"]).indexOf("декабрь\n2023") + 1
     let svg = document.getElementById(`analytics-months-info-rating-chart`)
     let chart = new BarChart({barColor: colors["rating"]})
     chart.Plot(svg, months_data, "date", "rating", start)

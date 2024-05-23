@@ -214,10 +214,12 @@
             <svg id="analytics-months-info-mean_players-chart"></svg>
         </div>
 
+        {% if data.months_data[-1].date.year >= 2024 %}
         <h3>Смузи рейтинг</h3>
         <div class="analytics-months-info">
             <svg id="analytics-months-info-rating-chart"></svg>
         </div>
+        {% endif %}
         {% endif %}
     </div>
 
