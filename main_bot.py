@@ -167,10 +167,10 @@ async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: Li
             await bot.send_document(chat_id=chat_id, document=photo_file, caption=caption)
 
 
-def make_schedule_picture(output_path: str) -> str:
+def make_schedule_picture(output_path: str, date: str = "") -> str:
     hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1280, 1020), output_path=output_path)
-    hti.screenshot(url="https://plush-anvil.ru/schedule", save_as="schedule.png")
-    hti.screenshot(url="https://plush-anvil.ru/schedule", save_as="schedule.png")
+    hti.screenshot(url=f"https://plush-anvil.ru/schedule?date={date}", save_as="schedule.png")
+    hti.screenshot(url=f"https://plush-anvil.ru/schedule?date={date}", save_as="schedule.png")
     return os.path.join(output_path, "schedule.png")
 
 
@@ -322,6 +322,23 @@ async def handle_schedule(message: types.Message) -> None:
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         await bot.send_photo(chat_id=message.chat.id, photo=FSInputFile(make_schedule_picture(tmp_dir)), caption="Актуальное расписание")
+
+
+@dp.message(Command("schedule_next"))
+async def handle_schedule_next(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
+    if message.chat.id not in [target_group_id, message.from_user.id]:
+        return await send_error(message, "Команда pred-schedule недоступна для этого чата", delete_message=True)
+
+    await message.delete()
+    today = datetime.now()
+    month, year = (today.month + 1, today.year) if today.month < 12 else (1, today.year + 1)
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        picture = make_schedule_picture(tmp_dir, f"{constants.MONTH_TO_RUS[month]}-{year}")
+        message = await bot.send_photo(chat_id=message.chat.id, photo=FSInputFile(picture), caption=f"Предварительное расписание на {constants.MONTH_TO_RUS[month]}")
+        await message.pin(disable_notification=True)
 
 
 @dp.message(Command("pred_poll"))

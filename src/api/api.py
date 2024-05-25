@@ -56,8 +56,8 @@ def schedule(date: str = Body(..., embed=True)) -> JSONResponse:
 
 
 @router.get("/schedule")
-def schedule_get() -> HTMLResponse:
-    parsed_date = parse_date("")
+def schedule_get(date: str = Query("")) -> HTMLResponse:
+    parsed_date = parse_date(date)
     template = templates.get_template("pages/schedule.html")
     curr_schedule = get_schedule(parsed_date)
     places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
