@@ -148,7 +148,7 @@ async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: Li
         return
 
     tg_messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": quiz_ids}})}
-    caption = "\n".join([f'{quiz.name}: {tg_messages[quiz_id]["url"] if quiz_id in tg_messages else ""}' for quiz_id, quiz in zip(quiz_ids, quizzes)])
+    caption = "\n".join([f'{quiz.name}:\n{tg_messages[quiz_id]["url"] if quiz_id in tg_messages else ""}' for quiz_id, quiz in zip(quiz_ids, quizzes)])
 
     date = quizzes[0].date
     weekday = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"][date.weekday()]
