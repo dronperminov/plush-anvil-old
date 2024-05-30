@@ -1,6 +1,7 @@
 {% set title = "Альбомы | Плюшевая наковальня" %}
 {% include "header.html" %}
 <link rel="stylesheet" type="text/css" href="/styles/photos.css?v={{version}}">
+<link rel="stylesheet" type="text/css" href="/styles/inputs.css?v={{version}}">
 </head>
 <body>
     {% include "components/menu.html" %}
@@ -50,9 +51,18 @@
         </div>
         {% endif %}
 
+        <div class="photo-albums-filter">
+            <div class="photo-albums-filter-clear hidden" id="albums-filter-clear">
+                <div class="photo-albums-filter-clear-icon"></div>
+            </div>
+            <div class="photo-albums-filter-input">
+                <input class="basic-input default-input" placeholder="начните писать" id="albums-filter-input">
+            </div>
+        </div>
+
         <div class="photo-albums">
             {% for album in albums %}
-            <div class="photo-album">
+            <div class="photo-album" id="album-{{album.album_id}}">
                 <div class="photo-album-main">
                     <div class="photo-album-preview">
                         {% if album.preview_url %}
@@ -87,8 +97,16 @@
 
     <script src="/js/fetch.js?v={{version}}"></script>
     <script src="/js/utils.js?v={{version}}"></script>
+    <script src="/js/utils/text_filter.js?v={{version}}"></script>
     <script src="/js/photos.js?v={{version}}"></script>
 
     {% include "footer.html" %}
+
+    <script>
+        let filter = new TextFilter("albums-filter-input", "albums-filter-clear", [
+            {% for album in albums %}{id: "album-{{album.album_id}}", text: "{{album.title}}"},
+            {% endfor %}
+        ])
+    </script>
 </body>
 </html>

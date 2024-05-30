@@ -132,6 +132,53 @@ h1 {
     text-align: right;
 }
 
+.photo-albums-filter {
+    display: table;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.photo-albums-filter-input {
+    display: table-cell;
+}
+
+.photo-albums-filter-clear {
+    display: table-cell;
+    width: 25px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.photo-albums-filter-clear-icon {
+    display: block;
+    position: relative;
+    width: 1em;
+    height: 2px;
+    transition: all .2s ease-out;
+}
+
+.photo-albums-filter-clear-icon:before, .photo-albums-filter-clear-icon:after {
+    background: #eee;
+    content: "";
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.photo-albums-filter-clear:hover .photo-albums-filter-clear-icon:before, .photo-albums-filter-clear:hover  .photo-albums-filter-clear-icon:after {
+    background: #fff;
+}
+
+.photo-albums-filter-clear-icon:before {
+    transform: rotate(-45deg);
+}
+
+.photo-albums-filter-clear-icon:after {
+    transform: rotate(45deg);
+}
+
 @media (max-width: 300px) {
     .photo-albums {
         grid-template-columns: 1fr;
