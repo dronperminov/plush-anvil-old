@@ -9,6 +9,12 @@
         <h1>Игроки квиза {{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}} "{{quiz.name}}"</h1>
 
         <div id="users"></div>
+        <div class="form-row form-row-checkbox">
+            <label>
+                <input type="checkbox" id="ignore-participants" {% if quiz.ignore_participants %}checked{% endif %} onchange="ShowBtn()">
+                Не учитывать квиз в проходках
+            </label>
+        </div>
 
         <button id="save-btn" class="basic-button default-button hidden" onclick="SaveUsers()">Сохранить</button>
         <div class="error" id="error"></div>
@@ -23,11 +29,18 @@
         const users = {{users}}
 
         function SaveUsers() {
+            let checkbox = document.getElementById("ignore-participants")
             let btn = document.getElementById("save-btn")
             let error = document.getElementById("error")
             error.innerText = ""
 
-            SendRequest("/update-quiz-participants", {"quiz_id": "{{quiz._id}}", "participants": userSelect.GetSelected()}).then(response => {
+            let data = {
+                "quiz_id": "{{quiz._id}}",
+                "participants": userSelect.GetSelected(),
+                "ignore_participants": checkbox.checked
+            }
+
+            SendRequest("/update-quiz-participants", data).then(response => {
                 if (response.status != SUCCESS_STATUS) {
                     error.innerText = response.message
                     return

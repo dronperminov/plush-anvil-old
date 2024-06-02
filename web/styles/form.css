@@ -88,4 +88,8 @@
     .form-row-input {
         grid-area: input;
     }
+
+    .form-row-checkbox {
+        display: block;
+    }
 }

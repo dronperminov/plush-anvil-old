@@ -21,6 +21,7 @@ router = APIRouter()
 class QuizParticipantsForm:
     quiz_id: str = Body(..., embed=True)
     participants: List[dict] = Body(..., embed=True)
+    ignore_participants: bool = Body(..., embed=True)
 
 
 @dataclass
@@ -97,7 +98,14 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
     users = {user["username"]: user for user in database.users.find({})}
     user2games = {username: [{"date": date, "time": "", "paid": True} for date in users[username].get("participant_dates", [])] for username in users}
 
-    for quiz in database.quizzes.find({"organizer": "Смузи", "participants": {"$exists": True}, "date": {"$gte": datetime(2024, 4, 1)}}):
+    query = {
+        "organizer": "Смузи",
+        "participants": {"$exists": True},
+        "date": {"$gte": datetime(2024, 4, 1)},
+        "ignore_participants": {"$ne": True}
+    }
+
+    for quiz in database.quizzes.find(query):
         for participant in quiz["participants"]:
             if users[participant["username"]].get("ignore_paid", False):
                 continue
@@ -150,7 +158,7 @@ def update_quiz_participants(user: Optional[dict] = Depends(get_current_user), p
         if count < 1 or count > 100:
             return JSONResponse({"status": constants.ERROR, "message": f'Количество проходок участника с ником "@{username}" задано некорректно ({count})'})
 
-    database.quizzes.update_one({"_id": ObjectId(params.quiz_id)}, {"$set": {"participants": params.participants}})
+    database.quizzes.update_one({"_id": ObjectId(params.quiz_id)}, {"$set": {"participants": params.participants, "ignore_participants": params.ignore_participants}})
     return JSONResponse({"status": constants.SUCCESS})
 
 
