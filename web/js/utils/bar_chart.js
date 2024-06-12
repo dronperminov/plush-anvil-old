@@ -72,7 +72,7 @@ BarChart.prototype.Map = function(x, xmin, xmax, min, max) {
 
 BarChart.prototype.Plot = function(svg, data, axisKey, labelKey, startIndex = 0) {
     let width = svg.clientWidth
-    let height = svg.clientHeight
+    let height = svg.clientHeight == 0 ? 300 : svg.clientHeight
     let rectWidth = width / (data.length - startIndex) - this.padding
     let limits = this.GetLimits(data, labelKey, startIndex)
 
