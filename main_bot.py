@@ -402,8 +402,9 @@ async def handle_inline_poll(query: InlineQuery) -> None:
         return
 
     today = datetime.now()
+    delta = 13 - today.weekday() if today.weekday() >= 5 else 6 - today.weekday()
     start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
-    end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=7)
+    end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=delta)
 
     results = []
 
@@ -432,7 +433,7 @@ async def handle_inline_poll(query: InlineQuery) -> None:
     if len(lost_quiz_ids) > 1:
         result = InlineQueryResultArticle(
             id="all_quizzes",
-            title=f'Все {get_word_form(len(lost_quiz_ids), ["квизов", "квиза", "квиз"])}',
+            title=f'Все {get_word_form(len(lost_quiz_ids), ["квизов", "квиза", "квиз"])} до {end_date.day:02d}.{end_date.month:02d}.{end_date.year}',
             description="",
             input_message_content=InputTextMessageContent(message_text=f'/poll {" ".join(lost_quiz_ids)}')
         )
@@ -467,7 +468,7 @@ async def handle_inline_story(query: InlineQuery) -> None:
 
 
 @dp.inline_query(F.query == "list")
-async def handke_inline_list(query: InlineQuery) -> None:
+async def handle_inline_list(query: InlineQuery) -> None:
     today = datetime.now()
     curr_start, curr_end = get_month_dates(today)
 
