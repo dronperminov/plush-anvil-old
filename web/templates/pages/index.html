@@ -8,7 +8,12 @@
     <div class="first-screen">
         <h1>КОМАНДА ПЛЮШЕВАЯ НАКОВАЛЬНЯ</h1>
 
-        <div class="first-screen-rating">РЕЙТИНГ СМУЗИ: {{ smuzi_rating.score }} ({{smuzi_rating.info.level}} уровень, {{smuzi_rating.info.name}})</div>
+        <div class="first-screen-rating">РЕЙТИНГ СМУЗИ: {{ smuzi_rating.score }} ({{smuzi_rating.info.level}} уровень, {{smuzi_rating.info.name}})
+            <br><br><small>{{smuzi_rating.mean|round(2)}} в среднем за {{smuzi_rating.total_games_text}}</small>
+        {% if smuzi_rating.next_level %}
+            <br><small>До "{{smuzi_rating.next_level.info.name}}" ~{{smuzi_rating.next_level.count}} и {{smuzi_rating.next_level.score}}</small>
+        {% endif %}
+        </div>
 
         {% if next_quizzes1 %}
         <div class="first-screen-quiz">

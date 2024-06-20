@@ -167,12 +167,32 @@ def get_smuzi_rating() -> dict:
         rating += SMUZI_POSITION_TO_SCORE.get(quiz["position"], 50)
         players.append(quiz.get("players", 0))
 
-        if rating >= SMUZI_RATING_TO_NAME[level + 1]["score"]:
+        if level < len(SMUZI_RATING_TO_NAME) - 1 and rating >= SMUZI_RATING_TO_NAME[level + 1]["score"]:
             level += 1
             history.append({"date": quiz["date"], "score": rating, "players": players, "mean_players": sum(players) / len(players)})
             players = []
 
-    return {"score": rating, "info": SMUZI_RATING_TO_NAME[level], "players": players, "mean_players": sum(players) / max(len(players), 1), "history": history}
+    mean_rating = rating / max(len(quizzes), 1)
+    next_level = None
+
+    if level < len(SMUZI_RATING_TO_NAME) - 1:
+        next_level = {
+            "count": get_word_form(round((SMUZI_RATING_TO_NAME[level + 1]["score"] - rating) / mean_rating + 0.5), ["игр", "игры", "игра"]),
+            "score": get_word_form(SMUZI_RATING_TO_NAME[level + 1]["score"] - rating, ["баллов", "балла", "балл"]),
+            "info": SMUZI_RATING_TO_NAME[level + 1]
+        }
+
+    return {
+        "score": rating,
+        "mean": mean_rating,
+        "total_games": len(quizzes),
+        "total_games_text": get_word_form(len(quizzes), ["игр", "игры", "игру"]),
+        "next_level": next_level,
+        "info": SMUZI_RATING_TO_NAME[level],
+        "players": players,
+        "mean_players": sum(players) / max(len(players), 1),
+        "history": history
+    }
 
 
 def get_dates_query(start_date: Optional[datetime], end_date: Optional[datetime]) -> dict:
