@@ -1,5 +1,6 @@
 {% set title = "Аналитика | Плюшевая наковальня" %}
 {% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/year_grid.css?v={{version}}">
 <link rel="stylesheet" type="text/css" href="/styles/analytics.css?v={{version}}">
 </head>
 <body>
@@ -24,6 +25,8 @@
             <a href="/analytics?start_date={{dates['year'][0]}}&end_date={{dates['year'][1]}}">текущий год</a>,
             <a href="/analytics?start_date={{dates['month'][0]}}&end_date={{dates['month'][1]}}">текущий месяц</a>
         </p>
+
+        <div id="year-grid"></div>
 
         {% if data.total.games > 0 %}
         <div class="analytics-info">
@@ -229,6 +232,7 @@
     <script src="/js/utils.js?v={{version}}"></script>
     <script src="/js/utils/chart.js?v={{version}}"></script>
     <script src="/js/utils/bar_chart.js?v={{version}}"></script>
+    <script src="/js/utils/year_grid.js?v={{version}}"></script>
     <script src="/js/analytics.js?v={{version}}"></script>
     <script>
         const colors = {
@@ -275,6 +279,16 @@
         PlotAnalyticsChart()
         PlotCategoriesChart()
         PlotPositionsChart("analytics-positions-chart", positions_data)
+
+        let events = [
+            {% for category_info in data.total.categories %}
+            {% for game in data.games[category_info.name] %}
+            "{{game.date.year}}-{{game.date.month}}-{{game.date.day}}",
+            {% endfor %}
+            {% endfor %}
+        ]
+
+        let grid = new YearGrid("year-grid", events, ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"])
 
         {% for category_info in data.total.categories %}
         {% if data.total.category_positions[category_info.name].values()|sum > 0 %}

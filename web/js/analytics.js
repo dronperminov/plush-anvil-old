@@ -12,6 +12,8 @@ function PlotCategoriesChart() {
 
 function PlotPositionsChart(svgId, positions) {
     let svg = document.getElementById(svgId)
+    svg.clientHeight = 300
+
     let chart = new BarChart({barColor: colors.positions, minRectWidth: 32, maxRectWidth: 45, bottomPadding: 12})
     let data = []
 

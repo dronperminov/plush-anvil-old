@@ -1,5 +1,6 @@
 {% set title = "%s (@%s) | Плюшевая наковальня" % (show_user.fullname, show_user.username) %}
 {% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/year_grid.css?v={{version}}">
 <link rel="stylesheet" type="text/css" href="/styles/profile.css?v={{version}}">
 </head>
 <body>
@@ -68,6 +69,7 @@
         </ul>
         {% endif %}
 
+
         {% if games %}
         <h2>Количество посещённых квизов по месяцам</h2>
         <div class="quizzes-chart">
@@ -75,6 +77,8 @@
         </div>
 
         <h2>Посещённые квизы ({{games|length}})</h2>
+        <div id="year-grid"></div>
+
         <div class="visited-quizzes">
             <table>
                 <tr><th>Дата</th><th colspan="2">Игра</th></tr>
@@ -95,6 +99,7 @@
     <script src="/js/utils/image_cropper.js?v={{version}}"></script>
     <script src="/js/profile.js?v={{version}}"></script>
     <script src="/js/utils/bar_chart.js?v={{version}}"></script>
+    <script src="/js/utils/year_grid.js?v={{version}}"></script>
     <script>
         {% if show_user == user %}
         let cropper = new ImageCropper("cropper")
@@ -111,6 +116,16 @@
         let svg = document.getElementById("quizzes-chart")
         let chart = new BarChart({radius: 5})
         chart.Plot(svg, MONTH2GAMES, "date", "games")
+
+        {% if games %}
+        let events = [
+            {% for game in games %}
+            "{{game.date.year}}-{{game.date.month}}-{{game.date.day}}",
+            {% endfor %}
+        ]
+
+        let grid = new YearGrid("year-grid", events, ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"])
+        {% endif %}
     </script>
     {% include "footer.html" %}
 </body>
