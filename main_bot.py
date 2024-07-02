@@ -126,6 +126,10 @@ async def send_remind(quizzes: List[dict]) -> None:
             final_line
         ]
 
+        if (existed_message := database.tg_quiz_messages.find_one({"quiz_id": quiz["_id"], "remind_message_id": {"$exists": True}})) is not None:
+            await bot.edit_message_text("\n".join(lines), target_group_id, existed_message["remind_message_id"], parse_mode="HTML", disable_web_page_preview=True)
+            return
+
         kwargs = {"reply_to_message_id": messages[quiz["_id"]]["message_id"]} if quiz["_id"] in messages else {}
         message = await bot.send_message(target_group_id, text="\n".join(lines), parse_mode="HTML", disable_web_page_preview=True, **kwargs)
     else:
@@ -306,6 +310,20 @@ async def handle_story(message: types.Message) -> None:
 
     await message.delete()
     await send_story(quizzes, [ObjectId(quiz_id) for quiz_id in quiz_ids], [message.from_user.id])
+
+
+@dp.message(Command("remind"))
+async def handle_remind(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
+    if message.chat.id != target_group_id:
+        return await send_error(message, "Команда remind недоступна для этого чата", delete_message=True)
+
+    try:
+        await message.delete()
+        await send_remind(get_remind_quizzes())
+    except Exception as error:
+        logger.info(f"Raised exception during remind: {error}")
 
 
 @dp.message(Command("schedule"))
