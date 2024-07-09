@@ -109,3 +109,7 @@ ANALYTICS_COLORS = {
     "rating": "#ffc154",
     "position": "#00bcd4"
 }
+
+FREE_GAME = "free"
+PAID_GAME = "paid"
+PASS_GAME = "pass"

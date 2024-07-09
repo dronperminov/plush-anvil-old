@@ -121,6 +121,17 @@
     font-size: 0.9em;
 }
 
+.user-select-results .user-select-user {
+    background: #222;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
 .user-select-results .user-select-user:hover {
     background: #888;
+}
+
+/******************* INPUTS ******************/
+.user-select-user-paid select {
+    margin-bottom: 10px;
 }

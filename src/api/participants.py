@@ -9,6 +9,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 
 from src import constants
 from src.api import make_error, templates
+from src.constants import PAID_GAME, PASS_GAME
 from src.database import database
 from src.utils.auth import get_current_user
 from src.utils.common import get_static_hash, get_word_form
@@ -57,7 +58,7 @@ def get_last_free_game(games: List[dict]) -> int:
     paid_games = 0
 
     for game in games[::-1]:
-        if not game["paid"]:
+        if game["paid"] == PASS_GAME:
             break
 
         paid_games += 1
@@ -78,9 +79,9 @@ def get_paid_games(games: List[dict]) -> int:
 
     paid_games = 0
     for game in games[:end_index]:
-        if game["paid"]:
+        if game["paid"] == PAID_GAME:
             paid_games += 1
-        else:
+        elif game["paid"] == PASS_GAME:
             paid_games -= 10
 
     return paid_games
@@ -95,7 +96,7 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
     users = {user["username"]: user for user in database.users.find({})}
-    user2games = {username: [{"date": date, "time": "", "paid": True} for date in users[username].get("participant_dates", [])] for username in users}
+    user2games = {username: [{"date": date, "time": "", "paid": PAID_GAME} for date in users[username].get("participant_dates", [])] for username in users}
 
     query = {
         "organizer": "Смузи",
@@ -110,8 +111,11 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
                 continue
 
             count = participant.get("count", 1) - 1
-            user2games[participant["username"]].append({"date": quiz["date"], "time": quiz["time"], "paid": participant["paid"]})
-            user2games[participant["username"]].extend([{"date": quiz["date"], "time": "", "paid": True}] * count)
+
+            if participant["paid"] in [PAID_GAME, PASS_GAME]:
+                user2games[participant["username"]].append({"date": quiz["date"], "time": quiz["time"], "paid": participant["paid"]})
+
+            user2games[participant["username"]].extend([{"date": quiz["date"], "time": "", "paid": PAID_GAME}] * count)
 
     participants = []
 

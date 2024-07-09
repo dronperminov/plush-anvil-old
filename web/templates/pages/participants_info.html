@@ -51,7 +51,7 @@
                     <div class="participant-games">
                         {% for game in participant.games %}
                         <div class="participant-game">
-                            <div class="participant-game-cell {% if game.paid %}participant-game-fill-cell{% endif %} {% if game.time == '' %}participant-game-other-cell{% endif %}"></div>
+                            <div class="participant-game-cell {% if game.paid == 'paid' %}participant-game-fill-cell{% endif %} {% if game.time == '' %}participant-game-other-cell{% endif %}"></div>
                             <div class="participant-game-date">{{"%02d.%02d.%d" % (game.date.day, game.date.month, game.date.year)}}</div>
                         </div>
                         {% endfor %}

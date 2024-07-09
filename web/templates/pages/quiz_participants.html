@@ -58,7 +58,7 @@
         let userSelect = new UserSelect(users, "users", {{"true" if quiz.organizer == "Смузи" else "false"}}, true, ShowBtn)
 
         {% for participant in quiz.participants %}
-        userSelect.SelectUser("{{participant.username}}", {{"true" if participant.paid else "false"}}, {{participant.get("count", 1)}})
+        userSelect.SelectUser("{{participant.username}}", "{{participant.paid}}", {{participant.get("count", 1)}})
         {% endfor %}
     </script>
 </body>

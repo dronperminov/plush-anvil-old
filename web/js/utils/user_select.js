@@ -1,3 +1,7 @@
+const PAID_GAME = "paid"
+const FREE_GAME = "free"
+const PASS_GAME = "pass"
+
 function UserSelect(users, blockId, canPaid, canCount, onChange) {
     this.users = users
     this.onChange = onChange
@@ -37,7 +41,7 @@ UserSelect.prototype.BuildUsers = function() {
     for (let [username, user] of Object.entries(this.users)) {
         user.block = this.BuildUser(usersBlock, user)
         user.isSelect = false
-        user.isPaid = true
+        user.paid = PAID_GAME
         user.count = 1
     }
 
@@ -51,7 +55,7 @@ UserSelect.prototype.BuildResults = function() {
     for (let user of Object.values(this.users)) {
         let result = this.BuildResultUser(this.resultsUsersBlock, user)
         user.resultBlock = result.block
-        user.resultCheckbox = result.checkbox
+        user.resultSelect = result.select
         user.resultInput = result.input
     }
 
@@ -82,9 +86,10 @@ UserSelect.prototype.BuildResultUser = function(parent, user, isResult, onclick)
     })
 
     let paid = this.MakeElement("user-select-user-paid", name)
-    let label = this.MakeElement("", paid, {}, "label")
-    let checkbox = this.MakeElement("", label, {type: "checkbox", checked: true}, "input")
-    let span = this.MakeElement("", label, {innerText: " платно"}, "span")
+    let select = this.MakeElement("basic-input default-input", paid, {checked: true}, "select")
+
+    for (let [value, text] of Object.entries({"paid": "платно", "pass": "проходка", "free": "бесплатно"}))
+        this.MakeElement("", select, {value: value, innerText: text}, "option")
 
     let count = this.MakeElement("user-select-user-count", name)
     let input = this.MakeElement("basic-input default-input", count, {type: "number", min: 1, value: 1, step: 1, placeholder: "количество проходок"}, "input")
@@ -95,8 +100,8 @@ UserSelect.prototype.BuildResultUser = function(parent, user, isResult, onclick)
     if (!this.canCount)
         count.classList.add("user-select-hidden")
 
-    checkbox.addEventListener("change", () => {
-        user.isPaid = checkbox.checked
+    select.addEventListener("change", () => {
+        user.paid = select.value
         this.onChange()
     })
 
@@ -110,7 +115,7 @@ UserSelect.prototype.BuildResultUser = function(parent, user, isResult, onclick)
         this.onChange()
     })
 
-    return {"block": block, "checkbox": checkbox, "input": input}
+    return {"block": block, "select": select, "input": input}
 }
 
 UserSelect.prototype.ClearQuery = function() {
@@ -136,7 +141,7 @@ UserSelect.prototype.FilterUsers = function() {
     let selectedCount = 0
 
     for (let user of Object.values(this.users)) {
-        user.resultCheckbox.checked = user.isPaid
+        user.resultSelect.value = user.paid
         user.resultInput.value = user.count
 
         if (user.isSelect) {
@@ -192,12 +197,12 @@ UserSelect.prototype.Transliterate = function(query) {
     return query.split("").map(c => c in map ? map[c] : c).join("")
 }
 
-UserSelect.prototype.SelectUser = function(username, isPaid = true, count = 1) {
+UserSelect.prototype.SelectUser = function(username, paid = PAID_GAME, count = 1) {
     if (!this.users[username].isSelect)
         this.selected.push(username)
 
     this.users[username].isSelect = true
-    this.users[username].isPaid = isPaid
+    this.users[username].paid = paid
     this.users[username].count = count
 
     this.FilterUsers()
@@ -208,7 +213,7 @@ UserSelect.prototype.RemoveUser = function(username) {
         this.selected.splice(this.selected.indexOf(username), 1)
 
     this.users[username].isSelect = false
-    this.users[username].isPaid = true
+    this.users[username].paid = PAID_GAME
     this.users[username].count = 1
 
     this.FilterUsers()
@@ -218,7 +223,7 @@ UserSelect.prototype.GetSelected = function() {
     let selected = []
 
     for (let username of this.selected) {
-        let value = {username: username, paid: this.canPaid ? this.users[username].isPaid : true}
+        let value = {username: username, paid: this.canPaid ? this.users[username].paid : PAID_GAME}
 
         if (this.canCount)
             value.count = this.users[username].count
@@ -253,7 +258,9 @@ UserSelect.prototype.SetAttributes = function(element, attributes) {
 
 UserSelect.prototype.MakeElement = function(className, parent = null, attributes = null, tagName = "div") {
     let element = document.createElement(tagName)
-    element.className = className
+
+    if (className !== "")
+        element.className = className
 
     this.SetAttributes(element, attributes)
 
