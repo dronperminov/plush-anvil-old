@@ -107,7 +107,7 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
 
     for quiz in database.quizzes.find(query):
         for participant in quiz["participants"]:
-            if users[participant["username"]].get("ignore_paid", False):
+            if quiz["date"] < users[participant["username"]].get("ignore_paid_before", quiz["date"]):
                 continue
 
             count = participant.get("count", 1) - 1
