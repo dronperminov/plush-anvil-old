@@ -21,23 +21,25 @@ class Quiz:
     teams: int
     players: int
     participants: List[dict]
+    ignore_rating: bool
 
     @classmethod
     def from_dict(cls: "Quiz", data: dict) -> "Quiz":
         return Quiz(
-            data["name"],
-            data["short_name"],
-            data["date"],
-            data["time"],
-            data["place"],
-            data["organizer"],
-            data["description"],
-            data["category"],
-            data["cost"],
-            data["position"],
-            data["teams"],
-            data["players"],
-            data["participants"]
+            name=data["name"],
+            short_name=data["short_name"],
+            date=data["date"],
+            time=data["time"],
+            place=data["place"],
+            organizer=data["organizer"],
+            description=data["description"],
+            category=data["category"],
+            cost=data["cost"],
+            position=data["position"],
+            teams=data["teams"],
+            players=data["players"],
+            participants=data["participants"],
+            ignore_rating=data.get("ignore_rating", False)
         )
 
     def to_dict(self) -> dict:
@@ -54,7 +56,8 @@ class Quiz:
             "position": self.position,
             "teams": self.teams,
             "players": self.players,
-            "participants": self.participants
+            "participants": self.participants,
+            "ignore_rating": self.ignore_rating
         }
 
     def to_inline_title(self) -> str:
@@ -93,7 +96,7 @@ class Quiz:
         return poll_option
 
     def smuzi_rating(self) -> int:
-        if self.date < datetime(2024, 1, 1) or self.position == 0 or self.organizer != "Смузи":
+        if self.date < datetime(2024, 1, 1) or self.position == 0 or self.organizer != "Смузи" or self.ignore_rating:
             return 0
 
         return SMUZI_POSITION_TO_SCORE.get(self.position, 50)

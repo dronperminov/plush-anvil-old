@@ -157,7 +157,14 @@ def get_word_form(count: int, word_forms: List[str]) -> str:
 
 
 def get_smuzi_rating() -> dict:
-    quizzes = list(database.quizzes.find({"date": {"$gte": datetime(2024, 1, 1)}, "position": {"$ne": 0}, "organizer": "Смузи"}).sort("date", 1))
+    query = {
+        "date": {"$gte": datetime(2024, 1, 1)},
+        "position": {"$ne": 0},
+        "organizer": "Смузи",
+        "ignore_rating": {"$ne": True}
+    }
+
+    quizzes = list(database.quizzes.find(query).sort("date", 1))
     rating = 0
     level = -1
     players = []

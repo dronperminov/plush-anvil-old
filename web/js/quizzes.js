@@ -47,6 +47,8 @@ function ParseQuiz(date, quizId = "", withGameResult = false) {
             return null
     }
 
+    quizData.ignore_rating = withGameResult ? document.getElementById(`ignore-rating${quizId}`).checked : false
+
     return quizData
 }
 

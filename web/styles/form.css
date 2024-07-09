@@ -49,6 +49,11 @@
     vertical-align: middle;
 }
 
+.form-row-checkbox {
+    display: table-cell;
+    vertical-align: middle;
+}
+
 .form-row-top .form-row-icon,
 .form-row-top .form-row-label,
 .form-row-top .form-row-input {

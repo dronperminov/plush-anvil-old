@@ -30,6 +30,7 @@ class QuizAddForm:
     position: int = Body(0, embed=True)
     teams: int = Body(0, embed=True)
     players: int = Body(0, embed=True)
+    ignore_rating: bool = Body(False, embed=True)
 
 
 @dataclass
@@ -132,7 +133,8 @@ def add_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Quiz
         "position": quiz_params.position,
         "teams": quiz_params.teams,
         "players": quiz_params.players,
-        "participants": []
+        "participants": [],
+        "ignore_rating": quiz_params.ignore_rating
     })
 
     database.quizzes.insert_one(quiz.to_dict())
@@ -191,7 +193,8 @@ def update_quiz(user: Optional[dict] = Depends(get_current_user), quiz_params: Q
             "cost": quiz_params.cost,
             "position": quiz_params.position,
             "teams": quiz_params.teams,
-            "players": quiz_params.players
+            "players": quiz_params.players,
+            "ignore_rating": quiz_params.ignore_rating
         }
     })
 

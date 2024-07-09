@@ -155,10 +155,17 @@ function GetFormatTextField(inputId, format, errorMessage, errorFormatMessage) {
     return value
 }
 
+function FixTextareaHeight(textarea, force) {
+    if (!force && textarea.style.height != "")
+        return
+
+    textarea.style.height = "0px"
+    textarea.style.height = `${textarea.scrollHeight + 2}px`
+}
+
 function AutoHeightTextareas() {
     for (let textarea of document.getElementsByTagName("textarea")) {
-        textarea.style.height = "5px"
-        textarea.style.height = `${textarea.scrollHeight + 2}px`
+        FixTextareaHeight(textarea, false)
     }
 }
 
