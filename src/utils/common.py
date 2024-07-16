@@ -72,16 +72,14 @@ def crop_image(path: str, x: float, y: float, size: float) -> None:
 def preview_image(original_path: str, preview_path: str, preview_width: int = 220, preview_height: int = 200) -> None:
     image = cv2.imread(original_path)
     height, width = image.shape[:2]
-    preview_aspect_ratio = preview_width / preview_height
 
-    if width / height > 1.2:
-        target_width = int(height * preview_aspect_ratio)
-        x = (width - target_width) // 2
-        image = image[:, x:x + target_width]
-    elif width / height < 0.8:
-        target_height = int(width / preview_aspect_ratio)
-        y = (height - target_height) // 2
-        image = image[y:y + target_height]
+    k = min(height / preview_height, width / preview_width)
+
+    target_width = int(preview_width * k)
+    target_height = int(preview_height * k)
+    x = (width - target_width) // 2
+    y = (height - target_height) // 2
+    image = image[y:y + target_height, x:x + target_width]
 
     image = cv2.resize(image, (preview_width, preview_height), interpolation=cv2.INTER_AREA)
     cv2.imwrite(preview_path, image, [cv2.IMWRITE_JPEG_QUALITY, 80])
