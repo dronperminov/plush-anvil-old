@@ -37,7 +37,7 @@
 }
 
 .default-input:hover {
-    border-bottom-color: var(--input-border-color);
+    border-bottom-color: var(--input-hover-border-color);
 }
 
 .default-input:focus {
@@ -182,4 +182,40 @@
 
 .one-line-textarea {
     white-space: nowrap;
+}
+
+.basic-select {
+    border: 1px solid var(--input-disabled-color);
+    border-radius: 0.8em;
+    padding: 8px 15px;
+    background: transparent;
+    font-family: var(--input-font-family);
+    font-size: 0.95em;
+    transition: border-color 150ms ease-in;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.basic-select:hover, .basic-select:focus {
+    outline: none;
+    transition: border-color 150ms ease-in;
+}
+
+.basic-select:disabled, .basic-select:disabled:hover, .basic-select:disabled:focus {
+    color: var(--input-disabled-color);
+    border: none;
+}
+
+.default-select {
+    color: var(--input-text-color);
+}
+
+.default-select:hover {
+    border-color: var(--input-hover-border-color);
+}
+
+.default-select:focus {
+    border-color: var(--input-focus-border-color);
 }

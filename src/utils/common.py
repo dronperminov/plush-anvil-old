@@ -299,9 +299,13 @@ def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime], 
         return get_analytics_data(quizzes, only_main=False)
 
     date2quizzes = defaultdict(list)
+    organizers = defaultdict(int)
+    categories = defaultdict(int)
 
     for quiz in quizzes:
         date2quizzes[(quiz.date.year, quiz.date.month)].append(quiz)
+        categories[quiz.category] += 1
+        organizers[quiz.organizer] += 1
 
     months_data = []
 
@@ -314,6 +318,8 @@ def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime], 
     return {
         "total": get_analytics_data(quizzes),
         "games": sorted(quizzes, key=lambda quiz: (quiz.date, quiz.time, -quiz.position), reverse=True),
+        "categories": sorted([(count, name) for name, count in categories.items()], reverse=True),
+        "organizers": sorted([(count, name) for name, count in organizers.items()], reverse=True),
         "months_data": sorted(months_data, key=lambda info: (info["date"]["year"], info["date"]["month"])),
     }
 

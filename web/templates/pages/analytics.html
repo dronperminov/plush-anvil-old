@@ -157,11 +157,34 @@
         {% if data.games|length > 0 %}
         <h2>Игры</h2>
 
-        <div class="analytics-quizzes">
-            <div class="analytics-quizzes-filters">
-                <label><input type="checkbox" onchange="table.UpdateAdditionalColumns(this.checked)"> <b>Подробно</b></label>
-            </div>
+        <div class="analytics-quizzes-filters">
+            <select class="basic-select default-select" onchange="table.FilterRows('position', this.value, NUMBER_FILTER_TYPE)">
+                <option value="all">все места</option>
+                <option value="1-1">победы</option>
+                <option value="2-3">2-3 места</option>
+                <option value="4-">ниже тройки</option>
+                <option value="11-">ниже десятки</option>
+            </select>
 
+            <select class="basic-select default-select" onchange="table.FilterRows('category', this.value, TEXT_FILTER_TYPE)">
+                <option value="all">все категории</option>
+                {% for _, category in data.categories %}
+                <option value="{{category}}">{{category}}</option>
+                {% endfor %}
+            </select>
+
+            <select class="basic-select default-select" onchange="table.FilterRows('organizer', this.value, TEXT_FILTER_TYPE)">
+                <option value="all">все организаторы</option>
+
+                {% for _, organizer in data.organizers %}
+                <option value="{{organizer}}">{{organizer}}</option>
+                {% endfor %}
+            </select>
+
+            <label><input type="checkbox" onchange="table.UpdateAdditionalColumns(this.checked)"> Подробно</label>
+        </div>
+
+        <div class="analytics-quizzes">
             <table>
             <tbody id="games">
                 <tr>
@@ -191,6 +214,7 @@
             </table>
         </div>
 
+        <div class="analytics-quizzes-no-games hidden" id="games-no-rows">Нет подходящих игр, соответствующих условиям выбранных фильтров</div>
         <div class="analytics-quizzes-button">
             <button class="basic-button default-button fit-button hidden" id="games-show">Показать ещё</button>
             <button class="basic-button default-button fit-button hidden" id="games-collapse">Свернуть</button>

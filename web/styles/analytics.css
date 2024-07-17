@@ -108,6 +108,22 @@ h3 {
     margin-bottom: 10px;
 }
 
+.analytics-quizzes-filters select {
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+
+.analytics-quizzes-filters label {
+    white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+    .analytics-quizzes-filters select {
+        display: block;
+        width: 100%;
+    }
+}
+
 .analytics-quizzes table {
     width: 100%;
     border-collapse: collapse;
@@ -158,6 +174,11 @@ h3 {
 .analytics-quizzes .quiz-organizer img {
     width: 25px;
     vertical-align: middle;
+}
+
+.analytics-quizzes-no-games {
+    color: var(--text-color);
+    font-size: 0.9em;
 }
 
 .analytics-quizzes-button {

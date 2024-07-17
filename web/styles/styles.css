@@ -49,6 +49,7 @@
     --input-disabled-color: var(--disabled-color);
     --input-text-color: var(--text-color);
     --input-border-color: var(--border-color);
+    --input-hover-border-color: var(--main-color);
     --input-focus-border-color: var(--main-color);
 
     /* textarea */

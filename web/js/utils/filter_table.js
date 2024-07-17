@@ -1,3 +1,6 @@
+const TEXT_FILTER_TYPE = "text"
+const NUMBER_FILTER_TYPE = "number"
+
 function FilterTable(tableId, showSize = 10, showAdditionalColumns = false) {
     this.table = document.getElementById(tableId)
     this.header = this.table.children[0]
@@ -8,9 +11,12 @@ function FilterTable(tableId, showSize = 10, showAdditionalColumns = false) {
     this.collapseBtn = document.getElementById(`${tableId}-collapse`)
     this.collapseBtn.addEventListener("click", () => this.CollapseRows())
 
+    this.noRows = document.getElementById(`${tableId}-no-rows`)
+
     this.showSize = showSize
     this.showCount = 0
     this.showAdditionalColumns = showAdditionalColumns
+    this.filters = {}
 
     this.ShowNewRows()
 }
@@ -20,12 +26,28 @@ FilterTable.prototype.UpdateAdditionalColumns = function(value) {
     this.Show()
 }
 
+FilterTable.prototype.CanShowRow = function(tr) {
+    for (let [name, filter] of Object.entries(this.filters)) {
+        let value = tr.getElementsByClassName(`column-${name}`)[0].innerText.trim()
+
+        if (!filter(value))
+            return false
+    }
+
+    return true
+}
+
 FilterTable.prototype.Show = function() {
     this.UpdateButtons()
 
     let index = -1
 
     for (let tr of this.table.children) {
+        if (index > -1 && !this.CanShowRow(tr)) {
+            tr.classList.add("hidden")
+            continue
+        }
+
         if (index < this.showCount)
             tr.classList.remove("hidden")
         else
@@ -42,7 +64,7 @@ FilterTable.prototype.Show = function() {
     }
 }
 
-FilterTable.prototype.HideButton = function(button, condition) {
+FilterTable.prototype.HideElement = function(button, condition) {
     if (condition)
         button.classList.add("hidden")
     else
@@ -52,9 +74,12 @@ FilterTable.prototype.HideButton = function(button, condition) {
 FilterTable.prototype.UpdateButtons = function() {
     let total = this.GetTotalRows()
 
-    this.showCount = Math.min(this.showCount, total)
-    this.HideButton(this.showBtn, this.showCount == total)
-    this.HideButton(this.collapseBtn, this.showCount <= this.showSize)
+    this.showCount = Math.min(Math.max(this.showCount, this.showSize), total)
+
+    this.HideElement(this.table, total == 0)
+    this.HideElement(this.noRows, total > 0)
+    this.HideElement(this.showBtn, this.showCount == total)
+    this.HideElement(this.collapseBtn, this.showCount <= this.showSize)
 }
 
 FilterTable.prototype.ShowNewRows = function() {
@@ -69,7 +94,16 @@ FilterTable.prototype.CollapseRows = function() {
 }
 
 FilterTable.prototype.GetTotalRows = function() {
-    return this.table.children.length - 1
+    if (Object.keys(this.filters).length == 0)
+        return this.table.children.length - 1
+
+    let rows = 0
+
+    for (let i = 1; i < this.table.children.length; i++)
+        if (this.CanShowRow(this.table.children[i]))
+            rows++
+
+    return rows
 }
 
 FilterTable.prototype.GetColumn = function(tr, name, autoType) {
@@ -132,6 +166,27 @@ FilterTable.prototype.SortByColumn = function(name, autoType = true) {
 
     for (let row of data)
         this.table.appendChild(row.tr)
+
+    this.Show()
+}
+
+FilterTable.prototype.FilterRows = function(name, value, type) {
+    if (value == "all") {
+        delete this.filters[name]
+    }
+    else {
+        if (type == NUMBER_FILTER_TYPE) {
+            let [min, max] = value.split("-")
+            min = min == "" ? -Infinity : +min
+            max = max == "" ? Infinity : +max
+            this.filters[name] = testValue => min <= +testValue && +testValue <= max
+        }
+        else if (type == "text") {
+            this.filters[name] = testValue => testValue == value
+        }
+        else
+            throw new Error(`Invalid filter type "${type}"`)
+    }
 
     this.Show()
 }
