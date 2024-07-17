@@ -93,6 +93,10 @@
     padding: 7px 10px;
 }
 
+.center-button {
+    margin: 0 auto;
+}
+
 .switch-buttons {
     display: table;
     table-layout: fixed;

@@ -104,6 +104,10 @@ h3 {
     overflow-x: auto;
 }
 
+.analytics-quizzes-filters {
+    margin-bottom: 10px;
+}
+
 .analytics-quizzes table {
     width: 100%;
     border-collapse: collapse;
@@ -117,13 +121,48 @@ h3 {
     vertical-align: middle;
 }
 
+.analytics-quizzes th {
+    padding: 15px 13px;
+    white-space: nowrap;
+}
+
+.analytics-quizzes th.order-asc,
+.analytics-quizzes th.order-desc {
+    padding: 15px 5px;
+    color: var(--main-color);
+}
+
+.analytics-quizzes th.order-asc:after {
+    content: "↑";
+    display: inline-block;
+    width: 16px;
+}
+
+.analytics-quizzes th.order-desc:after {
+    content: "↓";
+    display: inline-block;
+    width: 16px;
+}
+
 .analytics-quizzes .quiz-name {
     text-align: left;
-    min-width: 180px;
+    min-width: 280px;
+}
+
+.analytics-quizzes .quiz-category,
+.analytics-quizzes .quiz-organizer {
+    text-align: left;
+    white-space: nowrap;
 }
 
 .analytics-quizzes .quiz-organizer img {
     width: 25px;
+    vertical-align: middle;
+}
+
+.analytics-quizzes-button {
+    padding-top: 10px;
+    text-align: center;
 }
 
 .analytics-months-info {

@@ -154,28 +154,48 @@
         </details>
         {% endif %}
 
-        <h2>Игры по категориям</h2>
-        {% for category_info in data.total.categories %}
-        {% if data.games[category_info.name]|length > 0 %}
-        <details class="analytics-details">
-            <summary><b class="analytics-circle" style="background: {{category2color[category_info.name]}}"></b> <span>{{category_info.name}}</span></summary>
+        {% if data.games|length > 0 %}
+        <h2>Игры</h2>
 
-            <div class="analytics-quizzes">
-                <table>
-                    <tr><th>Дата</th><th>Место</th><th colspan="2">Игра</th></tr>
-                    {% for quiz in data.games[category_info.name] %}
-                    <tr>
-                        <td>{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
-                        <td>{{quiz.position}}</td>
-                        <td class="quiz-name">{{quiz.name}}</td>
-                        <td class="quiz-organizer"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"></td>
-                    </tr>
-                    {% endfor %}
-                </table>
+        <div class="analytics-quizzes">
+            <div class="analytics-quizzes-filters">
+                <label><input type="checkbox" onchange="table.UpdateAdditionalColumns(this.checked)"> <b>Подробно</b></label>
             </div>
-        </details>
+
+            <table>
+            <tbody id="games">
+                <tr>
+                    <th class="column-date order-desc" onclick="table.SortByColumn('date')">Дата</th>
+                    <th class="column-position" onclick="table.SortByColumn('position')">Место</th>
+                    <th class="column-addition column-category" onclick="table.SortByColumn('category')">Категория</th>
+                    <th class="column-name" onclick="table.SortByColumn('name', false)">Название</th>
+                    <th class="column-addition column-organizer" onclick="table.SortByColumn('organizer', false)">Организатор</th>
+                    <th class="column-addition column-players" onclick="table.SortByColumn('players')">Игроки</th>
+                    <th class="column-addition column-teams" onclick="table.SortByColumn('teams')">Команды</th>
+                    <th class="column-addition column-place" onclick="table.SortByColumn('place', false)">Место проведения</th>
+                </tr>
+
+                {% for quiz in data.games %}
+                <tr class="hidden" data-index="{{loop.index}}">
+                    <td class="quiz-date column-date">{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
+                    <td class="quiz-position column-position">{{quiz.position}}</td>
+                    <td class="column-addition quiz-category column-category"><b class="analytics-circle" style="background: {{category2color[quiz.category]}}"></b> <span>{{quiz.category}}</span></td>
+                    <td class="quiz-name column-name">{{quiz.name}}</td>
+                    <td class="column-addition quiz-organizer column-organizer"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"> {{quiz.organizer}}</td>
+                    <td class="column-addition column-players">{{quiz.players}}</td>
+                    <td class="column-addition column-teams">{{quiz.teams}}</td>
+                    <td class="column-addition column-place">{{quiz.place}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+
+        <div class="analytics-quizzes-button">
+            <button class="basic-button default-button fit-button hidden" id="games-show">Показать ещё</button>
+            <button class="basic-button default-button fit-button hidden" id="games-collapse">Свернуть</button>
+        </div>
         {% endif %}
-        {% endfor %}
 
         {% else %}
         <p>Игр за указанный промежуток времени не было</p>
@@ -233,6 +253,7 @@
     <script src="/js/utils/chart.js?v={{version}}"></script>
     <script src="/js/utils/bar_chart.js?v={{version}}"></script>
     <script src="/js/utils/year_grid.js?v={{version}}"></script>
+    <script src="/js/utils/filter_table.js?v={{version}}"></script>
     <script src="/js/analytics.js?v={{version}}"></script>
     <script>
         const colors = {
@@ -280,15 +301,10 @@
         PlotCategoriesChart()
         PlotPositionsChart("analytics-positions-chart", positions_data)
 
-        let events = [
-            {% for category_info in data.total.categories %}
-            {% for game in data.games[category_info.name] %}
-            "{{game.date.year}}-{{game.date.month}}-{{game.date.day}}",
-            {% endfor %}
-            {% endfor %}
-        ]
+        let events = [{% for game in data.games %}"{{game.date.year}}-{{game.date.month}}-{{game.date.day}}",{% endfor %}]
 
         let grid = new YearGrid("year-grid", events, ["#ebedf0", "hsl(210, 87%, 90%)", "hsl(210, 87%, 76%)", "hsl(210, 87%, 63%)", "hsl(210, 87%, 50%)"])
+        let table = new FilterTable("games")
 
         {% for category_info in data.total.categories %}
         {% if data.total.category_positions[category_info.name].values()|sum > 0 %}
