@@ -9,8 +9,8 @@
     <nav class="nav">
         <ul class="menu">
             <li class="subnav">
-                <p class="subnavbtn"><label for="photo-subnav">ФОТО</label></p>
                 <input class="subnav-checkbox" type="checkbox" id="photo-subnav">
+                <p class="subnavbtn"><label for="photo-subnav">ФОТО</label></p>
                 <div class="subnav-content">
                     <a href="/albums">АЛЬБОМЫ</a>
                     <a href="/photos">ВСЕ ФОТО</a>
@@ -23,15 +23,15 @@
                 </div>
             </li>
             <li class="subnav">
-                <p class="subnavbtn"><label for="about-subnav">О НАС</label></p>
                 <input class="subnav-checkbox" type="checkbox" id="about-subnav">
+                <p class="subnavbtn"><label for="about-subnav">О НАС</label></p>
                 <div class="subnav-content">
                     <a href="/analytics">АНАЛИТИКА</a>
                 </div>
             </li>
             <li class="subnav">
-                <p class="subnavbtn"><label for="trainings-subnav">ТРЕНИРОВКИ</label></p>
                 <input class="subnav-checkbox" type="checkbox" id="trainings-subnav">
+                <p class="subnavbtn"><label for="trainings-subnav">ТРЕНИРОВКИ</label></p>
                 <div class="subnav-content">
                     <a class="subnav-content-icon-item" href="https://music-quiz.plush-anvil.ru">
                         <svg width="24px" height="24px" viewBox="-3 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -62,8 +62,8 @@
             {% if user %}
             {% if user.role == "owner" %}
             <li class="subnav">
-                <p class="subnavbtn"><label for="admin-subnav">УПРАВЛЕНИЕ</label></p>
                 <input class="subnav-checkbox" type="checkbox" id="admin-subnav">
+                <p class="subnavbtn"><label for="admin-subnav">УПРАВЛЕНИЕ</label></p>
                 <div class="subnav-content">
                     <a href="/parse-quizzes">КВИЗЫ</a>
                     <a href="/places">МЕСТА</a>

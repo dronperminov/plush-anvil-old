@@ -1,21 +1,28 @@
 {% set title = "Расписание | Плюшевая наковальня" %}
 {% include "header.html" %}
 <link rel="stylesheet" type="text/css" href="/styles/index.css?v={{version}}">
-<style>.schedule { max-width: 1400px; } </style>
+<style>
+    html { margin: 0; padding: 0 }
+    .content { margin: 0; padding: 0; border: none; max-width: unset }
+    .schedule { max-width: 1400px; }
+    .schedule-month { padding: 5px 0 0 0; background: none; font-weight: bold; }
+</style>
 </head>
 <body>
     <div class="content">
-        <h3 class="schedule-month">
-            <svg class="schedule-control-icon hidden" width="25px" height="25px" viewBox="100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-prev-date">
-                <path d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z" />
-            </svg>
+        <div class="schedule-month">
+            <div class="schedule-month-table">
+                <svg class="schedule-control-icon hidden" width="25px" height="25px" viewBox="100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-prev-date">
+                    <path d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z" />
+                </svg>
 
-            <span class="schedule-date" id="schedule-month"></span>
+                <span class="schedule-date" id="schedule-month"></span>
 
-            <svg class="schedule-control-icon hidden" width="25px" height="25px" viewBox="-100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-next-date">
-                <path d="M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z" />
-            </svg>
-        </h3>
+                <svg class="schedule-control-icon hidden" width="25px" height="25px" viewBox="-100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-next-date">
+                    <path d="M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z" />
+                </svg>
+            </div>
+        </div>
 
         <div class="error" id="schedule-error"></div>
 

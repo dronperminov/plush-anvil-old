@@ -7,8 +7,8 @@
 }
 
 .user-select-input {
-    background: #ffffff;
-    color: #555555;
+    background: var(--content-background);
+    color: var(--text-color);
 
     border-radius: 10px;
     user-select: none;
@@ -39,7 +39,7 @@
 }
 
 .user-select-query-clear-icon:before, .user-select-query-clear-icon:after {
-    background: #555555;
+    background: var(--text-color);
     content: "";
     display: block;
     height: 100%;
@@ -67,7 +67,7 @@
 
 .user-select-query-input {
     display: table-cell;
-    color: #555555;
+    color: var(--text-color);
     vertical-align: middle;
 }
 
@@ -86,7 +86,7 @@
 }
 
 .user-select-users .user-select-user:hover {
-    background: #ddd;
+    background: var(--content-dark-background);
 }
 
 .user-select-user-name {
@@ -96,11 +96,11 @@
 .user-select-user-avatar {
     border-radius: 100%;
     width: 100%;
-    border: 2px solid #555555;
+    border: 2px solid var(--text-color);
 }
 
 .user-select-no-matches {
-    color: #888;
+    color: var(--disabled-color);
     padding: 5px;
     font-size: 0.9em;
 }
@@ -117,18 +117,18 @@
 
 .user-select-no-results {
     padding: 5px;
-    color: #888;
+    color: var(--disabled-color);
     font-size: 0.9em;
 }
 
 .user-select-results .user-select-user {
-    background: #222;
+    background: var(--content-background);
     margin-bottom: 5px;
     border-radius: 5px;
 }
 
 .user-select-results .user-select-user:hover {
-    background: #888;
+    background: var(--content-dark-background);
 }
 
 /******************* INPUTS ******************/

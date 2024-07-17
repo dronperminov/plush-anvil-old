@@ -9,11 +9,11 @@
 }
 
 .add-participant-info summary span {
-    border-bottom: 1px dashed #fff;
+    border-bottom: 1px dashed var(--text-color);
 }
 
 .add-participant-form {
-    border: 2px solid #666;
+    border: 1px solid var(--text-color);
     border-radius: 10px;
     padding: 5px;
 }
@@ -29,7 +29,7 @@
 .participant-avatar {
     width: 100%;
     border-radius: 100%;
-    border: 2px solid #fff;
+    border: 2px solid var(--text-color);
 }
 
 .participant-name {
@@ -37,14 +37,14 @@
 }
 
 .participant-name span {
-    border-bottom: 1px dashed #fff;
+    border-bottom: 1px dashed var(--text-color);
 }
 
 .participant-name span:hover {
     border-bottom-style: solid;
 }
 
-details[open] .participant-games {
+details[open] {
     margin-bottom: 20px;
 }
 
@@ -66,12 +66,14 @@ details[open] .participant-games {
     display: inline-block;
     width: 15px;
     height: 15px;
-    border: 2px solid #fff;
     border-radius: 100%;
+    border: 2px solid var(--main-color);
+    background: var(--main-color);
 }
 
 .participant-game-fill-cell {
-    background: #fff;
+    background: none;
+    border-color: var(--text-color);
 }
 
 .participant-game-other-cell {

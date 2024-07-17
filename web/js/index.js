@@ -273,7 +273,10 @@ function SwitchSchedule(link, isAdmin) {
         }
 
         console.log(response)
+        SCHEDULE = response.schedule
+        PLACES = response.places
         BuildSchedule(response.schedule, response.places, isAdmin)
+        // UpdateColors()
     })
 }
 

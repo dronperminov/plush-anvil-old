@@ -64,7 +64,7 @@
 }
 
 .year-grid-marker-active {
-	background: #0969da;
+	background: var(--main-color);
 	color: #ffffff;
 }
 

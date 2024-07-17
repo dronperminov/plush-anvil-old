@@ -1,14 +1,15 @@
 :root {
     /* basic */
-    --background-color: #111111;
-    --text-color: #ffffff;
-    --text-font: Roboto;
-    --border-color: #aaa;
-    --main-color: #a8d0e6;
-    --link-color: #ffffff;
+    --background-color: #ffffff;
+    --text-color: #212121;
+    --text-font: Inter;
+    --border-color: #d9d9d9;
+    --main-color: #c238a2;
+    --link-color: var(--main-color);
 
-    --content-background-color: #1a1a1a;
-    --content-border-color: #1a1a1a;
+    --content-background: #eeeeee;
+    --content-light-background: #f7f7f7;
+    --content-dark-background: #d1d1d1;
 
     /* status */
     --error-color: #f44336;
@@ -16,25 +17,27 @@
     --disabled-color: #d0d0d0;
 
     /* icons  */
-    --interactive-icon-color: #aaa;
-    --interactive-icon-hover-color: #fff;
+    --interactive-icon-color: #333333;
+    --interactive-icon-hover-color: var(--main-color);
 
     /* menu  */
-    --menu-background: #202528;
-    --menu-icon-color: #eee;
-    --menu-border-color: transparent;
+    --menu-background: #eeeeee;
+    --menu-icon-color: #212121;
+    --menu-border-color: var(--main-color);
 
-    --menu-item-text-color: #eee;
-    --menu-item-text-hover-color: #fff;
-    --menu-item-background-hover-color: #252525;
+    --menu-item-text-color: #212121;
+    --menu-item-text-hover-color: #414141;
+    --menu-item-background-hover-color: #e0e0e0;
 
-    --submenu-background: #333333;
-    --submenu-item-text-color: #eee;
-    --submenu-item-text-hover-color: #fff;
-    --submenu-item-background-hover-color: #252525;
+    --submenu-background: #eeeeee;
+    --submenu-mobile-background: #e8e8e8;
+    --submenu-border-color: var(--main-color);
+    --submenu-item-text-color: #212121;
+    --submenu-item-text-hover-color: #212121;
+    --submenu-item-background-hover-color: #d9d9d9;
 
     /* form */
-    --form-row-background: #0f0f0f;
+    --form-row-background: #eeeeee;
     --form-row-text-color: var(--text-color);
     --form-row-icon-color: var(--text-color);
 
@@ -55,26 +58,26 @@
     --textarea-hover-border-color: var(--main-color);
 
     /* button */
-    --button-font-family: Roboto;
+    --button-font-family: Inter;
 
-    --button-background-color: #000000;
-    --button-border-color: #ccc;
-    --button-text-color: #ccc;
+    --button-background-color: #ffffff;
+    --button-border-color: #c238a2;
+    --button-text-color: #c238a2;
 
     --button-disabled-background-color: var(--disabled-color);
     --button-disabled-border-color: var(--disabled-color);
     --button-disabled-text-color: #888888;
 
-    --button-hover-background-color: #0f0f0f;
-    --button-hover-border-color: #fff;
-    --button-hover-text-color: #fff;
+    --button-hover-background-color: #d82e6b;
+    --button-hover-border-color: #ffffff;
+    --button-hover-text-color: #ffffff;
 
-    --button-active-background-color: #222;
-    --button-active-border-color: #eee;
-    --button-active-text-color: #eee;
+    --button-active-background-color: #e2284e;
+    --button-active-border-color: #ffffff;
+    --button-active-text-color: #ffffff;
 
     /* switch button */
-    --switch-button-font-family: Roboto;
+    --switch-button-font-family: Inter;
 
     --switch-button-background-color: transparent;
     --switch-button-border-color: var(--border-color);
@@ -90,6 +93,11 @@
     src: url("/fonts/Roboto-Regular.ttf");
 }
 
+@font-face {
+    font-family: Inter;
+    src: url("/fonts/Inter-Regular.ttf");
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -100,23 +108,24 @@ html {
     font-size: 20px;
     font-family: var(--text-font);
     color: var(--text-color);
-    background-color: var(--background-color);
+}
+
+h1, h2 {
+    margin-bottom: 15px;
+}
+
+h2 {
+    margin-top: 40px;
 }
 
 .content {
-    background-color: var(--content-background-color);
-    font-size: 16px;
-    padding: 10px;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 15px 30px;
     min-height: calc(100dvh - 65px);
-}
-
-.content h1 {
-    text-align: center;
-    font-size: 2em;
-}
-
-.content h1, .content h2, .content p {
-    margin-bottom: 10px;
+    max-width: 1775px;
+    margin: 10px 75px 0 75px;
 }
 
 .content a {
@@ -127,6 +136,28 @@ html {
 
 .content a:hover {
     border-bottom-style: solid;
+}
+
+.content ul {
+    margin-left: 1em;
+}
+
+.page {
+    margin-left: 75px;
+    margin-top: 10px;
+    padding: 7px 0 10px 0;
+    position: relative;
+}
+
+.page:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -2px;
+    left: 0;
+    height: 2px;
+    width: 150px;
+    background: var(--main-color);
 }
 
 .error:not(:empty) {
@@ -189,12 +220,24 @@ html {
     white-space: nowrap;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 767px) {
+    html {
+        font-size: 16px;
+    }
+
     .content {
-        font-size: 20px;
-        width: 650px;
-        margin: 0 auto;
-        border-left: 1px solid var(--content-border-color);
-        border-right: 1px solid var(--content-border-color);
+        margin: 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        padding: 10px;
+    }
+
+    .page {
+        margin-left: 10px;
+    }
+
+    .page:before {
+        height: 1px;
     }
 }

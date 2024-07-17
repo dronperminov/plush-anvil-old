@@ -5,9 +5,9 @@
 <body>
     {% include "components/menu.html" %}
 
-    <div class="content">
-        <h1>Квизы в {{weekday}} {{"%02d" % date.day}}.{{"%02d" % date.month}}.{{date.year}}</h1>
+    <h1 class="page">Квизы в {{weekday}} {{"%02d" % date.day}}.{{"%02d" % date.month}}.{{date.year}}</h1>
 
+    <div class="content">
         <div class="add-quiz">
             <div class="form-row">
                 <div class="form-row-icon" id="name-icon">

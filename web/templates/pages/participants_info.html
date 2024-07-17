@@ -6,9 +6,9 @@
 <body>
     {% include "components/menu.html" %}
 
-    <div class="content">
-        <h1>Аналитика проходок</h1>
+    <h1 class="page">Аналитика проходок</h1>
 
+    <div class="content">
         <details class="add-participant-info">
             <summary><span>Управление проходками</span></summary>
             <div class="add-participant-form">
@@ -33,6 +33,14 @@
                 <div class="error" id="error"></div>
             </div>
         </details>
+
+        <h4>Обозначение игр</h4>
+        <ul>
+            <li><span class="participant-game-cell participant-game-fill-cell"></span> - обычная игра</li>
+            <li><span class="participant-game-cell"></span> - проходка</li>
+            <li><span class="participant-game-cell participant-game-other-cell"></span> - дополнительная наклейка</li>
+        </ul>
+        <br>
 
         {% if not participants %}
         <p>Игр у смузи ещё не было</p>

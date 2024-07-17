@@ -6,9 +6,9 @@
 <body>
     {% include "components/menu.html" %}
 
-    <div class="content">
-        <h1>Аналитика</h1>
+    <h1 class="page">Аналитика</h1>
 
+    <div class="content">
         {% if start_date and end_date %}
         <p class="analytics-period">Показана информация за период с {{"%02d.%02d.%d" % (start_date.day, start_date.month, start_date.year)}} по {{"%02d.%02d.%d" % (end_date.day, end_date.month, end_date.year)}}</p>
         {% elif start_date %}
@@ -288,7 +288,7 @@
             {% endfor %}
         ]
 
-        let grid = new YearGrid("year-grid", events, ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"])
+        let grid = new YearGrid("year-grid", events, ["#ebedf0", "hsl(210, 87%, 90%)", "hsl(210, 87%, 76%)", "hsl(210, 87%, 63%)", "hsl(210, 87%, 50%)"])
 
         {% for category_info in data.total.categories %}
         {% if data.total.category_positions[category_info.name].values()|sum > 0 %}

@@ -1,97 +1,261 @@
-.first-screen {
-    width: 100%;
-    height: calc(100dvh - 65px);
-    padding: 20px;
-    text-align: center;
-}
-
-h1 {
-    margin-bottom: 40px;
-}
-
-.first-screen-popup, .first-screen-background {
-    position: absolute;
-    top: 65px;
-    left: 0;
-    height: calc(100dvh - 65px);
-    width: 100%;
-}
-
-.first-screen-background {
-    background-image: url("https://plush-anvil.ru/images/banner.jpg");
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    z-index: -2;
-    transition: all 200ms ease-in;
-}
-
-.first-screen-popup {
-    z-index: -1;
-    background: linear-gradient(#222222f2, #00283cf2, #008fd5f2);
-}
-
-.first-screen-rating {
+/*************************** FIRST BLOCK ***************************/
+.first-block {
+    background: var(--content-background);
+    border: 1px solid var(--main-color);
+    border-radius: 20px;
+    padding: 20px 20px 250px 20px;
     margin-bottom: 20px;
-    color: #ffeb3b;
+    position: relative;
 }
 
-.first-screen-quiz {
-    margin-bottom: 20px;
-    text-align: center;
-}
 
-.first-screen-quiz-header {
-    margin-bottom: 5px;
+.first-block-team {
     font-size: 0.9em;
+    margin-bottom: 3px;
 }
 
-.first-screen-quiz-name {
-    font-size: 1.1em;
-    margin-bottom: 10px;
+.first-block-team-name {
+    font-weight: normal;
+    font-size: 1.9em;
+}
+
+.first-block-rating {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+}
+
+.first-block-rating-value {
+    font-size: 2em;
     font-weight: bold;
 }
 
-.first-screen-quiz-date {
-    margin-bottom: 5px;
-    font-size: 0.9em;
+.first-block-rating-description {
+    font-size: 0.8em;
+    margin-bottom: 8px;
 }
 
-.first-screen-quiz-time {
-    margin-bottom: 5px;
-    font-size: 0.9em;
+.first-block-rating-small-description {
+    font-size: 0.7em;
 }
 
-.content {
-    background-color: var(--background-color);
-    width: unset;
+@media (max-width: 767px) {
+    .first-block {
+        border-radius: 10px;
+        padding: 10px 10px 150px 10px;
+    }
+
+    .first-block-rating {
+        left: 10px;
+        bottom: 10px;
+    }
+}
+
+/************************* NEAREST QUIZZES *************************/
+.nearest-quizzes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 0 2vw;
+}
+
+.nearest-quiz {
+    border: 1px solid var(--main-color);
+    border-radius: 15px;
+    padding: 10px 10px 50px 10px;
+    position: relative;
+    background: var(--content-light-background);
+}
+
+.nearest-quiz-header {
+    font-size: 0.75em;
+    margin-bottom: 5px;
+    color: var(--main-color);
+}
+
+.nearest-quiz-name {
+    font-size: 1.04em;
+}
+
+.nearest-quiz-name img {
+    width: 25px;
+    height: 25px;
+    margin-bottom: -6px;
+    margin-right: 4px;
+    border-radius: 100%;
+}
+
+.nearest-quiz-name div {
+    margin-bottom: 8px;
+}
+
+.nearest-quiz-date {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    font-size: 0.85em;
+}
+
+@media (max-width: 767px) {
+    .nearest-quizzes {
+        grid-template-columns: 1fr;
+        grid-gap: 10px 0;
+    }
+
+    .nearest-quiz-name img {
+        width: 20px;
+        height: 20px;
+        margin-bottom: -3px;
+    }
+}
+
+/****************************** ABOUT ******************************/
+.about {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-auto-rows: 1fr;
+    grid-gap: 1vw 2vw;
+}
+
+.about-fact {
+    border: 1px solid var(--main-color);
+    border-radius: 25px;
+    padding: 30px 15px;
+    background: var(--content-light-background);
+}
+
+.about-fake-fact {
+    background: none;
     border: none;
 }
 
-.content h2 {
-    text-align: center;
-    margin-bottom: 20px;
+.about-value {
+    font-size: 2.7em;
+    font-weight: bold;
 }
 
-.schedule-list-icon {
-    stroke: #fff;
+.about-name {
+    font-size: 0.9em;
+}
+
+@media (max-width: 980px) {
+    .about {
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 10px;
+    }
+
+
+    .about-fake-fact {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .about-fact {
+        padding: 20px 10px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 380px) {
+    .about {
+        grid-template-columns: 1fr;
+    }
+}
+
+/************************** PHOTO ALBUMS ****************************/
+.photo-albums {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 0 5px;
+}
+
+.album img {
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    object-fit: cover;
+    padding: 2px;
+    border-radius: 20px;
+}
+
+.album a, .album a:hover {
+    border: none;
+}
+
+.album:hover img {
+    padding: 0;
+    border: 2px solid var(--main-color);
+}
+
+@media (max-width: 1200px) {
+    .photo-albums {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .album:nth-child(n+7) {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .photo-albums {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/******************************* FAQ *******************************/
+.faq details {
+    background: var(--content-light-background);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.faq details[open] {
+    background: var(--content-background);
+}
+
+.faq summary {
+    text-transform: uppercase;
+    font-size: 1.1em;
+    padding-bottom: 5px;
     cursor: pointer;
 }
 
-.schedule-list-icon:hover {
-    stroke: #ffeb3b;
+.faq details[open] summary {
+    font-weight: bold;
 }
 
+.faq p:not(:last-child) {
+    margin-bottom: 15px;
+}
+
+.faq li {
+    margin-bottom: 10px;
+}
+
+.faq .term {
+    font-weight: bold;
+    color: var(--main-color);
+}
+
+/***************************** SCHEDULE ****************************/
 .schedule-list {
     display: none;
 }
 
 .schedule-month {
+    border-radius: 10px;
+    background: var(--content-background);
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    scroll-margin-top: 65px;
+    font-size: 1.17em;
+}
+
+.schedule-month-table {
     text-align: center;
     display: table;
     margin: 0 auto;
-    margin-bottom: 10px;
-    scroll-margin-top: 65px;
 }
 
 .schedule-date {
@@ -101,7 +265,7 @@ h1 {
 }
 
 .schedule-control-icon {
-    fill: #ddd;
+    fill: var(--interactive-icon-color);
     cursor: pointer;
     display: table-cell;
     vertical-align: middle;
@@ -117,7 +281,7 @@ h1 {
 }
 
 .schedule-control-icon:hover {
-    fill: #fff;
+    fill: var(--interactive-icon-hover-color);
 }
 
 .schedule-places {
@@ -214,7 +378,7 @@ h1 {
 .schedule-quiz-album:hover svg,
 .schedule-quiz-poll:hover svg,
 .schedule-quiz-players:hover svg {
-    fill: #fff;
+    fill: var(--main-color);
 }
 
 .schedule-quiz-time {
@@ -319,7 +483,7 @@ h1 {
     background: var(--background-color);
     position: relative;
     padding: 20px 10px 10px 10px;
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--main-color);
     border-radius: 10px;
     width: 550px;
     margin: 0 auto;
@@ -337,7 +501,7 @@ h1 {
 }
 
 .quiz-details-content-close:before, .quiz-details-content-close:after {
-    background: #eee;
+    background: var(--text-color);
     content: "";
     display: block;
     height: 2px;
@@ -356,7 +520,7 @@ h1 {
 }
 
 .quiz-details-content-close:hover:before, .quiz-details-content-close:hover:after {
-    background: #fff;
+    background: var(--main-color);
 }
 
 .quiz-details-name {
@@ -371,42 +535,10 @@ h1 {
     margin-bottom: 8px;
 }
 
-.faq {
-    margin-top: 40px;
-}
-
-.faq h2 {
-    margin-bottom: 10px;
-}
-
-.faq details {
-    margin-bottom: 10px;
-}
-
-.faq summary {
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 1.15em;
-}
-
-.faq details[open] summary, .faq a {
-    color: #ffeb3b;
-}
-
-.faq .term {
-    font-weight: bold;
-    color: #ffeb3b;
-}
-
-.faq ul {
-    padding-left: 20px;
-}
-
-.faq li {
-    margin-bottom: 10px;
-}
-
 @media (max-width: 767px) {
+    .schedule-month {
+        padding: 5px;
+    }
     .schedule {
         display: grid;
         min-width: unset;

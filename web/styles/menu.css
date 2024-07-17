@@ -6,6 +6,7 @@
     height: 65px;
     border-bottom: 1px solid var(--menu-border-color);
     z-index: 3;
+    user-select: none;
 }
 
 .header ul {
@@ -120,6 +121,9 @@
 
 .subnav-content {
     background-color: var(--submenu-background);
+    border-left: 1px solid var(--submenu-border-color);
+    border-right: 1px solid var(--submenu-border-color);
+    border-bottom: 1px solid var(--submenu-border-color);
     width: 100%;
     z-index: 3;
     display: none;
@@ -170,11 +174,19 @@
         max-height: 0;
         overflow: hidden;
         transition: max-height .2s ease-out;
+        border: none;
+        background: var(--submenu-mobile-background);
+    }
+
+    .subnav-checkbox:checked ~ .subnavbtn {
+        background: var(--submenu-mobile-background);
+        font-weight: bold;
     }
 
     .subnav-checkbox:checked ~ .subnav-content {
         display: block;
         max-height: 260px;
+        border-bottom: 1px solid var(--submenu-border-color);
     }
 }
 
@@ -235,7 +247,7 @@
     }
 
     .subnavbtn {
-        padding: 20px 30px;
+        padding: 20px 2.3vw;
     }
 
     .subnav:hover .subnav-content {

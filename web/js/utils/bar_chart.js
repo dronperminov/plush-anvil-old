@@ -9,7 +9,7 @@ function BarChart(config = null) {
     this.maxRectWidth = config.maxRectWidth || 60
     this.radius = config.radius || 5
     this.barColor = config.barColor || "#00bcd4"
-    this.labelColor = config.labelColor || "#fff"
+    this.labelColor = config.labelColor || "#212121"
     this.labelSize = config.labelSize || 10
 }
 

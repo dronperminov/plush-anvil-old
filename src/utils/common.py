@@ -144,14 +144,15 @@ def get_date2quizzes(quizzes: List[dict]) -> Dict[datetime, List[dict]]:
     return date2quizzes
 
 
-def get_word_form(count: int, word_forms: List[str]) -> str:
+def get_word_form(count: int, word_forms: List[str], only_form: bool = False) -> str:
+    index = 2
+
     if abs(count) % 10 in {0, 5, 6, 7, 8, 9} or abs(count) % 100 in {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}:
-        return f"{count} {word_forms[0]}"
+        index = 0
+    elif abs(count) % 10 in {2, 3, 4}:
+        index = 1
 
-    if abs(count) % 10 in {2, 3, 4}:
-        return f"{count} {word_forms[1]}"
-
-    return f"{count} {word_forms[2]}"
+    return word_forms[index] if only_form else f"{count} {word_forms[index]}"
 
 
 def get_smuzi_rating() -> dict:
@@ -291,8 +292,12 @@ def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
     return data
 
 
-def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime]) -> dict:
+def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime], only_main: bool = False) -> dict:
     quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"position": {"$gt": 0}, **get_dates_query(start_date, end_date)})]
+
+    if only_main:
+        return get_analytics_data(quizzes, only_main=False)
+
     games = {category: [] for category in constants.CATEGORIES}
     date2quizzes = defaultdict(list)
 

@@ -17,7 +17,7 @@
 
 .photos {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 0 5px;
 }
 
@@ -122,18 +122,18 @@
 }
 
 .select-users .user input:checked ~ .user-name {
-    color: #ffeb3b;
+    color: var(--main-color);
 }
 
 .select-users .user input:checked ~ .user-photo {
-    border: 2px solid #ffeb3b;
+    border: 2px solid var(--main-color);
 }
 
 .select-users .user .user-photo {
     width: 40px;
     height: 40px;
     border-radius: 100%;
-    border: 2px solid #fff;
+    border: 2px solid var(--text-color);
 }
 
 .select-users .user .user-photo img {
@@ -152,9 +152,15 @@
     grid-gap: 0 10px;
 }
 
-@media (max-width: 320px) {
+@media (max-width: 1500px) {
     .photos {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+}
+
+@media (max-width: 1200px) {
+    .photos {
+        grid-template-columns: 1fr 1fr 1fr;
     }
 }
 

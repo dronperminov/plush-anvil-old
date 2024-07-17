@@ -5,9 +5,9 @@
 <body>
     {% include "components/menu.html" %}
 
-    <div class="content">
-        <h1>Игроки квиза {{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}} "{{quiz.name}}"</h1>
+    <h1 class="page">Игроки квиза {{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}} "{{quiz.name}}"</h1>
 
+    <div class="content">
         <div id="users"></div>
         <div class="form-row form-row-checkbox">
             <label>

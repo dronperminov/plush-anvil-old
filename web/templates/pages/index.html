@@ -5,50 +5,68 @@
 <body>
     {% include "components/menu.html" %}
 
-    <div class="first-screen">
-        <h1>КОМАНДА ПЛЮШЕВАЯ НАКОВАЛЬНЯ</h1>
-
-        <div class="first-screen-rating">РЕЙТИНГ СМУЗИ: {{ smuzi_rating.score }} ({{smuzi_rating.info.level}} уровень, {{smuzi_rating.info.name}})
-            <br><br><small>{{smuzi_rating.mean|round(2)}} в среднем за {{smuzi_rating.total_games_text}}</small>
-        {% if smuzi_rating.next_level %}
-            <br><small>До "{{smuzi_rating.next_level.info.name}}" ~{{smuzi_rating.next_level.count}} и {{smuzi_rating.next_level.score}}</small>
-        {% endif %}
-        </div>
-
-        {% if next_quizzes1 %}
-        <div class="first-screen-quiz">
-            <div class="first-screen-quiz-header">{{ "БЛИЖАЙШИЙ КВИЗ" if next_quizzes1|length == 1 else "БЛИЖАЙШИЕ КВИЗЫ" }}</div>
-            <div class="first-screen-quiz-name">{{next_quizzes1|map(attribute="name")|join("<br>")}}</div>
-            <div class="first-screen-quiz-date">{{"%02d" % next_quizzes1[0].date.day}}.{{"%02d" % next_quizzes1[0].date.month}}.{{next_quizzes1[0].date.year}}</div>
-            <div class="first-screen-quiz-time">{{next_quizzes1[0].time}}</div>
-        </div>
-        {% endif %}
-
-        {% if next_quizzes2 %}
-        <div class="first-screen-quiz">
-            <div class="first-screen-quiz-header">{{ "СЛЕДУЮЩИЙ КВИЗ" if next_quizzes2|length == 1 else "СЛЕДУЮЩИЕ КВИЗЫ" }}</div>
-            <div class="first-screen-quiz-name">{{next_quizzes2|map(attribute="name")|join("<br>")}}</div>
-            <div class="first-screen-quiz-date">{{"%02d" % next_quizzes2[0].date.day}}.{{"%02d" % next_quizzes2[0].date.month}}.{{next_quizzes2[0].date.year}}</div>
-            <div class="first-screen-quiz-time">{{next_quizzes2[0].time}}</div>
-        </div>
-        {% endif %}
-    </div>
-    <div class="first-screen-background"></div>
-    <div class="first-screen-popup"></div>
+    <div class="page">ГЛАВНАЯ СТРАНИЦА</div>
 
     <div class="content">
+        <div class="first-block">
+            <div class="gradient-border"></div>
+            <div class="background-block"></div>
+
+            <div class="first-block-team">КОМАНДА</div>
+            <h1 class="first-block-team-name">ПЛЮШЕВАЯ НАКОВАЛЬНЯ</h1>
+
+            <div class="first-block-rating">
+                <div class="first-block-rating-value">{{ smuzi_rating.score }}</div>
+                <div class="first-block-rating-description">рейтинг смузи<br>{{smuzi_rating.info.level}} уровень, <b>{{smuzi_rating.info.name}}</b></div>
+                <div class="first-block-rating-small-description"><b>{{smuzi_rating.mean|round(2)}}</b> в среднем за <b>{{smuzi_rating.total_games_text}}</b>
+                {% if smuzi_rating.next_level %}
+                <br>До уровня "{{smuzi_rating.next_level.info.name}}" ~<b>{{smuzi_rating.next_level.count}}</b> и <b>{{smuzi_rating.next_level.score}}</b>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="nearest-quizzes">
+            {% if next_quizzes1 %}
+            <div class="nearest-quiz">
+                <div class="nearest-quiz-header">{{"БЛИЖАЙШИЙ КВИЗ" if next_quizzes1|length == 1 else "БЛИЖАЙШИЕ КВИЗЫ"}}</div>
+                <div class="nearest-quiz-name">{% for quiz in next_quizzes1 %}<div><img src="/images/organizers/{{quiz.organizer}}.png">{{quiz.name}}</div>{%endfor %}</div>
+                <div class="nearest-quiz-date">{{"%02d" % next_quizzes1[0].date.day}}.{{"%02d" % next_quizzes1[0].date.month}}.{{next_quizzes1[0].date.year}} {{next_quizzes1[0].time}}</div>
+            </div>
+            {% endif %}
+
+            {% if next_quizzes2 %}
+            <div class="nearest-quiz">
+                <div class="nearest-quiz-header">{{"СЛЕДУЮЩИЙ КВИЗ" if next_quizzes2|length == 1 else "СЛЕДУЮЩИЕ КВИЗЫ"}}</div>
+                <div class="nearest-quiz-name">{% for quiz in next_quizzes2 %}<div><img src="/images/organizers/{{quiz.organizer}}.png">{{quiz.name}}</div>{%endfor %}</div>
+                <div class="nearest-quiz-date">{{"%02d" % next_quizzes2[0].date.day}}.{{"%02d" % next_quizzes2[0].date.month}}.{{next_quizzes2[0].date.year}} {{next_quizzes2[0].time}}</div>
+            </div>
+            {% endif %}
+        </div>
+
         <h2>Расписание</h2>
-        <h3 class="schedule-month">
-            <svg class="schedule-control-icon" width="25px" height="25px" viewBox="100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-prev-date" onclick="SwitchSchedule(this, {{'true' if user.role == 'owner' else 'false'}})">
-                <path d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z" />
-            </svg>
+        <!--{% if user.role == "owner" %}
+        <center><h3>Изменение цветов:</h3><br>
+            <label><input type="checkbox" checked id="pink-box" onchange="UpdateColors()"> <b>Розово-Фиолетовый режим</b></label><br>
+            <b>Насыщенность</b>: <input style="display: block; width: 90%" type="range" min="0" max="100" value="64" id="s-box" oninput="UpdateColors()"> (<span id="s-value">50</span>)<br><br>
+            <b>Светлота</b>: <input style="display: block; width: 90%" type="range" min="0" max="100" value="51" id="l-box" oninput="UpdateColors()"> (<span id="l-value">50</span>)<br>
+            <br>
+        </center>
+        {% endif %}-->
 
-            <span class="schedule-date" id="schedule-month"></span>
+        <div class="schedule-month">
+            <div class="schedule-month-table">
+                <svg class="schedule-control-icon" width="25px" height="25px" viewBox="100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-prev-date" onclick="SwitchSchedule(this, {{'true' if user.role == 'owner' else 'false'}})">
+                    <path d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z" />
+                </svg>
 
-            <svg class="schedule-control-icon" width="25px" height="25px" viewBox="-100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-next-date" onclick="SwitchSchedule(this, {{'true' if user.role == 'owner' else 'false'}})">
-                <path d="M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z" />
-            </svg>
-        </h3>
+                <span class="schedule-date" id="schedule-month"></span>
+
+                <svg class="schedule-control-icon" width="25px" height="25px" viewBox="-100 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="schedule-next-date" onclick="SwitchSchedule(this, {{'true' if user.role == 'owner' else 'false'}})">
+                    <path d="M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z" />
+                </svg>
+            </div>
+        </div>
 
         <div class="error" id="schedule-error"></div>
 
@@ -67,19 +85,62 @@
         <div class="schedule-list" id="schedule-list"></div>
         <div class="schedule-statistic" id="schedule-statistic"></div>
 
-        <div class="faq">
-            <h2>Ответы на частые вопросы</h2>
+        <h2>О КОМАНДЕ</h2>
+        <div class="about">
+            <div class="about-fact">
+                <div class="about-value">{{analytics.games}}</div>
+                <div class="about-name">{{analytics.games_text}} сыграли</div>
+            </div>
 
+            <div class="about-fact">
+                <div class="about-value">{{analytics.wins}}</div>
+                <div class="about-name">{{analytics.wins_text}} выиграли</div>
+            </div>
+
+            <div class="about-fact">
+                <div class="about-value">{{analytics.prizes}}</div>
+                <div class="about-name">{{analytics.prizes_text}} заняли призовое (2-3) место</div>
+            </div>
+
+
+            <div class="about-fact about-fake-fact"></div>
+            <div class="about-fact about-fake-fact"></div>
+            <div class="about-fact about-fake-fact"></div>
+            <div class="about-fact">
+                <div class="about-value">{{analytics.mean_position|round(1)}}</div>
+                <div class="about-name">средняя позиция</div>
+            </div>
+
+            <div class="about-fact">
+                <div class="about-value">{{analytics.mean_players|round(1)}}</div>
+                <div class="about-name">игроков в среднем</div>
+            </div>
+        </div>
+
+        <h2>BEST OF THE BEST</h2>
+        <div class="photo-albums">
+            {% for album in albums %}
+            <div class="album">
+                <a href="/albums/{{album.album_id}}"><img src="{{album.preview_url.replace('preview_', '')}}" loading="lazy"></a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2>FAQ</h2>
+        <div class="faq">
             <details>
                 <summary>Что за УМ, КМС, ГП, караоке-квиз и тд?</summary>
                 <p>Так мы сокращаем названия некоторых типов игр, а именно:</p>
                 <ul>
                     <li><span class="term">УМ</span> - угадай мелодию. Необходимо определять исполнителя трека (как по самому аудио, так и по смежным вопросам)</li>
                     <li><span class="term">Караоке-квиз</span> - вопросы на знание текста песен - продолжить строчку, назвать пропущенное слово, посчитать что-то и тд. Бывает версия "только припевы" - тогда аналогичные вопросы, но только про припевы.</li>
+                    <li><span class="term">Танцуем и поём</span> - сочетание механик УМ и караоке-квиза. В турах фигурируют как вопросы на знание исполнителя, так и на знание текстов песен.</li>
+                    <li><span class="term">Музыкальный мега-квиз</span> - сочетание механик УМ, караоке-квиза и текстовых вопросов (ребусы, видеоклипы и тд.).</li>
                     <li><span class="term">КМС</span> - кино, мультфильмы и сериалы. Вопросы на знание названий, сюжета, актёров и тд по различным видам кинематографа</li>
                     <li><span class="term">Медиа-микс</span> - то же, что и КМС, но с музыкальными вопросами</li>
                     <li><span class="term">ГП</span> - игры по Гарри Поттеру (бывают как только по фильмам, только по книгам, так и по всему сразу).</li>
                     <li><span class="term">Телеквиз</span> - каждый тур игры имеет механику схожую с одной из телевизионных игр: кто хочет стать миллионером - даны четыре варианта ответов, поле чудес - открыта какая-то буква ответа, угадай мелодию - вопросы из УМ квизов и тд.</li>
+                    <li><span class="term">Обо всём</span> - классические квизы с вопросами на самые различные общие темы.</li>
                 </ul>
             </details>
 
@@ -95,13 +156,17 @@
 
             <details>
                 <summary>На какие квизы вы ходите?</summary>
-                <p>В основном нас интересуют квизы по КМС, музыкальные, ГП и некоторые тематические вроде квиза по Сумеркам, по сериалу "Как я встретил вашу маму" и тд. Если же есть желание пойти на что-то ещё, не стоит стесняться, а можно предложить команде сходить на что-то новое.</p>
+                <p>В основном нас интересуют квизы по кино, мультфильмам и сериалам (<span class="term">КМС</span>), музыкальные (<span class="term">УМ</span>, <span class="term">караоке-квиз</span>, ...), <span class="term">обо всём</span>, <span class="term">ГП</span> и некоторые тематические вроде квиза по Сумеркам, по сериалу "Как я встретил вашу маму" и тд.</p>
+
+                <p>Если же есть желание пойти на что-то ещё, не стоит стесняться, а можно предложить команде сходить на что-то новое.</p>
             </details>
 
             <details>
                 <summary>К каким организаторам квизов вы ходите?</summary>
 
-                <p>В последнее время мы ходим на квизы к <a href="https://smuzi-quiz.com/" target="_blank">Смузи</a>. Раньше ходили на <a href="https://peacequizmsk.ru/">Пис-квиз</a>, но, кажется, это было давно и неправда. Ещё мы бывали у <a href="https://bubo-quiz.com/" target="_blank">Bubo</a> и <a href="https://sheikerq.ru/">Шейкера</a>.</p>
+                <p>В основном мы ходим на квизы к <a href="https://smuzi-quiz.com/" target="_blank">Смузи</a>. Раньше ходили на <a href="https://peacequizmsk.ru/">Пис-квиз</a>, но, кажется, это было давно и неправда.</p>
+
+                <p>Ещё мы бываем у <a href="https://bubo-quiz.com/" target="_blank">Bubo</a>, <a href="https://sheikerq.ru/" target="_blank">Шейкера</a> и <a href="https://vk.com/capybara_msk" target="_blank">Капибары</a>.</p>
             </details>
         </div>
     </div>
@@ -110,7 +175,37 @@
     <script src="/js/utils.js?v={{version}}"></script>
     <script src="/js/index.js?v={{version}}"></script>
     <script>
-        BuildSchedule({{schedule|tojson()}}, {{places|tojson()}}, {{'true' if user.role == 'owner' else 'false'}})
+        let SCHEDULE = {{schedule|tojson()}}
+        let PLACES = {{places|tojson()}}
+
+        BuildSchedule(SCHEDULE, PLACES, {{'true' if user.role == 'owner' else 'false'}})
+
+        {% if user.role == "owner" %}
+        function UpdateColors() {
+            let s = +document.getElementById("s-box").value
+            let l = +document.getElementById("l-box").value
+            let pink = document.getElementById("pink-box").checked
+
+            let min = pink ? 240 : 0
+            let max = pink ? 340 : 240
+
+            document.getElementById("s-value").innerText = s
+            document.getElementById("l-value").innerText = l
+
+            let index = 0
+            for (let place of SCHEDULE.places) {
+                let h = min + index / (SCHEDULE.places.length - 1) * (max - min)
+                PLACES[place].color = `hsl(${h}, ${s}%, ${l}%)`
+                index++
+            }
+
+            PLACES["Жаровня"].color = `hsl(0, 88%, 43%)`
+
+            BuildSchedule(SCHEDULE, PLACES, {{'true' if user.role == 'owner' else 'false'}})
+        }
+
+        // UpdateColors()
+        {% endif %}
     </script>
     {% include "footer.html" %}
 </body>
