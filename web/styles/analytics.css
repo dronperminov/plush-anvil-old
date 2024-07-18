@@ -100,66 +100,6 @@ h3 {
     margin-right: 2px;
 }
 
-.analytics-quizzes {
-    overflow-x: auto;
-}
-
-.analytics-quizzes-filters {
-    margin-bottom: 10px;
-}
-
-.analytics-quizzes-filters select {
-    margin-bottom: 5px;
-    margin-right: 10px;
-}
-
-.analytics-quizzes-filters label {
-    white-space: nowrap;
-}
-
-@media (max-width: 520px) {
-    .analytics-quizzes-filters select {
-        display: block;
-        width: 100%;
-    }
-}
-
-.analytics-quizzes table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.analytics-quizzes td, th {
-    font-size: 0.8em;
-    padding: 5px;
-    border: 1px solid var(--border-color);
-    text-align: center;
-    vertical-align: middle;
-}
-
-.analytics-quizzes th {
-    padding: 15px 13px;
-    white-space: nowrap;
-}
-
-.analytics-quizzes th.order-asc,
-.analytics-quizzes th.order-desc {
-    padding: 15px 5px;
-    color: var(--main-color);
-}
-
-.analytics-quizzes th.order-asc:after {
-    content: "↑";
-    display: inline-block;
-    width: 16px;
-}
-
-.analytics-quizzes th.order-desc:after {
-    content: "↓";
-    display: inline-block;
-    width: 16px;
-}
-
 .analytics-quizzes .quiz-name {
     text-align: left;
     min-width: 280px;
@@ -174,16 +114,6 @@ h3 {
 .analytics-quizzes .quiz-organizer img {
     width: 25px;
     vertical-align: middle;
-}
-
-.analytics-quizzes-no-games {
-    color: var(--text-color);
-    font-size: 0.9em;
-}
-
-.analytics-quizzes-button {
-    padding-top: 10px;
-    text-align: center;
 }
 
 .analytics-months-info {

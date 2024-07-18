@@ -8,7 +8,7 @@ from src import constants
 from src.api import templates
 from src.database import database
 from src.utils.auth import get_current_user
-from src.utils.common import get_analytics, get_places, get_schedule, get_smuzi_rating, get_static_hash, get_word_form, parse_date, quiz_to_datetime
+from src.utils.common import get_analytics, get_places, get_schedule, get_smuzi_rating, get_static_hash, get_team_achievements, get_word_form, parse_date, quiz_to_datetime
 
 router = APIRouter()
 
@@ -77,6 +77,10 @@ def schedule_get(date: str = Query("")) -> HTMLResponse:
 def analytics(user: Optional[dict] = Depends(get_current_user), start_date: str = Query(""), end_date: str = Query("")) -> Response:
     start_date = None if start_date == "" else parse_date(start_date)
     end_date = None if end_date == "" else parse_date(end_date)
+
+    if start_date and end_date and start_date > end_date:
+        start_date, end_date = end_date, start_date
+
     analytics_data = get_analytics(start_date, end_date)
 
     today = datetime.now()
@@ -99,4 +103,11 @@ def analytics(user: Optional[dict] = Depends(get_current_user), start_date: str 
         category2color=constants.CATEGORY2COLOR,
         colors=constants.ANALYTICS_COLORS
     )
+    return HTMLResponse(content=content)
+
+
+@router.get("/achievements")
+def achievements(user: Optional[dict] = Depends(get_current_user)) -> Response:
+    template = templates.get_template("pages/achievements.html")
+    content = template.render(user=user, version=get_static_hash(), achievements=get_team_achievements())
     return HTMLResponse(content=content)

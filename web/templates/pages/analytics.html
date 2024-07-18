@@ -1,6 +1,7 @@
 {% set title = "Аналитика | Плюшевая наковальня" %}
 {% include "header.html" %}
 <link rel="stylesheet" type="text/css" href="/styles/year_grid.css?v={{version}}">
+<link rel="stylesheet" type="text/css" href="/styles/filter_table.css?v={{version}}">
 <link rel="stylesheet" type="text/css" href="/styles/analytics.css?v={{version}}">
 </head>
 <body>
@@ -157,7 +158,7 @@
         {% if data.games|length > 0 %}
         <h2>Игры</h2>
 
-        <div class="analytics-quizzes-filters">
+        <div class="filter-table-filters">
             <select class="basic-select default-select" onchange="table.FilterRows('position', this.value, NUMBER_FILTER_TYPE)">
                 <option value="all">все места</option>
                 <option value="1-1">победы</option>
@@ -181,11 +182,19 @@
                 {% endfor %}
             </select>
 
+            <select class="basic-select default-select" onchange="table.FilterRows('place', this.value, TEXT_FILTER_TYPE)">
+                <option value="all">все места проведения</option>
+
+                {% for _, place in data.places %}
+                <option value="{{place}}">{{place}}</option>
+                {% endfor %}
+            </select>
+
             <label><input type="checkbox" onchange="table.UpdateAdditionalColumns(this.checked)"> Подробно</label>
         </div>
 
-        <div class="analytics-quizzes">
-            <table>
+        <div class="analytics-quizzes scrollable">
+            <table class="filter-table">
             <tbody id="games">
                 <tr>
                     <th class="column-date order-desc" onclick="table.SortByColumn('date')">Дата</th>
@@ -214,8 +223,8 @@
             </table>
         </div>
 
-        <div class="analytics-quizzes-no-games hidden" id="games-no-rows">Нет подходящих игр, соответствующих условиям выбранных фильтров</div>
-        <div class="analytics-quizzes-button">
+        <div class="filter-table-no-rows hidden" id="games-no-rows">Нет подходящих игр, соответствующих условиям выбранных фильтров</div>
+        <div class="filter-table-buttons">
             <button class="basic-button default-button fit-button hidden" id="games-show">Показать ещё</button>
             <button class="basic-button default-button fit-button hidden" id="games-collapse">Свернуть</button>
         </div>

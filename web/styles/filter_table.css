@@ -1,0 +1,65 @@
+.filter-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.filter-table td, th {
+    font-size: 0.8em;
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.filter-table th {
+    padding: 15px 13px;
+    white-space: nowrap;
+}
+
+.filter-table th.order-asc,
+.filter-table th.order-desc {
+    padding: 15px 5px;
+    color: var(--main-color);
+}
+
+.filter-table th.order-asc:after {
+    content: "↑";
+    display: inline-block;
+    width: 16px;
+}
+
+.filter-table th.order-desc:after {
+    content: "↓";
+    display: inline-block;
+    width: 16px;
+}
+
+.filter-table-no-rows {
+    color: var(--text-color);
+    font-size: 0.9em;
+}
+
+.filter-table-buttons {
+    padding-top: 10px;
+    text-align: center;
+}
+
+.filter-table-filters {
+    margin-bottom: 10px;
+}
+
+.filter-table-filters select {
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+
+.filter-table-filters label {
+    white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+    .filter-table-filters select {
+        display: block;
+        width: 100%;
+    }
+}

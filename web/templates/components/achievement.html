@@ -1,0 +1,10 @@
+<div class="achievement {% if achievement.count == 0 %}achievement-locked{% endif %}">
+    <div class="achievement-name">{{achievement.name}}</div>
+    <div class="achievement-description">{{achievement.description}}</div>
+
+    {% if achievement.count > 0 %}
+    <div class="achievement-count">{{achievement.count}}</div>
+    {% endif %}
+
+    <div class="achievement-date">{% if achievement.count != 0 %}получено {{achievement.label_date}}{% else %}пока не открыто{% endif %}</div>
+</div>

@@ -1,0 +1,20 @@
+{% set title = "Достижения | Плюшевая наковальня" %}
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/achievements.css?v={{version}}">
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <h1 class="page">Достижения</h1>
+
+    <div class="content">
+        <div class="achievements">
+            {% for achievement in achievements %}
+            {% include "components/achievement.html" %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+</body>
+</html>

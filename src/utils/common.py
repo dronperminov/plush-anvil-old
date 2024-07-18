@@ -12,6 +12,16 @@ import cv2
 from fastapi import UploadFile
 
 from src import constants
+from src.achievements.achievement import Achievement
+from src.achievements.hardy_achievement import HardyAchievement
+from src.achievements.position_count_achievement import PositionCountAchievement
+from src.achievements.position_days_achievement import PositionDaysAchievement
+from src.achievements.solo_achievement import SoloAchievement
+from src.achievements.team_achievements.diversity_month_achievement import DiversityMonthAchievement
+from src.achievements.team_achievements.narrow_circle_achievement import NarrowCircleAchievement
+from src.achievements.team_achievements.there_here_achievement import ThereHereAchievement
+from src.achievements.user_achievements.games_count_achievement import GamesCountAchievement
+from src.achievements.user_achievements.players_count_achievement import PlayersCountAchievement
 from src.constants import SMUZI_POSITION_TO_SCORE, SMUZI_RATING_TO_NAME
 from src.database import database
 from src.dataclasses.quiz import Quiz
@@ -301,11 +311,13 @@ def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime], 
     date2quizzes = defaultdict(list)
     organizers = defaultdict(int)
     categories = defaultdict(int)
+    places = defaultdict(int)
 
     for quiz in quizzes:
         date2quizzes[(quiz.date.year, quiz.date.month)].append(quiz)
         categories[quiz.category] += 1
         organizers[quiz.organizer] += 1
+        places[quiz.place] += 1
 
     months_data = []
 
@@ -320,6 +332,7 @@ def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime], 
         "games": sorted(quizzes, key=lambda quiz: (quiz.date, quiz.time, -quiz.position), reverse=True),
         "categories": sorted([(count, name) for name, count in categories.items()], reverse=True),
         "organizers": sorted([(count, name) for name, count in organizers.items()], reverse=True),
+        "places": sorted([(count, name) for name, count in places.items()], reverse=True),
         "months_data": sorted(months_data, key=lambda info: (info["date"]["year"], info["date"]["month"])),
     }
 
@@ -380,3 +393,58 @@ def get_month_dates(date: datetime) -> Tuple[datetime, datetime]:
     start_date = datetime(date.year, date.month, 1, 0, 0, 0)
     end_date = start_date + timedelta(days=num_days)
     return start_date, end_date
+
+
+def get_team_achievements() -> List[Achievement]:
+    quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"position": {"$gt": 0}}).sort("date")]
+    achievements = [
+        ThereHereAchievement(),
+        HardyAchievement(name="Выносливые", description="посетить две и более игры в один день", min_count=2, max_count=100),
+        SoloAchievement(name="Соло", description="сыграть командой из одного человека"),
+        DiversityMonthAchievement(),
+        NarrowCircleAchievement(),
+        PositionDaysAchievement(name="7 дней призов", description="7 дней подряд входить в тройку", target_count=7, position=3),
+        PositionDaysAchievement(name="7 дней побед", description="7 дней подряд одержать победу", target_count=7, position=1),
+        PositionDaysAchievement(name="7 дней игр", description="7 дней подряд ходить на квизы", target_count=7, position=100),
+        PositionDaysAchievement(name="15 дней игр", description="15 дней подряд ходить на квизы", target_count=15, position=100),
+        PositionDaysAchievement(name="30 дней игр", description="30 дней подряд ходить на квизы", target_count=30, position=100),
+
+        PositionCountAchievement(name="50 призов", description="войти в тройку в 50 квизах", target_count=50, position=3),
+        PositionCountAchievement(name="100 призов", description="войти в тройку в 100 квизах", target_count=100, position=3),
+        PositionCountAchievement(name="250 призов", description="войти в тройку в 250 квизах", target_count=250, position=3),
+
+        PositionCountAchievement(name="50 побед", description="победить в 50 квизах", target_count=50, position=1),
+        PositionCountAchievement(name="100 побед", description="победить в 100 квизах", target_count=100, position=1),
+        PositionCountAchievement(name="250 побед", description="победить в 250 квизах", target_count=250, position=1)
+    ]
+
+    for achievement in achievements:
+        achievement.analyze(quizzes)
+        achievement.set_label_date()
+
+    return sorted(achievements, key=lambda achievement: achievement.count == 0)
+
+
+def get_user_achievements(username: str) -> List[Achievement]:
+    quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"position": {"$gt": 0}, "participants.username": username}).sort("date")]
+    achievements = [
+        SoloAchievement(name="Одиночка", description="участвовать в соло"),
+        GamesCountAchievement(name="Частый гость", description="посетить 100 игр", target_count=100),
+        GamesCountAchievement(name="Преданный фанат", description="посетить 1000 игр", target_count=1000),
+        PlayersCountAchievement(name="Суперкоманда", description="участвовать в команде, состоящей из 10 и более игроков", min_count=10, max_count=12),
+        PlayersCountAchievement(name="Узким кругом", description="участвовать в команде, состоящей из 5 и менее игроков", min_count=1, max_count=5),
+        HardyAchievement(name="Выносливый", description="участвовать в двух играх в один день", min_count=2, max_count=2),
+        HardyAchievement(name="Очень выносливый", description="участвовать в трёх и более играх в один день", min_count=3, max_count=100),
+        PositionDaysAchievement(name="7 дней игр", description="участвовать в играх 7 дней подряд", target_count=7, position=100),
+
+        PositionCountAchievement(name="Призёр", description="посетить игру и войти в тройку", target_count=1, position=3),
+        PositionCountAchievement(name="Призёр-50", description="посетить 50 игр и войти в тройку", target_count=50, position=3),
+        PositionCountAchievement(name="Победитель", description="посетить победную игру", target_count=1, position=1),
+        PositionCountAchievement(name="Победитель-50", description="посетить 50 победных игр", target_count=50, position=1),
+    ]
+
+    for achievement in achievements:
+        achievement.analyze(quizzes)
+        achievement.set_label_date()
+
+    return sorted(achievements, key=lambda achievement: achievement.count == 0)

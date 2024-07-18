@@ -1,6 +1,8 @@
 {% set title = "%s (@%s) | Плюшевая наковальня" % (show_user.fullname, show_user.username) %}
 {% include "header.html" %}
 <link rel="stylesheet" type="text/css" href="/styles/year_grid.css?v={{version}}">
+<link rel="stylesheet" type="text/css" href="/styles/achievements.css?v={{version}}">
+<link rel="stylesheet" type="text/css" href="/styles/filter_table.css?v={{version}}">
 <link rel="stylesheet" type="text/css" href="/styles/profile.css?v={{version}}">
 </head>
 <body>
@@ -69,27 +71,89 @@
         </ul>
         {% endif %}
 
-
         {% if games %}
         <h2>Количество посещённых квизов по месяцам</h2>
         <div class="quizzes-chart">
             <svg id="quizzes-chart"></svg>
         </div>
 
+        <h2 id="achievements">Достижения</h2>
+        <div class="achievements">
+            {% for achievement in achievements %}
+            {% include "components/achievement.html" %}
+            {% endfor %}
+        </div>
+
         <h2>Посещённые квизы ({{games|length}})</h2>
         <div id="year-grid"></div>
 
-        <div class="visited-quizzes">
-            <table>
-                <tr><th>Дата</th><th colspan="2">Игра</th></tr>
+        <div class="filter-table-filters">
+            <select class="basic-select default-select" onchange="table.FilterRows('position', this.value, NUMBER_FILTER_TYPE)">
+                <option value="all">все места</option>
+                <option value="1-1">победы</option>
+                <option value="2-3">2-3 места</option>
+                <option value="4-">ниже тройки</option>
+                <option value="11-">ниже десятки</option>
+            </select>
+
+            <select class="basic-select default-select" onchange="table.FilterRows('category', this.value, TEXT_FILTER_TYPE)">
+                <option value="all">все категории</option>
+                {% for _, category in games_categories %}
+                <option value="{{category}}">{{category}}</option>
+                {% endfor %}
+            </select>
+
+            <select class="basic-select default-select" onchange="table.FilterRows('organizer', this.value, TEXT_FILTER_TYPE)">
+                <option value="all">все организаторы</option>
+
+                {% for _, organizer in games_organizers %}
+                <option value="{{organizer}}">{{organizer}}</option>
+                {% endfor %}
+            </select>
+
+            <select class="basic-select default-select" onchange="table.FilterRows('place', this.value, TEXT_FILTER_TYPE)">
+                <option value="all">все места проведения</option>
+
+                {% for _, place in games_places %}
+                <option value="{{place}}">{{place}}</option>
+                {% endfor %}
+            </select>
+
+            <label><input type="checkbox" onchange="table.UpdateAdditionalColumns(this.checked)"> Подробно</label>
+        </div>
+
+        <div class="visited-quizzes scrollable">
+            <table class="filter-table">
+                <tbody id="games">
+                <tr>
+                    <th class="column-date order-desc" onclick="table.SortByColumn('date')">Дата</th>
+                    <th class="column-position" onclick="table.SortByColumn('position')">Место</th>
+                    <th class="column-addition column-category" onclick="table.SortByColumn('category')">Категория</th>
+                    <th class="column-name" onclick="table.SortByColumn('name', false)">Название</th>
+                    <th class="column-addition column-organizer" onclick="table.SortByColumn('organizer', false)">Организатор</th>
+                    <th class="column-addition column-players" onclick="table.SortByColumn('players')">Игроки</th>
+                    <th class="column-addition column-teams" onclick="table.SortByColumn('teams')">Команды</th>
+                    <th class="column-addition column-place" onclick="table.SortByColumn('place', false)">Место проведения</th>
+                </tr>
                 {% for quiz in games %}
                 <tr>
-                    <td>{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
-                    <td class="quiz-name">{{quiz.name}}</td>
-                    <td class="quiz-organizer"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"></td>
+                    <td class="column-date">{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
+                    <td class="column-position">{{quiz.position}}</td>
+                    <td class="column-addition column-category"><b class="circle" style="background: {{category2color[quiz.category]}}"></b> <span>{{quiz.category}}</span></td>
+                    <td class="quiz-name column-name">{{quiz.name}}</td>
+                    <td class="quiz-organizer column-addition column-organizer"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"> {{quiz.organizer}}</td>
+                    <td class="column-addition column-players">{{quiz.players}}</td>
+                    <td class="column-addition column-teams">{{quiz.teams}}</td>
+                    <td class="column-addition column-place">{{quiz.place}}</td>
                 </tr>
                 {% endfor %}
+                </tbody>
             </table>
+        </div>
+        <div class="filter-table-no-rows hidden" id="games-no-rows">Нет подходящих игр, соответствующих условиям выбранных фильтров</div>
+        <div class="filter-table-buttons">
+            <button class="basic-button default-button fit-button hidden" id="games-show">Показать ещё</button>
+            <button class="basic-button default-button fit-button hidden" id="games-collapse">Свернуть</button>
         </div>
         {% endif %}
     </div>
@@ -100,6 +164,7 @@
     <script src="/js/profile.js?v={{version}}"></script>
     <script src="/js/utils/bar_chart.js?v={{version}}"></script>
     <script src="/js/utils/year_grid.js?v={{version}}"></script>
+    <script src="/js/utils/filter_table.js?v={{version}}"></script>
     <script>
         {% if show_user == user %}
         let cropper = new ImageCropper("cropper")
@@ -125,6 +190,7 @@
         ]
 
         let grid = new YearGrid("year-grid", events, ["#ebedf0", "hsl(210, 87%, 90%)", "hsl(210, 87%, 76%)", "hsl(210, 87%, 63%)", "hsl(210, 87%, 50%)"])
+        let table = new FilterTable("games")
         {% endif %}
     </script>
     {% include "footer.html" %}

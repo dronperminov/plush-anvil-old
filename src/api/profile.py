@@ -10,7 +10,7 @@ from src import constants
 from src.api import templates
 from src.database import database
 from src.utils.auth import get_current_user
-from src.utils.common import crop_image, get_hash, get_static_hash, save_image
+from src.utils.common import crop_image, get_hash, get_static_hash, get_user_achievements, save_image
 
 router = APIRouter()
 
@@ -38,9 +38,15 @@ def profile(user: Optional[dict] = Depends(get_current_user), username: str = Qu
 
     games = list(database.quizzes.find({"position": {"$ne": 0}, "participants.username": show_user["username"]}, {"_id": 0}).sort([("date", -1), ("time", -1)]))
     month2games = defaultdict(int)
+    categories = defaultdict(int)
+    organizers = defaultdict(int)
+    places = defaultdict(int)
 
     for game in games:
         month2games[(game["date"].year, game["date"].month)] += 1
+        categories[game["category"]] += 1
+        organizers[game["organizer"]] += 1
+        places[game["place"]] += 1
 
     month2games = sorted([(year, month, games) for (year, month), games in month2games.items()], key=lambda item: (item[0], item[1]))
 
@@ -51,8 +57,13 @@ def profile(user: Optional[dict] = Depends(get_current_user), username: str = Qu
         page="profile",
         version=get_static_hash(),
         games=games,
+        games_categories=sorted([(count, name) for name, count in categories.items()], reverse=True),
+        games_organizers=sorted([(count, name) for name, count in organizers.items()], reverse=True),
+        games_places=sorted([(count, name) for name, count in places.items()], reverse=True),
+        achievements=get_user_achievements(show_user["username"]),
         month2games=month2games,
-        month2rus=constants.MONTH_TO_RUS
+        month2rus=constants.MONTH_TO_RUS,
+        category2color=constants.CATEGORY2COLOR
     )
 
     return HTMLResponse(content=content)

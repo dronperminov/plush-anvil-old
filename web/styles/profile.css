@@ -93,41 +93,26 @@
     margin-bottom: 10px;
 }
 
-h2 {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.content ul {
-    padding-left: 20px;
-}
-
 .content li {
     margin-bottom: 10px;
 }
 
-.visited-quizzes {
-    overflow-x: auto;
+#achievements {
+    scroll-margin-top: 65px;
 }
 
-.visited-quizzes table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.visited-quizzes td, th {
-    font-size: 0.8em;
-    padding: 5px;
-    border: 1px solid #aaa;
-    vertical-align: middle;
+#year-grid {
+    margin-bottom: 20px;
 }
 
 .visited-quizzes .quiz-organizer {
-    text-align: center;
+    text-align: left;
+    white-space: nowrap;
 }
 
 .visited-quizzes .quiz-organizer img {
     width: 25px;
+    vertical-align: middle;
 }
 
 .quizzes-chart {
