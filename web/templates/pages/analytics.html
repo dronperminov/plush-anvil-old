@@ -209,7 +209,7 @@
 
                 {% for quiz in data.games %}
                 <tr class="hidden" data-index="{{loop.index}}">
-                    <td class="column-date">{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
+                    <td class="column-date">{% if user.role == "owner" %}<a href="/quizzes/{{quiz.date.year}}-{{quiz.date.month}}-{{quiz.date.day}}">{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</a>{% else %}{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}{% endif %}</td>
                     <td class="column-position">{{quiz.position}}</td>
                     <td class="column-category column-addition column-no-wrap"><b class="circle" style="background: {{category2color[quiz.category]}}"></b> <span>{{quiz.category}}</span></td>
                     <td class="column-name column-left">{{quiz.name}}</td>
