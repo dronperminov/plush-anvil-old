@@ -105,16 +105,6 @@
     margin-bottom: 20px;
 }
 
-.visited-quizzes .quiz-organizer {
-    text-align: left;
-    white-space: nowrap;
-}
-
-.visited-quizzes .quiz-organizer img {
-    width: 25px;
-    vertical-align: middle;
-}
-
 .quizzes-chart {
     max-width: 100%;
     overflow: auto;

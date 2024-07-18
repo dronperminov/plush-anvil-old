@@ -92,30 +92,6 @@ h3 {
     border-bottom: 2px dashed var(--text-color);
 }
 
-.analytics-circle {
-    display: inline-block;
-    width: 0.6em;
-    height: 0.6em;
-    border-radius: 100%;
-    margin-right: 2px;
-}
-
-.analytics-quizzes .quiz-name {
-    text-align: left;
-    min-width: 280px;
-}
-
-.analytics-quizzes .quiz-category,
-.analytics-quizzes .quiz-organizer {
-    text-align: left;
-    white-space: nowrap;
-}
-
-.analytics-quizzes .quiz-organizer img {
-    width: 25px;
-    vertical-align: middle;
-}
-
 .analytics-months-info {
     max-width: 100%;
     overflow: auto;

@@ -122,29 +122,29 @@
             <label><input type="checkbox" onchange="table.UpdateAdditionalColumns(this.checked)"> Подробно</label>
         </div>
 
-        <div class="visited-quizzes scrollable">
+        <div class="scrollable">
             <table class="filter-table">
                 <tbody id="games">
                 <tr>
                     <th class="column-date order-desc" onclick="table.SortByColumn('date')">Дата</th>
                     <th class="column-position" onclick="table.SortByColumn('position')">Место</th>
-                    <th class="column-addition column-category" onclick="table.SortByColumn('category')">Категория</th>
+                    <th class="column-category column-addition" onclick="table.SortByColumn('category')">Категория</th>
                     <th class="column-name" onclick="table.SortByColumn('name', false)">Название</th>
-                    <th class="column-addition column-organizer" onclick="table.SortByColumn('organizer', false)">Организатор</th>
-                    <th class="column-addition column-players" onclick="table.SortByColumn('players')">Игроки</th>
-                    <th class="column-addition column-teams" onclick="table.SortByColumn('teams')">Команды</th>
-                    <th class="column-addition column-place" onclick="table.SortByColumn('place', false)">Место проведения</th>
+                    <th class="column-organizer column-addition" onclick="table.SortByColumn('organizer', false)">Организатор</th>
+                    <th class="column-players column-addition" onclick="table.SortByColumn('players')">Игроки</th>
+                    <th class="column-teams column-addition" onclick="table.SortByColumn('teams')">Команды</th>
+                    <th class="column-place column-addition" onclick="table.SortByColumn('place', false)">Место проведения</th>
                 </tr>
                 {% for quiz in games %}
                 <tr>
                     <td class="column-date">{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
                     <td class="column-position">{{quiz.position}}</td>
-                    <td class="column-addition column-category"><b class="circle" style="background: {{category2color[quiz.category]}}"></b> <span>{{quiz.category}}</span></td>
-                    <td class="quiz-name column-name">{{quiz.name}}</td>
-                    <td class="quiz-organizer column-addition column-organizer"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"> {{quiz.organizer}}</td>
-                    <td class="column-addition column-players">{{quiz.players}}</td>
-                    <td class="column-addition column-teams">{{quiz.teams}}</td>
-                    <td class="column-addition column-place">{{quiz.place}}</td>
+                    <td class="column-category column-addition column-no-wrap"><b class="circle" style="background: {{category2color[quiz.category]}}"></b> <span>{{quiz.category}}</span></td>
+                    <td class="column-name column-left">{{quiz.name}}</td>
+                    <td class="column-organizer column-addition column-left column-no-wrap"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"> {{quiz.organizer}}</td>
+                    <td class="column-players column-addition">{{quiz.players}}</td>
+                    <td class="column-teams column-addition">{{quiz.teams}}</td>
+                    <td class="column-place column-addition">{{quiz.place}}</td>
                 </tr>
                 {% endfor %}
                 </tbody>

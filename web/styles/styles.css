@@ -187,6 +187,14 @@ h2 {
     overflow: hidden;
 }
 
+.circle {
+    display: inline-block;
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 100%;
+    margin-right: 2px;
+}
+
 .margin-bottom {
     margin-bottom: 10px;
 }

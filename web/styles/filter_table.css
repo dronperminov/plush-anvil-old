@@ -11,6 +11,14 @@
     vertical-align: middle;
 }
 
+.filter-table .column-left {
+    text-align: left;
+}
+
+.filter-table .column-no-wrap {
+    white-space: nowrap;
+}
+
 .filter-table th {
     padding: 15px 13px;
     white-space: nowrap;
@@ -32,6 +40,11 @@
     content: "↓";
     display: inline-block;
     width: 16px;
+}
+
+.filter-table td img {
+    width: 25px;
+    vertical-align: middle;
 }
 
 .filter-table-no-rows {

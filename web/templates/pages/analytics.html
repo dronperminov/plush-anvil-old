@@ -37,7 +37,7 @@
             <div class="analytics-info-items">
                 {% if data.total.wins > 0 %}
                 <div class="analytics-info-item">
-                    <span class="analytics-circle" style="background: {{colors.wins}}"></span>
+                    <span class="circle" style="background: {{colors.wins}}"></span>
                     <span class="analytics-info-item-label">Победы:</span>
                     <span class="analytics-info-item-value">{{data.total.wins}} ({{(data.total.wins / data.total.games * 100) | round(1)}}%)</span>
                 </div>
@@ -45,7 +45,7 @@
 
                 {% if data.total.prizes > 0 %}
                 <div class="analytics-info-item">
-                    <span class="analytics-circle" style="background: {{colors.prizes}}"></span>
+                    <span class="circle" style="background: {{colors.prizes}}"></span>
                     <span class="analytics-info-item-label">Призовые места:</span>
                     <span class="analytics-info-item-value">{{data.total.prizes}} ({{(data.total.prizes / data.total.games * 100) | round(1)}}%)</span>
                 </div>
@@ -53,7 +53,7 @@
 
                 {% if data.total.top10 > 0 %}
                 <div class="analytics-info-item">
-                    <span class="analytics-circle" style="background: {{colors.top10}}"></span>
+                    <span class="circle" style="background: {{colors.top10}}"></span>
                     <span class="analytics-info-item-label">Вхождение в топ-10:</span>
                     <span class="analytics-info-item-value">{{data.total.top10}} ({{(data.total.top10 / data.total.games * 100) | round(1)}}%)</span>
                 </div>
@@ -89,7 +89,7 @@
                 {% for category_info in data.total.categories %}
                 {% if category_info.value > 0 %}
                 <div class="analytics-info-item">
-                    <span class="analytics-circle" style="background: {{category2color[category_info.name]}}"></span>
+                    <span class="circle" style="background: {{category2color[category_info.name]}}"></span>
                     <span class="analytics-info-item-label">{{category_info.name}}:</span>
                     <span class="analytics-info-item-value">{{category_info.value}} ({{(category_info.value / data.total.games * 100) | round(1)}}%<!--
                         -->{% if data.total.categories_wins[category_info.name] > 0 %}, <b>побед</b>: {{data.total.categories_wins[category_info.name]}}{% endif %}<!--
@@ -115,7 +115,7 @@
         {% for category_info in data.total.categories %}
         {% if data.total.category_positions[category_info.name].values()|sum > 0 %}
         <details class="analytics-details">
-            <summary><b class="analytics-circle" style="background: {{category2color[category_info.name]}}"></b> <span>{{category_info.name}}</span> <small>(средняя позиция: {{"%.1f" % data.total.category_positions[category_info.name].mean}})</small></summary>
+            <summary><b class="circle" style="background: {{category2color[category_info.name]}}"></b> <span>{{category_info.name}}</span> <small>(средняя позиция: {{"%.1f" % data.total.category_positions[category_info.name].mean}})</small></summary>
 
             <div class="analytics-positions">
                 <svg id="analytics-category-{{loop.index}}-positions-chart"></svg>
@@ -193,30 +193,30 @@
             <label><input type="checkbox" onchange="table.UpdateAdditionalColumns(this.checked)"> Подробно</label>
         </div>
 
-        <div class="analytics-quizzes scrollable">
+        <div class="scrollable">
             <table class="filter-table">
             <tbody id="games">
                 <tr>
                     <th class="column-date order-desc" onclick="table.SortByColumn('date')">Дата</th>
                     <th class="column-position" onclick="table.SortByColumn('position')">Место</th>
-                    <th class="column-addition column-category" onclick="table.SortByColumn('category')">Категория</th>
+                    <th class="column-category column-addition" onclick="table.SortByColumn('category')">Категория</th>
                     <th class="column-name" onclick="table.SortByColumn('name', false)">Название</th>
-                    <th class="column-addition column-organizer" onclick="table.SortByColumn('organizer', false)">Организатор</th>
-                    <th class="column-addition column-players" onclick="table.SortByColumn('players')">Игроки</th>
-                    <th class="column-addition column-teams" onclick="table.SortByColumn('teams')">Команды</th>
-                    <th class="column-addition column-place" onclick="table.SortByColumn('place', false)">Место проведения</th>
+                    <th class="column-organizer column-addition" onclick="table.SortByColumn('organizer', false)">Организатор</th>
+                    <th class="column-players column-addition" onclick="table.SortByColumn('players')">Игроки</th>
+                    <th class="column-teams column-addition" onclick="table.SortByColumn('teams')">Команды</th>
+                    <th class="column-place column-addition" onclick="table.SortByColumn('place', false)">Место проведения</th>
                 </tr>
 
                 {% for quiz in data.games %}
                 <tr class="hidden" data-index="{{loop.index}}">
-                    <td class="quiz-date column-date">{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
-                    <td class="quiz-position column-position">{{quiz.position}}</td>
-                    <td class="column-addition quiz-category column-category"><b class="analytics-circle" style="background: {{category2color[quiz.category]}}"></b> <span>{{quiz.category}}</span></td>
-                    <td class="quiz-name column-name">{{quiz.name}}</td>
-                    <td class="column-addition quiz-organizer column-organizer"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"> {{quiz.organizer}}</td>
-                    <td class="column-addition column-players">{{quiz.players}}</td>
-                    <td class="column-addition column-teams">{{quiz.teams}}</td>
-                    <td class="column-addition column-place">{{quiz.place}}</td>
+                    <td class="column-date">{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</td>
+                    <td class="column-position">{{quiz.position}}</td>
+                    <td class="column-category column-addition column-no-wrap"><b class="circle" style="background: {{category2color[quiz.category]}}"></b> <span>{{quiz.category}}</span></td>
+                    <td class="column-name column-left">{{quiz.name}}</td>
+                    <td class="column-organizer column-addition column-left column-no-wrap"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"> {{quiz.organizer}}</td>
+                    <td class="column-players column-addition">{{quiz.players}}</td>
+                    <td class="column-teams column-addition">{{quiz.teams}}</td>
+                    <td class="column-place column-addition">{{quiz.place}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
