@@ -1,0 +1,68 @@
+<div class="filter-table-filters">
+    <select class="basic-select default-select" onchange="table.FilterRows('position', this.value, NUMBER_FILTER_TYPE)">
+        <option value="all">все места</option>
+        <option value="1-1">победы</option>
+        <option value="2-3">2-3 места</option>
+        <option value="4-">ниже тройки</option>
+        <option value="11-">ниже десятки</option>
+    </select>
+
+    <select class="basic-select default-select" onchange="table.FilterRows('category', this.value, TEXT_FILTER_TYPE)">
+        <option value="all">все категории</option>
+        {% for _, category in games_categories %}
+        <option value="{{category}}">{{category}}</option>
+        {% endfor %}
+    </select>
+
+    <select class="basic-select default-select" onchange="table.FilterRows('organizer', this.value, TEXT_FILTER_TYPE)">
+        <option value="all">все организаторы</option>
+
+        {% for _, organizer in games_organizers %}
+        <option value="{{organizer}}">{{organizer}}</option>
+        {% endfor %}
+    </select>
+
+    <select class="basic-select default-select" onchange="table.FilterRows('place', this.value, TEXT_FILTER_TYPE)">
+        <option value="all">все места проведения</option>
+
+        {% for _, place in games_places %}
+        <option value="{{place}}">{{place}}</option>
+        {% endfor %}
+    </select>
+
+    <label><input type="checkbox" onchange="table.UpdateAdditionalColumns(this.checked)"> Подробно</label>
+</div>
+
+<div class="scrollable">
+    <table class="filter-table">
+        <tbody id="games">
+        <tr>
+            <th class="column-date order-desc" onclick="table.SortByColumn('date')">Дата</th>
+            <th class="column-position" onclick="table.SortByColumn('position')">Место</th>
+            <th class="column-category column-addition" onclick="table.SortByColumn('category')">Категория</th>
+            <th class="column-name" onclick="table.SortByColumn('name', false)">Название</th>
+            <th class="column-organizer column-addition" onclick="table.SortByColumn('organizer', false)">Организатор</th>
+            <th class="column-players column-addition" onclick="table.SortByColumn('players')">Игроки</th>
+            <th class="column-teams column-addition" onclick="table.SortByColumn('teams')">Команды</th>
+            <th class="column-place column-addition" onclick="table.SortByColumn('place', false)">Место проведения</th>
+        </tr>
+        {% for quiz in games %}
+        <tr>
+            <td class="column-date">{% if user.role == "owner" %}<a href="/quizzes/{{quiz.date.year}}-{{quiz.date.month}}-{{quiz.date.day}}">{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}</a>{% else %}{{"%02d.%02d.%d" % (quiz.date.day, quiz.date.month, quiz.date.year)}}{% endif %}</td>
+            <td class="column-position">{{quiz.position}}</td>
+            <td class="column-category column-addition column-no-wrap"><b class="circle" style="background: {{category2color[quiz.category]}}"></b> <span>{{quiz.category}}</span></td>
+            <td class="column-name column-left">{{quiz.name}}</td>
+            <td class="column-organizer column-addition column-left column-no-wrap"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"> {{quiz.organizer}}</td>
+            <td class="column-players column-addition">{{quiz.players}}</td>
+            <td class="column-teams column-addition">{{quiz.teams}}</td>
+            <td class="column-place column-addition">{{quiz.place}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="filter-table-no-rows hidden" id="games-no-rows">Нет подходящих игр, соответствующих условиям выбранных фильтров</div>
+<div class="filter-table-buttons">
+    <button class="basic-button default-button fit-button hidden" id="games-show">Показать ещё</button>
+    <button class="basic-button default-button fit-button hidden" id="games-collapse">Свернуть</button>
+</div>
