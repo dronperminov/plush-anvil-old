@@ -192,9 +192,17 @@ def get_smuzi_rating() -> dict:
     next_level = None
 
     if level < len(SMUZI_RATING_TO_NAME) - 1:
+        today = datetime.now()
+        count = round((SMUZI_RATING_TO_NAME[level + 1]["score"] - rating) / mean_rating + 0.5)
+        days = (today - quizzes[0]["date"]).days
+        last_days = round(days / len(quizzes) * count + 0.5)
+        end_date = today + timedelta(days=last_days)
+
         next_level = {
-            "count": get_word_form(round((SMUZI_RATING_TO_NAME[level + 1]["score"] - rating) / mean_rating + 0.5), ["игр", "игры", "игра"]),
+            "count": get_word_form(count, ["игр", "игры", "игра"]),
             "score": get_word_form(SMUZI_RATING_TO_NAME[level + 1]["score"] - rating, ["баллов", "балла", "балл"]),
+            "days": get_word_form(last_days, ["дней", "дня", "день"]),
+            "end_date": f"{end_date.day:02}.{end_date.month:02}.{end_date.year}",
             "info": SMUZI_RATING_TO_NAME[level + 1]
         }
 

@@ -203,26 +203,59 @@
 }
 
 /******************************* FAQ *******************************/
-.faq details {
+.faq {
     background: var(--content-light-background);
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 5px;
+    position: relative;
+    min-height: 70px;
 }
 
-.faq details[open] {
+.faq-icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    fill: var(--text-color);
+    transition: all .2s ease-out;
+}
+
+.faq-open {
     background: var(--content-background);
 }
 
-.faq summary {
+.faq .faq-title {
     text-transform: uppercase;
     font-size: 1.1em;
     padding-bottom: 5px;
     cursor: pointer;
+    max-width: calc(100% - 70px);
 }
 
-.faq details[open] summary {
+.faq .faq-number {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.faq-open .faq-icon {
+    transform: rotate(-135deg);
+    transition: all .2s ease-out;
+    fill: var(--main-color);
+}
+
+.faq-open .faq-title {
     font-weight: bold;
+}
+
+.faq-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .2s ease-out;
+}
+
+.faq-open .faq-content {
+    max-height: 1000px;
+    transition: max-height .2s ease-out;
 }
 
 .faq p:not(:last-child) {
@@ -238,7 +271,22 @@
     color: var(--main-color);
 }
 
+@media (max-width: 767px) {
+    .faq-icon {
+        width: 35px;
+        height: 35px;
+    }
+
+    .faq .faq-title {
+        max-width: calc(100% - 55px);
+    }
+}
+
 /***************************** SCHEDULE ****************************/
+#schedule-block {
+    scroll-margin-top: 65px;
+}
+
 .schedule-list {
     display: none;
 }
