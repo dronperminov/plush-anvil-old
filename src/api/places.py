@@ -31,7 +31,7 @@ def get_places(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if user["role"] != "owner":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
-    template = templates.get_template("pages/places.html")
+    template = templates.get_template("admin_pages/places.html")
     places = [Place.from_dict(place) for place in database.places.find({})]
     metro_stations = list({station["name"] for station in database.metro_stations.find({})})
 

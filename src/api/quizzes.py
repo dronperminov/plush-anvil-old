@@ -49,7 +49,7 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
     date = parse_date(date)
     weekday = constants.WEEKDAY_TO_RUS[date.weekday()]
 
-    template = templates.get_template("pages/quizzes.html")
+    template = templates.get_template("admin_pages/quizzes.html")
     places = [place["name"] for place in database.places.find({})]
     organizers = [organizer["name"] for organizer in database.organizers.find({})]
     quizzes = list(database.quizzes.find({"date": date}))

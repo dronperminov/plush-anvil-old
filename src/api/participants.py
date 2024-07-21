@@ -130,7 +130,7 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
     participants = sorted(participants, key=lambda participant: -participant["paid_games"])
     today = datetime.now()
 
-    template = templates.get_template("pages/participants_info.html")
+    template = templates.get_template("admin_pages/participants_info.html")
     content = template.render(user=user, page="participants_info", version=get_static_hash(), participants=participants, users=get_participant_users(), today=today)
 
     return HTMLResponse(content=content)

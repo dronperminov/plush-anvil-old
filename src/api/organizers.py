@@ -33,7 +33,7 @@ def get_organizers(user: Optional[dict] = Depends(get_current_user)) -> Response
     if user["role"] != "owner":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
-    template = templates.get_template("pages/organizers.html")
+    template = templates.get_template("admin_pages/organizers.html")
     organizers = list(database.organizers.find({}))
     content = template.render(user=user, page="organizers", version=get_static_hash(), organizers=organizers)
     return HTMLResponse(content=content)
