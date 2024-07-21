@@ -100,10 +100,10 @@ CATEGORY2COLOR = {
 ANALYTICS_COLORS = {
     "wins": "#ec6b56",
     "prizes": "#ffc154",
+    "top3": "#d82e6b",
     "top10": "#47b39c",
     "other": "#cccccc",
     "games": "#478bb3",
-    "last": "#478bb3",
     "mean_position": "#478bb3",
     "mean_players": "#47b36b",
     "rating": "#ffc154",

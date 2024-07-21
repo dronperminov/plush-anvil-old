@@ -46,7 +46,7 @@
                 {% if data.total.prizes > 0 %}
                 <div class="analytics-info-item">
                     <span class="circle" style="background: {{colors.prizes}}"></span>
-                    <span class="analytics-info-item-label">Призовые места:</span>
+                    <span class="analytics-info-item-label">2-3 места:</span>
                     <span class="analytics-info-item-value">{{data.total.prizes}} ({{(data.total.prizes / data.total.games * 100) | round(1)}}%)</span>
                 </div>
                 {% endif %}
@@ -54,15 +54,8 @@
                 {% if data.total.top10 > 0 %}
                 <div class="analytics-info-item">
                     <span class="circle" style="background: {{colors.top10}}"></span>
-                    <span class="analytics-info-item-label">Вхождение в топ-10:</span>
+                    <span class="analytics-info-item-label">4-10 места:</span>
                     <span class="analytics-info-item-value">{{data.total.top10}} ({{(data.total.top10 / data.total.games * 100) | round(1)}}%)</span>
-                </div>
-                {% endif %}
-
-                {% if data.total.last > 0 %}
-                <div class="analytics-info-item">
-                    <span class="analytics-info-item-label">Последние места:</span>
-                    <span class="analytics-info-item-value">{{data.total.last}}</span>
                 </div>
                 {% endif %}
 
@@ -70,13 +63,6 @@
                     <span class="analytics-info-item-label">Всего игр:</span>
                     <span class="analytics-info-item-value">{{data.total.games}}</span>
                 </div>
-
-                {% if data.total.rating > 0 %}
-                <div class="analytics-info-item">
-                    <span class="analytics-info-item-label">Рейтинг смузи:</span>
-                    <span class="analytics-info-item-value">{{data.total.rating}}</span>
-                </div>
-                {% endif %}
             </div>
         </div>
 
@@ -178,19 +164,14 @@
             <svg id="analytics-months-info-wins-chart"></svg>
         </div>
 
-        <h3>Призовые места</h3>
+        <h3>2-3 места</h3>
         <div class="analytics-months-info">
             <svg id="analytics-months-info-prizes-chart"></svg>
         </div>
 
-        <h3>Вхождение в топ-10</h3>
+        <h3>Вхождение в тройку</h3>
         <div class="analytics-months-info">
-            <svg id="analytics-months-info-top10-chart"></svg>
-        </div>
-
-        <h3>Последние места</h3>
-        <div class="analytics-months-info">
-            <svg id="analytics-months-info-last-chart"></svg>
+            <svg id="analytics-months-info-top3-chart"></svg>
         </div>
 
         <h3>Средняя позиция</h3>
@@ -250,8 +231,7 @@
                 games: {{info.games}},
                 wins: {{info.wins}},
                 prizes: {{info.prizes}},
-                top10: {{info.top10}},
-                last: {{info.last}},
+                top3: {{info.top3}},
                 mean_position: {{"%.1f" % info.mean_position}},
                 mean_players: {{"%.1f" % info.mean_players}},
                 rating: {{info.rating}},

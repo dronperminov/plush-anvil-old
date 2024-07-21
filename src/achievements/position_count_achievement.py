@@ -21,6 +21,5 @@ class PositionCountAchievement(Achievement):
             count += 1
 
             if count == self.target_count:
-                self.count = -1
-                self.first_date = quiz.date
-                break
+                self.increment(quiz.date)
+                count = 0

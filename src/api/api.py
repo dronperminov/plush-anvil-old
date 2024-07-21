@@ -37,6 +37,7 @@ def index(user: Optional[dict] = Depends(get_current_user), date: str = Query(""
     total_analytics["games_text"] = get_word_form(total_analytics["games"], ["игр", "игры", "игра"], only_form=True)
     total_analytics["wins_text"] = get_word_form(total_analytics["wins"], ["раз", "раза", "раз"], only_form=True)
     total_analytics["prizes_text"] = get_word_form(total_analytics["prizes"], ["раз", "раза", "раз"], only_form=True)
+    total_analytics["top3_text"] = get_word_form(total_analytics["top3"], ["раз", "раза", "раз"], only_form=True)
 
     content = template.render(
         user=user,

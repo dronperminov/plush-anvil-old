@@ -233,19 +233,13 @@ function BuildScheduleStatistics(schedule) {
     if (statistics.wins > 0)
         values.push(`<b>${statistics.wins}</b> ${GetWordForm(statistics.wins, ['раз', 'раза', 'раз'])} победили`)
 
-    if (statistics.prizes > 0)
-        values.push(`<b>${statistics.prizes}</b> ${GetWordForm(statistics.prizes, ['раз', 'раза', 'раз'])} заняли призовое место`)
-
-    if (statistics.top10 > 0)
-        values.push(`<b>${statistics.top10}</b> ${GetWordForm(statistics.top10, ['раз', 'раза', 'раз'])} вошли в топ-10`)
-
-    if (statistics.last > 0)
-        values.push(`<b>${statistics.last}</b> ${GetWordForm(statistics.last, ['раз', 'раза', 'раз'])} заняли последнее место`)
+    if (statistics.top3 > 0)
+        values.push(`<b>${statistics.top3}</b> ${GetWordForm(statistics.top3, ['раз', 'раза', 'раз'])} вошли в тройку`)
 
     if (statistics.games > 0)
         values.push(`<b>${Math.round(statistics.mean_position * 10) / 10}</b> средняя занимаемая позиция`)
 
-    let text = values.length > 0 ? `<div class="schedule-statistic-header">Статистика:</div>` : ""
+    let text = values.length > 0 ? `<div class="schedule-statistic-header">Статистика за месяц:</div>` : ""
 
     let block = document.getElementById("schedule-statistic")
     block.innerHTML = text + values.map(v => `<div class="schedule-statistic-row">${v}</div>`).join("")

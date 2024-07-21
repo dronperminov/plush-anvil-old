@@ -24,7 +24,7 @@ function PlotPositionsChart(svgId, positions) {
 }
 
 function PlotMonthData() {
-    for (let key of ["wins", "prizes", "top10", "games", "last", "mean_position", "mean_players"]) {
+    for (let key of ["wins", "prizes", "top3", "games", "mean_position", "mean_players"]) {
         let keySvg = document.getElementById(`analytics-months-info-${key}-chart`)
         let keyChart = new BarChart({barColor: colors[key]})
         keyChart.Plot(keySvg, months_data, "date", key)
