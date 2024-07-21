@@ -90,7 +90,7 @@
             let users = userSelect.GetSelected()
             error.innerText = ""
 
-            if (!confirm("Вы уверены, что хотите добавить проходку для выбранных пользователей?"))
+            if (!confirm(`Вы уверены, что хотите ${action == "add" ? "добавить" : "удалить"} проходку для выбранных пользователей?`))
                 return
 
             SendRequest("/set-participant-info", {"date": `${date} 00:00:00`, "participants": users, "action": action}).then(response => {
