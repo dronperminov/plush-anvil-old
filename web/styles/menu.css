@@ -185,7 +185,7 @@
 
     .subnav-checkbox:checked ~ .subnav-content {
         display: block;
-        max-height: 260px;
+        max-height: 320px;
         border-bottom: 1px solid var(--submenu-border-color);
     }
 }

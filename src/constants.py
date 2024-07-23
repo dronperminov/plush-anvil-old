@@ -113,3 +113,9 @@ ANALYTICS_COLORS = {
 FREE_GAME = "free"
 PAID_GAME = "paid"
 PASS_GAME = "pass"
+
+HANDLE_ACHIEVEMENTS = [
+    {"id": "place", "name": "Топограф", "description": "перепутать место проведения квиза"},
+    {"id": "time", "name": "Вне времени", "description": "перепутать время проведения квиза"},
+    {"id": "forget", "name": "Забывчивый", "description": "забыть про квиз"}
+]

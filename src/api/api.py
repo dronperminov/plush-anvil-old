@@ -34,7 +34,7 @@ def index(user: Optional[dict] = Depends(get_current_user), date: str = Query(""
     albums = list(database.photo_albums.find({"deactivated": {"$ne": True}, "quiz_id": {"$ne": ""}, "photos.2": {"$exists": True}}).sort("date", -1).limit(8))
 
     total_analytics = get_analytics(start_date=None, end_date=None, only_main=True)
-    total_analytics["games_text"] = get_word_form(total_analytics["games"], ["игр", "игры", "игра"], only_form=True)
+    total_analytics["games_text"] = get_word_form(total_analytics["games"], ["игр", "игры", "игру"], only_form=True)
     total_analytics["wins_text"] = get_word_form(total_analytics["wins"], ["раз", "раза", "раз"], only_form=True)
     total_analytics["prizes_text"] = get_word_form(total_analytics["prizes"], ["раз", "раза", "раз"], only_form=True)
     total_analytics["top3_text"] = get_word_form(total_analytics["top3"], ["раз", "раза", "раз"], only_form=True)

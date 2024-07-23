@@ -8,6 +8,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from uvicorn.config import LOGGING_CONFIG
 
+from src.api.achievements import router as achievements_router
 from src.api.api import router as api_router
 from src.api.auth import router as auth_router
 from src.api.organizers import router as organizers_router
@@ -37,6 +38,7 @@ def main() -> None:
     app.include_router(organizers_router)
     app.include_router(quizzes_router)
     app.include_router(participants_router)
+    app.include_router(achievements_router)
     app.include_router(photos_router)
 
     app.add_middleware(GZipMiddleware, minimum_size=500)

@@ -404,6 +404,19 @@ def get_month_dates(date: datetime) -> Tuple[datetime, datetime]:
     return start_date, end_date
 
 
+def get_handle_user_achievements(username: str) -> List[Achievement]:
+    user = database.users.find_one({"username": username}, {"achievements": 1})
+    achievements = {achievement["id"]: Achievement(achievement["name"], achievement["description"]) for achievement in constants.HANDLE_ACHIEVEMENTS}
+
+    for achievement in user.get("achievements", []):
+        achievements[achievement["achievement_id"]].increment(achievement["date"])
+
+    for achievement in achievements.values():
+        achievement.set_label_date()
+
+    return [achievements[achievement["id"]] for achievement in constants.HANDLE_ACHIEVEMENTS]
+
+
 def get_team_achievements() -> List[Achievement]:
     quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"position": {"$gt": 0}}).sort("date")]
     achievements = [
@@ -456,4 +469,5 @@ def get_user_achievements(username: str) -> List[Achievement]:
         achievement.analyze(quizzes)
         achievement.set_label_date()
 
+    achievements.extend(get_handle_user_achievements(username))
     return sorted(achievements, key=lambda achievement: achievement.count == 0)
