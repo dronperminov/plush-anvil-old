@@ -73,12 +73,26 @@ function AddPostQuiz(quiz) {
     check.addEventListener("change", () => UpdatePostQuizzes(quizBlock, check))
 }
 
+function ParseSmuziResponse(parser, text) {
+    document.getElementById("text").value = text
+
+    let quizzes = parser.ParsePost(text)
+    for (let quiz of quizzes)
+        AddPostQuiz(quiz)
+
+    if (quizzes.length == 0) {
+        let postQuizzes = document.getElementById("post-quizzes")
+        MakeElement("error", postQuizzes, {innerText: "Не удалось найти ни одного квиза"})
+        MakeElement("info", postQuizzes, {innerHTML: "<b>Текст:</b>"})
+        MakeElement("info", postQuizzes, {innerText: text})
+    }
+}
+
 function ParseVKPost(link, parser) {
     let match = /wall(?<post>-\d+_\d+)$/g.exec(link).groups
     let group = match.group
     let postId = match.post
 
-    let text = document.getElementById("text")
     let error = document.getElementById("parse-error")
     error.innerText = ""
 
@@ -88,18 +102,29 @@ function ParseVKPost(link, parser) {
             return
         }
 
-        text.value = response.text
+        ParseSmuziResponse(parser, response.text)
+    })
 
-        let quizzes = parser.ParsePost(response.text)
-        for (let quiz of quizzes)
-            AddPostQuiz(quiz)
+    AddInvalidLines([])
+}
 
-        if (quizzes.length == 0) {
-            let postQuizzes = document.getElementById("post-quizzes")
-            MakeElement("error", postQuizzes, {innerText: "Не удалось найти ни одного квиза в посте"})
-            MakeElement("info", postQuizzes, {innerHTML: "<b>Текст поста:</b>"})
-            MakeElement("info", postQuizzes, {innerText: response.text})
+function ParseSmuziGames(link, parser) {
+    let error = document.getElementById("parse-error")
+    error.innerText = ""
+
+    SendRequest("/get-html-content", {url: "https://store.tildaapi.com/api/getproductslist/?storepartuid=220534520881&size=360"}).then(response => {
+        if (response.status != SUCCESS_STATUS) {
+            error.innerText = response.message
+            return
         }
+
+        let products = []
+        for (let product of JSON.parse(response.text)["products"])
+            products.push(`${product.title} ${product.text}`)
+
+        let div = MakeElement("")
+        div.innerHTML = products.join("\n\n")
+        ParseSmuziResponse(parser, div.innerText)
     })
 
     AddInvalidLines([])
@@ -149,6 +174,8 @@ function ParseQuizzes() {
 
     if (lines.length == 1 && lines[0].match(/wall-\d+_\d+$/g))
         ParseVKPost(lines[0], parser)
+    else if (lines.length == 1 && lines[0].match(/(smuzi\-quiz\.com\/games\/?$)|^смузи$/gi))
+        ParseSmuziGames(lines[0], parser)
     else
         ParseLines(lines, parser)
 }

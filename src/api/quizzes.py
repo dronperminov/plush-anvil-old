@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+import requests
 from bson import ObjectId
 from fastapi import APIRouter, Body, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
@@ -212,3 +213,17 @@ def get_vk_post(user: Optional[dict] = Depends(get_current_user), post_id: str =
         return JSONResponse({"status": constants.ERROR, "message": "Не удалось получить текст поста"})
 
     return JSONResponse({"status": constants.SUCCESS, "text": post_text})
+
+
+@router.post("/get-html-content")
+def get_html_content(user: Optional[dict] = Depends(get_current_user), url: str = Body(..., embed=True)) -> JSONResponse:
+    if not user:
+        return JSONResponse({"status": constants.ERROR, "message": "Пользователь не авторизован"})
+
+    headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        return JSONResponse({"status": constants.ERROR, "message": "Не удалось получить текст"})
+
+    return JSONResponse({"status": constants.SUCCESS, "text": response.text})
