@@ -12,17 +12,18 @@ SmuziParser.prototype.GetRegexp = function() {
     let weekday = `(?<weekday>${this.weekdays.join("|")})`
     let time = "(?<time>\\d\\d?:\\d\\d?)"
     let place = "(?<place>[^\\/\\)\\n]+)"
-    let name = "(?<name>[^№\\n]+?№\\s*\\d+(\\.\\d+)?(\\s*\\([^\\)]+\\))?(\\s*:[^.!\\n]+?[\\.\\!]|[\\.\\!])?|[^\\.\\!\\n]+?[\\.\\!])"
+    let repeat = "(\\s*\\(?повтор от \\d\\d?\\.\\d\\d?\\.\\d\\d\\d?\\d?\\)?)?"
+    let name = `(?<name>([^№\\n]+?№\\s*\\d+(\\.\\d+)?(\\s*\\([^\\)]+\\))?(\\s*:[^.!\\n]+?[\\.\\!]|[\\.\\!])?|[^\\.\\!\\n]+?[\\.\\!])${repeat})`
     let description = "(?<description>.+?)"
     let questions = "(?<questions>\\d+ вопро[а-я]+)"
     let cost = "((?<cost>\\d+) рублей с (чел|человека|игрока)\\s*)?\\)\\s*.?\\s*"
-    return new RegExp(`^${start}${day}\\s*${month}\\s+\\(?${weekday}\\)\\s+${time}\\s+[/(]${place}[\\)]\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?$`, "gim")
+    return new RegExp(`^${start}${day}\\s*${month}\\s+\\(?${weekday}\\)\\s+${time}\\s+[/(]${place}[\\)]\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?${repeat}$`, "gim")
 }
 
 SmuziParser.prototype.MatchToQuiz = function(match) {
     let day = match.groups.day.padStart(2, '0')
     let month = `${this.months.indexOf(match.groups.month.toLowerCase()) + 1}`.padStart(2, '0')
-    let name = match.groups.name.replace(/\s*№\s*\d+(\.\d+)?[\.!]?|\.\s*$/gi, "").trim()
+    let name = this.ProcessName(match.groups.name)
 
     return {
         line: match[0],
@@ -32,12 +33,20 @@ SmuziParser.prototype.MatchToQuiz = function(match) {
         time: match.groups.time,
         place: this.GetPlace(match.groups.place),
         name: name,
+        shortName: this.GetShortName(name),
         description: match.groups.description,
         category: this.GetCategory(name),
         questions: match.groups.questions === undefined ? 0 : +match.groups.questions,
         cost: +match.groups.cost,
         organizer: "Смузи"
     }
+}
+
+SmuziParser.prototype.ProcessName = function(name) {
+    name = name.replace(/\s*№\s*\d+(\.\d+)?[\.!]?|\.\s*$/gi, "").trim()
+    name = name.replace(/елеквиз new/gi, "елеквиз")
+    name = name.replace(/елеквиз лайт new/gi, "елеквиз лайт")
+    return name.trim()
 }
 
 SmuziParser.prototype.ParsePost = function(text) {
@@ -115,4 +124,31 @@ SmuziParser.prototype.GetCategory = function(name) {
         return "видеоигры"
 
     return "прочее"
+}
+
+SmuziParser.prototype.GetShortName = function(name) {
+    name = name.replace(/\s*\(повтор от \d\d?.\d\d?.\d\d\d?\d?\)/gi, "")
+
+    if (name.match(/^медиа-?микс/gi))
+        return "Медиа-микс"
+
+    if (name.match(/^кмс/gi))
+        return "КМС"
+
+    if (name.match(/^телеквиз: кмс/gi))
+        return "Телеквиз: КМС"
+
+    if (name.match(/^топовые кмс[: ]/gi))
+        return "Топовые КМС"
+
+    if (name.match(/^топовые фильмы/gi))
+        return "Топовые фильмы"
+
+    name = name.replace(/угадай мелодию/gi, "УМ")
+    name = name.replace(/караоке[ \-]квиз/gi, "караоке")
+    name = name.replace(/только припевы/gi, "припевы")
+    name = name.replace(/только хиты/gi, "хиты")
+    name = name.replace(/кино,\s*мультфильмы,\s*сериалы/gi, "КМС")
+    name = name.replace(/гарри поттер[аеу]?/gi, "ГП")
+    return name.trim()
 }
