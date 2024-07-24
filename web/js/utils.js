@@ -99,6 +99,13 @@ function ChangeInput(inputId, buttonClass = "save-button") {
     InputError(inputId, "")
 }
 
+function ClearInput(inputId, buttonClass = "save-button") {
+    let input = document.getElementById(inputId)
+    input.value = ""
+
+    ChangeInput(inputId, buttonClass)
+}
+
 function GetTextField(inputId, errorMessage = "") {
     let input = document.getElementById(inputId)
     let value = input.value.trim()

@@ -19,6 +19,10 @@
     width: 30px;
 }
 
+.form-row-icon-interactive {
+    cursor: pointer;
+}
+
 .form-row-fill-icon {
     fill: var(--form-row-icon-color);
 }
