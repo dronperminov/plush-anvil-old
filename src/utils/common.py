@@ -8,6 +8,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
+import bson
 import cv2
 from fastapi import UploadFile
 
@@ -417,6 +418,18 @@ def get_handle_user_achievements(username: str) -> List[Achievement]:
     return [achievements[achievement["id"]] for achievement in constants.HANDLE_ACHIEVEMENTS]
 
 
+def get_photos_achievement(username: str, quiz_ids: List[bson.ObjectId]) -> Achievement:
+    achievement = Achievement(name="Невидимка", description="не попасть на фото с игры")
+
+    for album in database.photo_albums.find({"quiz_id": {"$in": quiz_ids}}):
+        album_usernames = {markup["username"] for photo in album["photos"] for markup in photo["markup"]}
+        if username not in album_usernames:
+            achievement.increment(album["date"].date())
+
+    achievement.set_label_date()
+    return achievement
+
+
 def get_team_achievements() -> List[Achievement]:
     quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"position": {"$gt": 0}}).sort("date")]
     achievements = [
@@ -448,7 +461,6 @@ def get_team_achievements() -> List[Achievement]:
 
 
 def get_user_achievements(username: str) -> List[Achievement]:
-    quizzes = [Quiz.from_dict(quiz) for quiz in database.quizzes.find({"position": {"$gt": 0}, "participants.username": username}).sort("date")]
     achievements = [
         SoloAchievement(name="Одиночка", description="участвовать в соло"),
         GamesCountAchievement(name="Частый гость", description="посетить 100 игр", target_count=100),
@@ -465,9 +477,14 @@ def get_user_achievements(username: str) -> List[Achievement]:
         PositionCountAchievement(name="Победитель-50", description="посетить 50 победных игр", target_count=50, position=1),
     ]
 
+    quizzes = list(database.quizzes.find({"position": {"$gt": 0}, "participants.username": username}).sort("date"))
+    quiz_ids = [quiz["_id"] for quiz in quizzes]
+    quizzes = [Quiz.from_dict(quiz) for quiz in quizzes]
+
     for achievement in achievements:
         achievement.analyze(quizzes)
         achievement.set_label_date()
 
+    achievements.append(get_photos_achievement(username, quiz_ids))
     achievements.extend(get_handle_user_achievements(username))
     return sorted(achievements, key=lambda achievement: achievement.count == 0)
