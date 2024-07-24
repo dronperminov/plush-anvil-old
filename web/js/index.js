@@ -197,6 +197,7 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
                 let details = MakeElement("quiz-details hidden", scheduleBlock, {id: `${cell.day}-${i + 1}`})
                 let content = MakeElement("quiz-details-content", details)
                 let close = MakeElement("quiz-details-content-close", content)
+                details.addEventListener("click", (e) => { if (e.target == details) CloseDetails(`${cell.day}-${i + 1}`) })
                 close.addEventListener("click", () => CloseDetails(`${cell.day}-${i + 1}`))
 
                 if (isAdmin) {
