@@ -30,6 +30,10 @@ h2 {
     display: table-cell;
 }
 
+.organizer-info img {
+    max-width: 25px;
+}
+
 .organizer-icon {
     display: table-cell;
     width: 30px;
