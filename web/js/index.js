@@ -51,14 +51,15 @@ function UpdateScheduleMonth(schedule) {
     nextDate.setAttribute("data-date", schedule.next_date)
 }
 
-function BuildScedulePlaces(schedule, places) {
+function BuildScedulePlaces(schedule, places, withMetroStation = true) {
     let placesBlock = document.getElementById("schedule-places")
     placesBlock.innerHTML = ""
 
     for (let place of schedule.places) {
         let placeBlock = MakeElement("schedule-place", placesBlock)
         let colorSpan = MakeElement("schedule-place-color", placeBlock, {tag: "span", style: `background: ${places[place].color}`})
-        let info = MakeElement("", placeBlock, {tag: "span", innerText: ` ${place} (м. ${places[place].metro_station})`})
+        let placeText = ` ${place}` + (withMetroStation ? ` (м. ${places[place].metro_station})` : "")
+        let info = MakeElement("", placeBlock, {tag: "span", innerText: placeText})
     }
 }
 
@@ -248,7 +249,7 @@ function BuildScheduleStatistics(schedule) {
 
 function BuildSchedule(schedule, places, isAdmin, withStatistic = true) {
     UpdateScheduleMonth(schedule)
-    BuildScedulePlaces(schedule, places)
+    BuildScedulePlaces(schedule, places, withStatistic)
     BuildScheduleCells(schedule, places, isAdmin)
     BuildScheduleDetails(schedule, places, isAdmin)
 
