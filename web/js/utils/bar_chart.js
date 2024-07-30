@@ -78,7 +78,7 @@ BarChart.prototype.Plot = function(svg, data, axisKey, labelKey, startIndex = 0)
 
     if (rectWidth < this.minRectWidth) {
         rectWidth = this.minRectWidth
-        width = (rectWidth + this.padding) * data.length
+        width = (rectWidth + this.padding) * (data.length - startIndex)
         svg.style.width = `${width}px`
     }
     else if (rectWidth > this.maxRectWidth) {

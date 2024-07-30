@@ -24,10 +24,16 @@ function PlotPositionsChart(svgId, positions) {
 }
 
 function PlotMonthData() {
-    for (let key of ["wins", "prizes", "top3", "games", "mean_position", "mean_players"]) {
-        let keySvg = document.getElementById(`analytics-months-info-${key}-chart`)
-        let keyChart = new BarChart({barColor: colors[key]})
-        keyChart.Plot(keySvg, months_data, "date", key)
+    for (let key of ["wins", "prizes", "top3", "games"]) {
+        let svg = document.getElementById(`analytics-months-info-${key}-chart`)
+        let chart = new BarChart({barColor: colors[key]})
+        chart.Plot(svg, months_data, "date", key)
+    }
+
+    for (let key of ["mean_position", "mean_players"]) {
+        let svg = document.getElementById(`analytics-months-info-${key}-chart`)
+        let chart = new PlotChart({markerColor: colors[key]})
+        chart.Plot(svg, months_data, "date", key)
     }
 
     if (+months_data[months_data.length - 1]["date"].split("\n")[1] < 2024)
