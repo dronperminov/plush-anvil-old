@@ -33,6 +33,40 @@ PlotChart.prototype.GetLimits = function(data, key, startIndex) {
     return {max: max, min: min, delta: max - min}
 }
 
+PlotChart.prototype.Interpolate = function(x, points) {
+    if (points.length == 1)
+        return {x: x, y: points[0].y}
+
+    let result = 0
+    let sumWeights = 0
+
+    for (let i = 0; i < points.length; i++) {
+        let distance = Math.abs(x - points[i].x)
+
+        if (distance === 0)
+            return {x: x, y: points[i].y}
+
+        let weight = 1 / Math.pow(distance, 2)
+        result += points[i].y * weight
+        sumWeights += weight
+    }
+
+    return {x: x, y: result / sumWeights}
+}
+
+PlotChart.prototype.SmoothPoints = function(points, smoothCount = 20) {
+    let smoothPoints = [points[0]]
+
+    for (let i = 1; i < points.length; i++) {
+        for (let j = 0; j < smoothCount; j++)
+            smoothPoints.push(this.Interpolate(this.Map(j, -1, smoothCount, points[i - 1].x, points[i].x), points))
+
+        smoothPoints.push(points[i])
+    }
+
+    return smoothPoints
+}
+
 PlotChart.prototype.AppendLabel = function(svg, x, y, labelText, baseline = "middle", align = "middle", color) {
     let lines = labelText.split("\n")
 
@@ -119,5 +153,5 @@ PlotChart.prototype.Plot = function(svg, data, axisKey, labelKey, startIndex = 0
         points.push({x: x + offset, y: y})
     }
 
-    this.PlotPaths(line, path, points, height)    
+    this.PlotPaths(line, path, this.SmoothPoints(points), height)
 }
