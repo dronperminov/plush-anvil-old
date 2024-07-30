@@ -34,6 +34,35 @@ h3 {
     height: 150px;
 }
 
+.analytics-info-blocks {
+    display: grid;
+    grid-auto-flow: column;
+}
+
+.analytics-info-block {
+    display: grid;
+    grid-template-columns: 15px 1fr;
+    min-height: 100px;
+}
+
+.analytics-info-block-bar {
+    height: 100%;
+    width: 8px;
+    border-radius: 5px;
+}
+
+.analytics-info-block-bar div {
+    border-radius: 5px;
+}
+
+.analytics-info-block-value {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.analytics-info-block-label {
+}
+
 .analytics-info-item {
     margin-bottom: 8px;
 }
@@ -102,6 +131,14 @@ h3 {
 .analytics-months-info svg {
     width: 100%;
     height: 250px;
+}
+
+@media (max-width: 1200px) {
+    .analytics-info-blocks {
+        grid-auto-flow: unset;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 20px 0;
+    }
 }
 
 @media (max-width: 767px) {

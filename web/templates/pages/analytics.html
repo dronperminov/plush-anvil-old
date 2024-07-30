@@ -34,34 +34,50 @@
             <div class="analytics-info-chart">
                 <svg id="analytics-info-chart"></svg>
             </div>
-            <div class="analytics-info-items">
+            <div class="analytics-info-blocks">
                 {% if data.total.wins > 0 %}
-                <div class="analytics-info-item">
-                    <span class="circle" style="background: {{colors.wins}}"></span>
-                    <span class="analytics-info-item-label">Победы:</span>
-                    <span class="analytics-info-item-value">{{data.total.wins}} ({{(data.total.wins / data.total.games * 100) | round(1)}}%)</span>
+                <div class="analytics-info-block">
+                    <div class="analytics-info-block-bar" style="background: {{colors.wins}}40">
+                        <div style="height: {{data.total.wins / data.total.games * 100}}%; background: {{colors.wins}}"></div>
+                    </div>
+                    <div>
+                        <div class="analytics-info-block-value">{{(data.total.wins / data.total.games * 100) | round(1)}}%</div>
+                        <div class="analytics-info-block-label"><b>Победы</b>: {{data.total.wins}}</div>
+                    </div>
                 </div>
                 {% endif %}
 
                 {% if data.total.prizes > 0 %}
-                <div class="analytics-info-item">
-                    <span class="circle" style="background: {{colors.prizes}}"></span>
-                    <span class="analytics-info-item-label">2-3 места:</span>
-                    <span class="analytics-info-item-value">{{data.total.prizes}} ({{(data.total.prizes / data.total.games * 100) | round(1)}}%)</span>
+                <div class="analytics-info-block">
+                    <div class="analytics-info-block-bar" style="background: {{colors.prizes}}40">
+                        <div style="height: {{data.total.prizes / data.total.games * 100}}%; background: {{colors.prizes}}"></div>
+                    </div>
+                    <div>
+                        <div class="analytics-info-block-value">{{(data.total.prizes / data.total.games * 100) | round(1)}}%</div>
+                        <div class="analytics-info-block-label"><b>2-3 места</b>: {{data.total.prizes}}</div>
+                    </div>
                 </div>
                 {% endif %}
 
                 {% if data.total.top10 > 0 %}
-                <div class="analytics-info-item">
-                    <span class="circle" style="background: {{colors.top10}}"></span>
-                    <span class="analytics-info-item-label">4-10 места:</span>
-                    <span class="analytics-info-item-value">{{data.total.top10}} ({{(data.total.top10 / data.total.games * 100) | round(1)}}%)</span>
+                <div class="analytics-info-block">
+                    <div class="analytics-info-block-bar" style="background: {{colors.top10}}40">
+                        <div style="height: {{data.total.top10 / data.total.games * 100}}%; background: {{colors.top10}}"></div>
+                    </div>
+                    <div>
+                        <div class="analytics-info-block-value">{{(data.total.top10 / data.total.games * 100) | round(1)}}%</div>
+                        <div class="analytics-info-block-label"><b>4-10 места</b>: {{data.total.top10}}</div>
+                    </div>
                 </div>
                 {% endif %}
 
-                <div class="analytics-info-item">
-                    <span class="analytics-info-item-label">Всего игр:</span>
-                    <span class="analytics-info-item-value">{{data.total.games}}</span>
+                <div class="analytics-info-block">
+                    <div class="analytics-info-block-bar" style="background: #333">
+                    </div>
+                    <div>
+                        <div class="analytics-info-block-value">{{data.total.games}}</div>
+                        <div class="analytics-info-block-label"><b>Всего игр</b></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -249,7 +265,7 @@
 
         let events = [{% for game in data.games %}"{{game.date.year}}-{{game.date.month}}-{{game.date.day}}",{% endfor %}]
 
-        let grid = new YearGrid("year-grid", events, ["#ebedf0", "hsl(210, 87%, 90%)", "hsl(210, 87%, 76%)", "hsl(210, 87%, 63%)", "hsl(210, 87%, 50%)"])
+        let grid = new YearGrid("year-grid", events, ["#ebedf0", "hsl(340, 87%, 90%)", "hsl(340, 87%, 76%)", "hsl(340, 87%, 63%)", "hsl(340, 87%, 50%)"])
         let table = new FilterTable("games")
 
         {% for category_info in data.total.categories %}
