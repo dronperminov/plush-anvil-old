@@ -107,7 +107,7 @@ ANALYTICS_COLORS = {
     "mean_position": "#478bb3",
     "mean_players": "#47b36b",
     "rating": "#ffc154",
-    "position": "#00bcd4"
+    "position": "#d82e6b"
 }
 
 FREE_GAME = "free"

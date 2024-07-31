@@ -82,6 +82,58 @@ h3 {
     font-family: Roboto;
 }
 
+.analytics-info-horizontal-bar-block {
+    display: grid;
+    grid-template-columns: 1fr minmax(40px, max-content);
+    grid-gap: 0 5px;
+    cursor: pointer;
+}
+
+.analytics-info-horizontal-bar-block-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .2s ease-out;
+    margin-top: -8px;
+    margin-bottom: 8px;
+}
+
+.analytics-info-horizontal-bar-block-open + .analytics-info-horizontal-bar-block-details {
+    max-height: 100px;
+    transition: max-height .2s ease-out;
+}
+
+.analytics-info-horizontal-bar {
+    height: 30px;
+    position: relative;
+    border-radius: 10px;
+    display: grid;
+    padding-left: 10px;
+    align-content: center;
+    font-size: 0.9em;
+}
+
+.analytics-info-horizontal-bar-main {
+    height: 100%;
+    border-radius: 10px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+}
+
+.analytics-info-horizontal-bar-label {
+    z-index: 1;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.analytics-info-horizontal-bar-value {
+    align-content: center;
+    font-weight: bold;
+    text-align: right;
+    font-size: 1.3em;
+}
+
 .analytics-positions {
     max-width: 100%;
     overflow: auto;
@@ -214,6 +266,10 @@ h3 {
     .analytics-info-chart {
         text-align: center;
         margin-bottom: 10px;
+    }
+
+    .analytics-info-horizontal-bar-block {
+        grid-template-columns: 1fr minmax(20px, max-content);
     }
 
     .analytics-months-top-players-profile a:hover + .analytics-months-top-players-profile-activity {

@@ -83,6 +83,8 @@
         </div>
 
         <h3>Виды игр</h3>
+        <p class="description">Чтобы увидеть количество занимаемых призовых мест, нажмите на интересующую категорию.</p>
+
         <div class="analytics-info">
             <div class="analytics-info-chart">
                 <svg id="analytics-categories-chart"></svg>
@@ -90,13 +92,18 @@
             <div class="analytics-info-items">
                 {% for category_info in data.total.categories %}
                 {% if category_info.value > 0 %}
-                <div class="analytics-info-item">
-                    <span class="circle" style="background: {{category2color[category_info.name]}}"></span>
-                    <span class="analytics-info-item-label">{{category_info.name}}:</span>
-                    <span class="analytics-info-item-value">{{category_info.value}} ({{(category_info.value / data.total.games * 100) | round(1)}}%<!--
-                        -->{% if data.total.categories_wins[category_info.name] > 0 %}, <b>побед</b>: {{data.total.categories_wins[category_info.name]}}{% endif %}<!--
-                        -->{% if data.total.categories_prizes[category_info.name] > 0 %}, <b>в призах</b>: {{data.total.categories_prizes[category_info.name]}}{% endif %}<!--
-                    -->)</span>
+                <div class="analytics-info-item analytics-info-horizontal-bar-block" onclick="this.classList.toggle('analytics-info-horizontal-bar-block-open')">
+                    <div class="analytics-info-horizontal-bar" style="background: {{category2color[category_info.name]}}80">
+                        <div class="analytics-info-horizontal-bar-main" style="background: {{category2color[category_info.name]}}; width: {{category_info.value / data.total.games * 100}}%"></div>
+                        <div class="analytics-info-horizontal-bar-label">{{category_info.name}}</div>
+                    </div>
+                    <div class="analytics-info-horizontal-bar-value">{{category_info.value}}</div>
+                </div>
+                <div class="analytics-info-horizontal-bar-block-details">
+                    <ul>
+                        <li><b>доля</b>: {{(category_info.value / data.total.games * 100) | round(1)}}%</li>
+                        {% if data.total.categories_wins[category_info.name] > 0 %}<li><b>победы</b>: {{data.total.categories_wins[category_info.name]}}</li>{% endif %}{% if data.total.categories_prizes[category_info.name] > 0 %}<li><b>2-3 места</b>: {{data.total.categories_prizes[category_info.name]}}</li>{% endif %}
+                    </ul>
                 </div>
                 {% endif %}
                 {% endfor %}
