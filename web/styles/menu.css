@@ -258,7 +258,8 @@
         padding: 0;
         position: absolute;
         left: 0;
-        width: fit-content;
+        min-width: fit-content;
+        width: 100%;
     }
 
     .subnav-content a {
