@@ -127,11 +127,13 @@
         {% endfor %}
 
         <h2>Топ активных игроков</h2>
-        {% for player in data.total.top_players[:7] %}
+        <p class="description">Топ считается с учётом активности игроков. Алгоритм сортировки игроков по активности учитывает не только общее количество игр, в которых участвовал каждый игрок, но и их давность. Чем больше времени прошло с момента последней игры, тем меньше её вес. Таким образом, игроки, которые ходили на квизы недавно, будут иметь больший показатель активности, чем те, кто ходил давно.</p>
+
+        {% for player in data.top_players[:7] %}
         <div class="analytics-player">
             <img class="analytics-player-avatar" src="{{player.image_src}}">
             <div class="analytics-player-name">
-                <a href="/profile?username={{player.username}}">{{player.fullname}}</a> - {{player.count_text}}
+                <a href="/profile?username={{player.username}}">{{player.fullname}}</a> - {{player.count_text}} ({{player.score|round(1)}})
                 <div class="analytics-player-categories">
                     <b>Топ категорий</b>:
                 {% for category, count in player.categories[:3] %}{% if loop.index > 1 %}, {% endif %}{{category}} ({{count}}){% endfor %}
@@ -139,14 +141,14 @@
             </div>
         </div>
         {% endfor %}
-        {% if data.total.top_players|length > 7 %}
+        {% if data.top_players|length > 7 %}
         <details class="analytics-details">
             <summary><span>Показать остальных</span></summary>
-            {% for player in data.total.top_players[7:] %}
+            {% for player in data.top_players[7:] %}
             <div class="analytics-player">
                 <img class="analytics-player-avatar" src="{{player.image_src}}">
                 <div class="analytics-player-name">
-                    <a href="/profile?username={{player.username}}">{{player.fullname}}</a> - {{player.count_text}}
+                    <a href="/profile?username={{player.username}}">{{player.fullname}}</a> - {{player.count_text}} ({{player.score|round(1)}})
                     <div class="analytics-player-categories">
                         <b>Топ категорий</b>:
                     {% for category, count in player.categories[:3] %}{% if loop.index > 1 %}, {% endif %}{{category}} ({{count}}){% endfor %}

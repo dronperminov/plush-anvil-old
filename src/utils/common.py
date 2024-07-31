@@ -243,22 +243,34 @@ def get_categories_count(quizzes: List[Quiz]) -> Dict[str, int]:
     return categories
 
 
-def get_top_players(username2quizzes: Dict[str, List[Quiz]]) -> List[dict]:
+def get_activity_score(quizzes: List[Quiz], end_date: datetime, alpha: float) -> float:
+    return sum(alpha ** (end_date - quiz.date).days for quiz in quizzes)
+
+
+def get_top_players(quizzes: List[Quiz], alpha: float = 0.98) -> List[dict]:
+    username2quizzes = defaultdict(list)
+
+    for quiz in quizzes:
+        for participant in quiz.participants:
+            username2quizzes[participant["username"]].append(quiz)
+
+    end_date = max([quiz.date for quiz in quizzes], default=datetime.now())
     usernames = [username for username in username2quizzes]
     users = {user["username"]: user for user in database.users.find({"username": {"$in": usernames}}, {"_id": 0})}
     top_players = []
 
-    for username, quizzes in username2quizzes.items():
-        categories = [(category, count) for category, count in get_categories_count(quizzes).items() if count > 0]
+    for username, user_quizzes in username2quizzes.items():
+        categories = [(category, count) for category, count in get_categories_count(user_quizzes).items() if count > 0]
 
         top_players.append({
             **users[username],
-            "count": len(quizzes),
-            "count_text": get_word_form(len(quizzes), ["игр", "игры", "игра"]),
+            "score": get_activity_score(user_quizzes, end_date, alpha),
+            "count": len(user_quizzes),
+            "count_text": get_word_form(len(user_quizzes), ["игр", "игры", "игра"]),
             "categories": sorted(categories, key=lambda category: -category[1])
         })
 
-    return sorted(top_players, key=lambda player: (-player["count"], player["fullname"]))
+    return sorted(top_players, key=lambda player: (-player["score"], -player["count"], player["fullname"]))
 
 
 def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
@@ -283,7 +295,6 @@ def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
     categories = get_categories_count(quizzes)
     categories_wins = {category: 0 for category in constants.CATEGORIES}
     categories_prizes = {category: 0 for category in constants.CATEGORIES}
-    username2quizzes = defaultdict(list)
 
     for quiz in quizzes:
         positions[min(quiz.position, 16)] += 1
@@ -296,9 +307,6 @@ def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
         if quiz.is_prize():
             categories_prizes[quiz.category] += 1
 
-        for participant in quiz.participants:
-            username2quizzes[participant["username"]].append(quiz)
-
     for category, cat_positions in category_positions.items():
         cat_positions["mean"] = sum(category2positions[category]) / max(1, len(category2positions[category]))
 
@@ -307,7 +315,6 @@ def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
     data["categories"] = sorted([{"name": name, "value": count} for name, count in categories.items()], key=lambda info: (info["name"] == "прочее", -info["value"]))
     data["categories_wins"] = categories_wins
     data["categories_prizes"] = categories_prizes
-    data["top_players"] = get_top_players(username2quizzes)
 
     return data
 
@@ -334,11 +341,13 @@ def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime], 
     for (year, month), month_quizzes in date2quizzes.items():
         months_data.append({
             "date": {"year": year, "month": month},
-            **get_analytics_data(month_quizzes)
+            **get_analytics_data(month_quizzes),
+            "top_players": get_top_players(month_quizzes)
         })
 
     return {
         "total": get_analytics_data(quizzes),
+        "top_players": get_top_players(quizzes),
         "games": sorted(quizzes, key=lambda quiz: (quiz.date, quiz.time, -quiz.position), reverse=True),
         "categories": sorted([(count, name) for name, count in categories.items()], reverse=True),
         "organizers": sorted([(count, name) for name, count in organizers.items()], reverse=True),

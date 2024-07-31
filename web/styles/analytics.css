@@ -23,6 +23,13 @@ h3 {
     margin-bottom: 15px;
 }
 
+.content .description {
+    margin-top: -10px;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    font-size: 0.8em;
+}
+
 .analytics-info {
     display: grid;
     grid-template-columns: 180px 1fr;
