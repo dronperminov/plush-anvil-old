@@ -76,7 +76,7 @@ PlotChart.prototype.AppendLabel = function(svg, x, y, labelText, baseline = "mid
         label.textContent = line
         label.setAttribute("x", x)
         label.setAttribute("y", y)
-        label.setAttribute("alignment-baseline", baseline)
+        label.setAttribute("dominant-baseline", baseline)
         label.setAttribute("text-anchor", align)
         label.setAttribute("fill", color)
         label.setAttribute("font-size", this.labelSize)
@@ -150,8 +150,8 @@ PlotChart.prototype.Plot = function(svg, data, axisKey, labelKey, startIndex = 0
         let align = i == startIndex ? "start" : i == data.length - startIndex - 1 ? "end" : "middle"
 
         this.AppendMarker(svg, x + offset, y)
-        this.AppendLabel(svg, x, height - this.bottomPadding, data[i][axisKey], "before-edge", "middle", this.labelColor)
-        this.AppendLabel(svg, x + offset, y - this.markerRadius - 3, `${data[i][labelKey]}`, "top", align, this.labelColor)
+        this.AppendLabel(svg, x, height - this.bottomPadding, data[i][axisKey], "text-before-edge", "middle", this.labelColor)
+        this.AppendLabel(svg, x + offset, y - this.markerRadius - 1, `${data[i][labelKey]}`, "text-after-edge", align, this.labelColor)
 
         points.push({x: x + offset, y: y})
     }

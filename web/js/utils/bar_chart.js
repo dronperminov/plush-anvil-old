@@ -42,7 +42,7 @@ BarChart.prototype.AppendLabel = function(svg, x, y, labelText, baseline = "midd
         label.textContent = line
         label.setAttribute("x", x)
         label.setAttribute("y", y)
-        label.setAttribute("alignment-baseline", baseline)
+        label.setAttribute("dominant-baseline", baseline)
         label.setAttribute("text-anchor", "middle")
         label.setAttribute("fill", this.labelColor)
         label.setAttribute("font-size", this.labelSize)
@@ -97,11 +97,11 @@ BarChart.prototype.Plot = function(svg, data, axisKey, labelKey, startIndex = 0)
         let y = zero - Math.max(rectHeight, 0)
 
         this.AppendBar(svg, x, y, rectWidth, Math.abs(rectHeight))
-        this.AppendLabel(svg, x + rectWidth / 2, height - this.bottomPadding, data[i][axisKey], "before-edge")
+        this.AppendLabel(svg, x + rectWidth / 2, height - this.bottomPadding, data[i][axisKey], "text-before-edge")
 
         if (data[i][labelKey] == 0)
             continue
 
-        this.AppendLabel(svg, x + rectWidth / 2, y - 3, `${data[i][labelKey]}`, "top")
+        this.AppendLabel(svg, x + rectWidth / 2, y - 1, `${data[i][labelKey]}`, "text-after-edge")
     }
 }
