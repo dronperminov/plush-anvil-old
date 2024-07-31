@@ -8,6 +8,7 @@ function PlotChart(config = null) {
     this.maxMarkerWidth = config.maxMarkerWidth || 60
     this.markerRadius = config.markerRadius || 5
     this.markerColor = config.markerColor || "#00bcd4"
+    this.markerFillColor = config.markerFillColor || "#ffffff"
     this.labelColor = config.labelColor || "#212121"
     this.labelSize = config.labelSize || 10
 }
@@ -89,7 +90,9 @@ PlotChart.prototype.AppendMarker = function(svg, x, y) {
     marker.setAttribute("cx", x)
     marker.setAttribute("cy", y)
     marker.setAttribute("r", this.markerRadius)
-    marker.setAttribute("fill", this.markerColor)
+    marker.setAttribute("fill", this.markerFillColor)
+    marker.setAttribute("stroke", this.markerColor)
+    marker.setAttribute("stroke-width", this.markerRadius / 2)
 
     svg.appendChild(marker)
 }
@@ -143,7 +146,7 @@ PlotChart.prototype.Plot = function(svg, data, axisKey, labelKey, startIndex = 0
     for (let i = startIndex; i < data.length; i++) {
         let x = (i - startIndex) * markerWidth + markerWidth / 2
         let y = this.Map(data[i][labelKey], limits.min, limits.max, height - this.bottomPadding, this.topPadding)
-        let offset = i == startIndex ? this.markerRadius - markerWidth / 2 : i == data.length - startIndex - 1 ? markerWidth / 2 - this.markerRadius : 0
+        let offset = i == startIndex ? this.markerRadius * 1.5 - markerWidth / 2 : i == data.length - startIndex - 1 ? markerWidth / 2 - this.markerRadius * 1.5 : 0
         let align = i == startIndex ? "start" : i == data.length - startIndex - 1 ? "end" : "middle"
 
         this.AppendMarker(svg, x + offset, y)
