@@ -202,6 +202,21 @@
             <svg id="analytics-months-info-mean_players-chart"></svg>
         </div>
 
+        <h3>Топ активных игроков</h3>
+        <div class="analytics-months-top-players">
+            {% for info in data.months_data %}
+            <div class="analytics-months-top-players-profiles">
+                {% for player in info.top_players[:5] %}
+                <div class="analytics-months-top-players-profile">
+                    <a href="/profile?username={{player.username}}"><img src="{{player.image_src}}" title="{{player.score|round(1)}}"></a>
+                    <div class="analytics-months-top-players-profile-activity">{{player.score|round(1)}}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="analytics-months-top-players-date">{{month2rus[info.date.month]}}<br>{{info.date.year}}</div>
+            {% endfor %}
+        </div>
+
         {% if data.months_data[-1].date.year >= 2024 %}
         <h3>Смузи рейтинг</h3>
         <div class="analytics-months-info">
