@@ -207,6 +207,7 @@ h3 {
 .analytics-months-top-players-profiles {
     display: grid;
     grid-auto-flow: row;
+    grid-auto-rows: 1fr;
     background: #f1dcdc;
     border-radius: 8px;
     padding: 4px 2px;
@@ -226,6 +227,11 @@ h3 {
     height: 36px;
     border-radius: 100%;
     padding: 2px;
+}
+
+.analytics-months-top-players-profile-my img {
+    padding: 0;
+    border: 2px solid var(--main-color);
 }
 
 .analytics-months-top-players-profile a:hover img {

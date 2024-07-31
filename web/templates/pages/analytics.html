@@ -208,8 +208,9 @@
         <div class="analytics-months-top-players">
             {% for info in data.months_data %}
             <div class="analytics-months-top-players-profiles">
-                {% for player in info.top_players[:5] %}
-                <div class="analytics-months-top-players-profile">
+                {% for _ in range([0, 7 - (info.top_players|length)]|max) %}<div></div>{% endfor %}
+                {% for player in info.top_players[:7] %}
+                <div class="analytics-months-top-players-profile {% if player.username == user.username %}analytics-months-top-players-profile-my{% endif %}">
                     <a href="/profile?username={{player.username}}"><img src="{{player.image_src}}" title="{{player.fullname}}"></a>
                     <div class="analytics-months-top-players-profile-activity">{{player.score|round(1)}}</div>
                 </div>
