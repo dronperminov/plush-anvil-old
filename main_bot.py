@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
 import aioschedule as aioschedule
+import cv2
+import numpy as np
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters.command import Command
 from aiogram.types import FSInputFile, InlineQuery, InlineQueryResultArticle, InputMediaPhoto, InputTextMessageContent
@@ -175,6 +177,20 @@ def make_schedule_picture(output_path: str, date: str = "") -> str:
     hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1280, 1020), output_path=output_path)
     hti.screenshot(url=f"https://plush-anvil.ru/schedule?date={date}", save_as="schedule.png")
     hti.screenshot(url=f"https://plush-anvil.ru/schedule?date={date}", save_as="schedule.png")
+
+    today = datetime.now()
+    next_date = today + timedelta(days=6)
+
+    if date == "" and next_date.month != today.month and database.quizzes.find_one({"date": {"$gte": datetime(next_date.year, next_date.month, 1)}}):
+        date = f"{constants.MONTH_TO_RUS[next_date.month]}-{next_date.year}"
+        hti.screenshot(url=f"https://plush-anvil.ru/schedule?date={date}", save_as="schedule_next.png")
+        hti.screenshot(url=f"https://plush-anvil.ru/schedule?date={date}", save_as="schedule_next.png")
+
+        img1 = cv2.imread(os.path.join(output_path, "schedule.png"))
+        img2 = cv2.imread(os.path.join(output_path, "schedule_next.png"))
+        divider = np.ones((1020, 80, 3), dtype=np.uint8) * 255
+        cv2.imwrite(os.path.join(output_path, "schedule.png"), np.concatenate((img1, divider, img2), axis=1))
+
     return os.path.join(output_path, "schedule.png")
 
 
