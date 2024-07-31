@@ -27,9 +27,11 @@
             <a href="/analytics?start_date={{dates['month'][0]}}&end_date={{dates['month'][1]}}">текущий месяц</a>
         </p>
 
+        <h2>Активность команды</h2>
         <div id="year-grid"></div>
 
         {% if data.total.games > 0 %}
+        <h2>Результаты игр</h2>
         <div class="analytics-info">
             <div class="analytics-info-chart">
                 <svg id="analytics-info-chart"></svg>
@@ -82,8 +84,18 @@
             </div>
         </div>
 
-        <h3>Виды игр</h3>
-        <p class="description">Чтобы увидеть количество занимаемых призовых мест, нажмите на интересующую категорию.</p>
+        <h2>Распределение мест</h2>
+        <div class="analytics-info-item">
+            <span class="analytics-info-item-label">Средняя позиция:</span>
+            <span class="analytics-info-item-value">{{"%.1f" % data.total.mean_position}}</span>
+        </div>
+
+        <div class="analytics-positions">
+            <svg id="analytics-positions-chart"></svg>
+        </div>
+
+        <h2>Категории игр</h2>
+        <p class="description">Чтобы увидеть более подробную информацию, нажмите на интересующую категорию.</p>
 
         <div class="analytics-info">
             <div class="analytics-info-chart">
@@ -103,35 +115,18 @@
                     <ul>
                         <li><b>доля</b>: {{(category_info.value / data.total.games * 100) | round(1)}}%</li>
                         {% if data.total.categories_wins[category_info.name] > 0 %}<li><b>победы</b>: {{data.total.categories_wins[category_info.name]}}</li>{% endif %}{% if data.total.categories_prizes[category_info.name] > 0 %}<li><b>2-3 места</b>: {{data.total.categories_prizes[category_info.name]}}</li>{% endif %}
+                        <li><b>средняя позиция</b>: {{"%.1f" % data.total.category_positions[category_info.name].mean}}</li>
+                        <li><b>распределение мест</b>:</li>
                     </ul>
+
+                    <div class="analytics-positions">
+                        <svg id="analytics-category-{{loop.index}}-positions-chart"></svg>
+                    </div>
                 </div>
                 {% endif %}
                 {% endfor %}
             </div>
         </div>
-
-        <h2>Распределение мест</h2>
-        <div class="analytics-info-item">
-            <span class="analytics-info-item-label">Средняя позиция:</span>
-            <span class="analytics-info-item-value">{{"%.1f" % data.total.mean_position}}</span>
-        </div>
-
-        <div class="analytics-positions">
-            <svg id="analytics-positions-chart"></svg>
-        </div>
-
-        <h2>Распределение мест по категориям</h2>
-        {% for category_info in data.total.categories %}
-        {% if data.total.category_positions[category_info.name].values()|sum > 0 %}
-        <details class="analytics-details">
-            <summary><b class="circle" style="background: {{category2color[category_info.name]}}"></b> <span>{{category_info.name}}</span> <small>(средняя позиция: {{"%.1f" % data.total.category_positions[category_info.name].mean}})</small></summary>
-
-            <div class="analytics-positions">
-                <svg id="analytics-category-{{loop.index}}-positions-chart"></svg>
-            </div>
-        </details>
-        {% endif %}
-        {% endfor %}
 
         <h2>Топ активных игроков</h2>
         <p class="description">Топ считается с учётом активности игроков. Алгоритм сортировки игроков по активности учитывает не только общее количество игр, в которых участвовал каждый игрок, но и их давность. Чем больше времени прошло с момента последней игры, тем меньше её вес. Таким образом, игроки, которые ходили на квизы недавно, будут иметь больший показатель активности, чем те, кто ходил давно.</p>
@@ -215,7 +210,7 @@
             <div class="analytics-months-top-players-profiles">
                 {% for player in info.top_players[:5] %}
                 <div class="analytics-months-top-players-profile">
-                    <a href="/profile?username={{player.username}}"><img src="{{player.image_src}}" title="{{player.score|round(1)}}"></a>
+                    <a href="/profile?username={{player.username}}"><img src="{{player.image_src}}" title="{{player.fullname}}"></a>
                     <div class="analytics-months-top-players-profile-activity">{{player.score|round(1)}}</div>
                 </div>
                 {% endfor %}
@@ -285,7 +280,7 @@
         {% if data.total.games > 0 %}
         PlotAnalyticsChart()
         PlotCategoriesChart()
-        PlotPositionsChart("analytics-positions-chart", positions_data)
+        PlotPositionsChart("analytics-positions-chart", positions_data, "{{colors.position}}")
 
         let events = [{% for game in data.games %}"{{game.date.year}}-{{game.date.month}}-{{game.date.day}}",{% endfor %}]
 
@@ -294,7 +289,7 @@
 
         {% for category_info in data.total.categories %}
         {% if data.total.category_positions[category_info.name].values()|sum > 0 %}
-        PlotPositionsChart("analytics-category-{{loop.index}}-positions-chart", categories_positions_data[{{loop.index0}}])
+        PlotPositionsChart("analytics-category-{{loop.index}}-positions-chart", categories_positions_data[{{loop.index0}}], "{{category2color[category_info.name]}}")
         {% endif %}
         {% endfor %}
 

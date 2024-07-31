@@ -20,7 +20,7 @@ h3 {
 .content .analytics-period {
     color: var(--text-color);
     font-size: 0.85em;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .content .description {
@@ -98,7 +98,7 @@ h3 {
 }
 
 .analytics-info-horizontal-bar-block-open + .analytics-info-horizontal-bar-block-details {
-    max-height: 100px;
+    max-height: 410px;
     transition: max-height .2s ease-out;
 }
 

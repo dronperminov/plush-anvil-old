@@ -10,11 +10,11 @@ function PlotCategoriesChart() {
     chart.Plot(svg, categories_data)
 }
 
-function PlotPositionsChart(svgId, positions) {
+function PlotPositionsChart(svgId, positions, color) {
     let svg = document.getElementById(svgId)
     svg.clientHeight = 300
 
-    let chart = new BarChart({barColor: colors.position, minRectWidth: 32, maxRectWidth: 45, bottomPadding: 12})
+    let chart = new BarChart({barColor: color, minRectWidth: 32, maxRectWidth: 45, bottomPadding: 12})
     let data = []
 
     for (let position = 1; position <= 16; position++)

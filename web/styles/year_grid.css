@@ -5,11 +5,13 @@
 
 .year-grid {
 	min-width: 767px;
+	max-width: 1300px;
 
 	display: grid;
 	grid-auto-flow: column;
 	grid-template-rows: 20px repeat(9, 1fr);
 	grid-template-columns: 1.5em;
+	grid-auto-columns: minmax(0, 1fr);
 	grid-gap: 4px;
 	margin-bottom: 5px;
 }
@@ -51,7 +53,7 @@
 	display: inline-grid;
 	grid-auto-flow: column;
 	grid-gap: 5px;
-	margin-bottom: 5px;
+	margin-bottom: 25px;
 }
 
 .year-grid-marker {
