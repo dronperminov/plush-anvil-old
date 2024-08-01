@@ -8,6 +8,9 @@ function PlotCategoriesChart() {
     let svg = document.getElementById("analytics-categories-chart")
     let chart = new Chart()
     chart.Plot(svg, categories_data)
+
+    let radar = new RadarChart(window.innerWidth <= 767 ? {labelSize: 10} : {labelSize: 14})
+    radar.Plot("analytics-categories-radar", categories_data.filter(row => row.value > 0).sort((a, b) => Math.random() < 0.5 ? 1 : -1))
 }
 
 function PlotPositionsChart(svgId, positions, color) {

@@ -128,6 +128,11 @@
             </div>
         </div>
 
+        <h2>Радар категорий</h2>
+        <div class="scrollable analytics-radar">
+            <svg id="analytics-categories-radar"></svg>
+        </div>
+
         <h2>Топ активных игроков</h2>
         <p class="description">Топ считается с учётом активности игроков. Алгоритм сортировки игроков по активности учитывает не только общее количество игр, в которых участвовал каждый игрок, но и их давность. Чем больше времени прошло с момента последней игры, тем меньше её вес. Таким образом, игроки, которые ходили на квизы недавно, будут иметь больший показатель активности, чем те, кто ходил давно.</p>
 
@@ -235,6 +240,7 @@
     <script src="/js/utils/chart.js?v={{version}}"></script>
     <script src="/js/utils/bar_chart.js?v={{version}}"></script>
     <script src="/js/utils/plot_chart.js?v={{version}}"></script>
+    <script src="/js/utils/radar_chart.js?v={{version}}"></script>
     <script src="/js/utils/year_grid.js?v={{version}}"></script>
     <script src="/js/utils/filter_table.js?v={{version}}"></script>
     <script src="/js/analytics.js?v={{version}}"></script>
@@ -253,7 +259,7 @@
         const positions_data = {{data.total.positions}}
         const categories_data = [
             {% for category_info in data.total.categories %}
-            {value: {{category_info.value}}, color: "{{category2color[category_info.name]}}"},
+            {value: {{category_info.value}}, color: "{{category2color[category_info.name]}}", label: "{{category_info.name}}"},
             {% endfor %}
         ]
 

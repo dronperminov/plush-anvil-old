@@ -134,6 +134,11 @@ h3 {
     font-size: 1.3em;
 }
 
+.analytics-radar svg {
+    width: 100%;
+    height: 350px;
+}
+
 .analytics-positions {
     max-width: 100%;
     overflow: auto;
@@ -185,6 +190,10 @@ h3 {
     overflow: auto;
     margin-bottom: 30px;
     text-align: center;
+}
+
+.analytics-months-info:last-child {
+    margin-bottom: 0;
 }
 
 .analytics-months-info svg {
@@ -264,7 +273,7 @@ h3 {
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
     .analytics-info {
         display: block;
     }
@@ -272,6 +281,12 @@ h3 {
     .analytics-info-chart {
         text-align: center;
         margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 767px) {
+    .analytics-radar svg {
+        height: 280px;
     }
 
     .analytics-info-horizontal-bar-block {
