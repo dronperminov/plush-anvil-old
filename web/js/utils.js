@@ -177,9 +177,11 @@ function AutoHeightTextareas() {
 }
 
 function FormatDate(date) {
+    const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]
     let day = `${date.day}`.padStart(2, '0')
-    let month = `${date.month}`.padStart(2, '0')
-    return `${day}.${month}.${date.year}`
+    let month = months[date.month - 1]
+    let year = new Date().getFullYear() == date.year ? "" : ` ${date.year}`
+    return `${day} ${month}${year}`
 }
 
 function GetWordForm(number, words) {
