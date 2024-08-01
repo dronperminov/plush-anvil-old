@@ -219,7 +219,7 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
                 MakeElement("quiz-details-date", content, {innerHTML: `${FormatDate(quiz.date)}`})
                 MakeElement("quiz-details-day-time", content, {innerHTML: `${quiz.time}, ${cell.weekday}`})
                 MakeElement("quiz-details-cost", content, {innerHTML: `${RUB_ICON} <div>${quiz.cost}₽</div>`})
-                MakeElement("quiz-details-place", content, {innerHTML: `${PLACE_ICON} <div>${quiz.place}<div class="quiz-details-place-addition">м. ${places[quiz.place].metro_station}<br>${places[quiz.place].address}</div></div>`})
+                MakeElement("quiz-details-place", content, {innerHTML: `${PLACE_ICON} <div>${quiz.place}<div class="quiz-details-place-addition">м. ${places[quiz.place].metro_station}<br><a href="https://yandex.ru/maps/?text=${places[quiz.place].address}">${places[quiz.place].address}</</div></div>`})
                 MakeElement("quiz-details-organizer", content, {innerHTML: `<img src="/images/organizers/${quiz.organizer}.png"> ${quiz.organizer}`})
 
                 if (quiz.position > 0)
