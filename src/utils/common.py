@@ -398,6 +398,7 @@ def get_schedule(schedule_date: datetime) -> dict:
         "year": schedule_date.year,
         "calendar": calendar_cells,
         "places": places,
+        "category2color": constants.CATEGORY2COLOR,
         "statistics": statistics
     }
 

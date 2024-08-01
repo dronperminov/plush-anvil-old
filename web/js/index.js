@@ -92,15 +92,6 @@ function FixFontSize(foreign, nameSpan) {
 
 function QuizToName(quiz, count = 1) {
     let name = quiz.short_name
-
-    if (count < 3)
-        name += "<br>"
-    else
-        name += " "
-
-    if (quiz.position > 0)
-        name += `<span class='schedule-quiz-position'>${quiz.position} / ${quiz.teams}</span>`
-
     return name
 }
 
@@ -215,6 +206,7 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
                 }
 
                 MakeElement("quiz-details-name", content, {innerText: quiz.name})
+                MakeElement("quiz-details-category", content, {innerHTML: `<span class="circle" style="background: ${schedule.category2color[quiz.category]}"></span> ${quiz.category}`})
                 MakeElement("quiz-details-description", content, {innerHTML: `${quiz.description}`})
                 MakeElement("quiz-details-date", content, {innerHTML: `${FormatDate(quiz.date)}`})
                 MakeElement("quiz-details-day-time", content, {innerHTML: `${quiz.time}, ${cell.weekday}`})

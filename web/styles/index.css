@@ -578,6 +578,11 @@
     font-weight: bold;
 }
 
+.quiz-details-category {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
 .quiz-details-description {
     font-size: 0.8em;
     margin-bottom: 15px;
