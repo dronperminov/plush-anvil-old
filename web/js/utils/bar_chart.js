@@ -34,6 +34,29 @@ BarChart.prototype.GetLimits = function(data, key, startIndex) {
     return {max: max, min: min, delta: max - min}
 }
 
+BarChart.prototype.AppendGradient = function(svg) {
+    let defs = document.createElementNS('http://www.w3.org/2000/svg', "defs")
+    svg.appendChild(defs)
+
+    let gradient = document.createElementNS('http://www.w3.org/2000/svg', "linearGradient")
+    gradient.setAttribute("id", `${svg.getAttribute("id")}-gradient`)
+    gradient.setAttribute("x1", "0")
+    gradient.setAttribute("y1", "0")
+    gradient.setAttribute("x2", "0")
+    gradient.setAttribute("y2", "1")
+    defs.appendChild(gradient)
+
+    let stop1 = document.createElementNS('http://www.w3.org/2000/svg', "stop")
+    stop1.setAttribute("offset", "0%")
+    stop1.setAttribute("stop-color", this.barColor + "90")
+    gradient.appendChild(stop1)
+
+    let stop2 = document.createElementNS('http://www.w3.org/2000/svg', "stop")
+    stop2.setAttribute("offset", "100%")
+    stop2.setAttribute("stop-color", this.barColor)
+    gradient.appendChild(stop2)
+}
+
 BarChart.prototype.AppendLabel = function(svg, x, y, labelText, baseline = "middle") {
     let lines = labelText.split("\n")
 
@@ -61,7 +84,7 @@ BarChart.prototype.AppendBar = function(svg, x, y, rectWidth, rectHeight) {
     bar.setAttribute("width", rectWidth)
     bar.setAttribute("height", rectHeight)
     bar.setAttribute("rx", Math.min(this.radius, rectHeight / 4))
-    bar.setAttribute("fill", this.barColor)
+    bar.setAttribute("fill", `url(#${svg.getAttribute("id")}-gradient)`)
 
     svg.appendChild(bar)
 }
@@ -87,6 +110,8 @@ BarChart.prototype.Plot = function(svg, data, axisKey, labelKey, startIndex = 0)
 
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
     svg.innerHTML = ''
+
+    this.AppendGradient(svg)
 
     let availableHeight = (height - this.topPadding - this.bottomPadding)
     let zero = limits.min / limits.delta * availableHeight + height - this.bottomPadding
