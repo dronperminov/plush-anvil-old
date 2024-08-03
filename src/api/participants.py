@@ -9,10 +9,10 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 
 from src import constants
 from src.api import make_error, templates
-from src.constants import PAID_GAME, PASS_GAME
 from src.database import database
 from src.utils.auth import get_current_user
-from src.utils.common import get_static_hash, get_word_form
+from src.utils.common import get_static_hash
+from src.utils.participants import get_participants_info
 from src.utils.users import get_participant_users
 
 router = APIRouter()
@@ -54,39 +54,6 @@ def quiz_participants(user: Optional[dict] = Depends(get_current_user), quiz_id:
     return HTMLResponse(content=content)
 
 
-def get_last_free_game(games: List[dict]) -> int:
-    paid_games = 0
-
-    for game in games[::-1]:
-        if game["paid"] == PASS_GAME:
-            break
-
-        paid_games += 1
-
-    end_index = len(games) - paid_games - 1
-
-    if paid_games == len(games):
-        return -1
-
-    return len(games) if paid_games >= 10 else end_index
-
-
-def get_paid_games(games: List[dict]) -> int:
-    end_index = get_last_free_game(games)
-
-    if end_index == -1:
-        return len(games)
-
-    paid_games = 0
-    for game in games[:end_index]:
-        if game["paid"] == PAID_GAME:
-            paid_games += 1
-        elif game["paid"] == PASS_GAME:
-            paid_games -= 10
-
-    return paid_games
-
-
 @router.get("/participants-info")
 def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if not user:
@@ -95,39 +62,7 @@ def participants_info(user: Optional[dict] = Depends(get_current_user)) -> Respo
     if user["role"] != "owner":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
-    users = {user["username"]: user for user in database.users.find({})}
-    user2games = {username: [{"date": date, "time": "", "paid": PAID_GAME} for date in users[username].get("participant_dates", [])] for username in users}
-
-    query = {
-        "organizer": "Смузи",
-        "participants": {"$exists": True},
-        "date": {"$gte": datetime(2024, 4, 1)},
-        "ignore_participants": {"$ne": True}
-    }
-
-    for quiz in database.quizzes.find(query):
-        for participant in quiz["participants"]:
-            if quiz["date"] < users[participant["username"]].get("ignore_paid_before", quiz["date"]):
-                continue
-
-            count = participant.get("count", 1) - 1
-
-            if participant["paid"] in [PAID_GAME, PASS_GAME]:
-                user2games[participant["username"]].append({"date": quiz["date"], "time": quiz["time"], "paid": participant["paid"]})
-
-            user2games[participant["username"]].extend([{"date": quiz["date"], "time": "", "paid": PAID_GAME}] * count)
-
-    participants = []
-
-    for username, games in user2games.items():
-        if len(games) == 0:
-            continue
-
-        games = sorted(games, key=lambda game: (game["date"], game["time"]), reverse=True)
-        paid_games = get_paid_games(games)
-        participants.append({**users[username], "games": games, "paid_games": paid_games, "paid_games_text": get_word_form(paid_games, ["игр", "игры", "игра"])})
-
-    participants = sorted(participants, key=lambda participant: -participant["paid_games"])
+    participants = get_participants_info()
     today = datetime.now()
 
     template = templates.get_template("admin_pages/participants_info.html")

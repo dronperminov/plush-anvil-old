@@ -11,6 +11,7 @@ from src.api import templates
 from src.database import database
 from src.utils.auth import get_current_user
 from src.utils.common import crop_image, get_hash, get_static_hash, get_user_achievements, save_image
+from src.utils.participants import get_user_participant_info
 
 router = APIRouter()
 
@@ -60,6 +61,7 @@ def profile(user: Optional[dict] = Depends(get_current_user), username: str = Qu
         games_categories=sorted([(count, name) for name, count in categories.items()], reverse=True),
         games_organizers=sorted([(count, name) for name, count in organizers.items()], reverse=True),
         games_places=sorted([(count, name) for name, count in places.items()], reverse=True),
+        participant_info=get_user_participant_info(show_user["username"]),
         achievements=get_user_achievements(show_user["username"]),
         month2games=month2games,
         month2rus=constants.MONTH_TO_RUS,
