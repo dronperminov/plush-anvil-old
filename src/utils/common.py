@@ -492,7 +492,9 @@ def get_user_achievements(username: str) -> List[Achievement]:
     quizzes = [Quiz.from_dict(quiz) for quiz in quizzes]
 
     for achievement in achievements:
-        achievement.analyze(quizzes)
+        if quizzes:
+            achievement.analyze(quizzes)
+
         achievement.set_label_date()
 
     achievements.append(get_photos_achievement(username, quiz_ids))
