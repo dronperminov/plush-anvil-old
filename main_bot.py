@@ -22,10 +22,9 @@ from html2image import Html2Image
 
 from src import constants
 from src.api import templates
-from src.constants import SMUZI_RATING_TO_NAME
 from src.database import database
 from src.dataclasses.quiz import Quiz
-from src.utils.common import get_month_dates, get_places, get_smuzi_rating, get_word_form
+from src.utils.common import get_month_dates, get_places, get_word_form
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -194,26 +193,6 @@ def make_schedule_picture(output_path: str, date: str = "") -> str:
     return os.path.join(output_path, "schedule.png")
 
 
-def get_rating_text(rating: dict) -> str:
-    history = []
-
-    for i, info in enumerate(rating["history"]):
-        level = SMUZI_RATING_TO_NAME[i]["name"]
-        date = f'{info["date"].day:02d}.{info["date"].month:02d}.{info["date"].year}'
-        games = get_word_form(len(info["players"]), ["игр", "игры", "игру"])
-        history.append(f'- <b>{level}</b>: достигли {date} с рейтингом {info["score"]} за {games}, игроков в среднем: {info["mean_players"]:.1f}')
-
-    lines = [f'<b>Рейтинг смузи</b>: {rating["score"]} ({rating["info"]["level"]} уровень, {rating["info"]["name"]})']
-
-    if rating["players"]:
-        lines.append(f'<b>Среднее количество игроков</b>: {rating["mean_players"]:.1f} ({get_word_form(len(rating["players"]), ["игр", "игры", "игра"])})')
-
-    lines.append("\n<b>История получения уровней</b>:")
-    lines.extend(history)
-    lines.append("\nПост с информацией про рейтинг: https://vk.com/smuzi_msk?w=wall-164592450_73696")
-    return "\n".join(lines)
-
-
 @dp.message(Command("get_id"))
 async def log(message: types.Message) -> None:
     logger.info(f"Chat id: {message.chat.id}")
@@ -231,12 +210,7 @@ async def handle_start(message: types.Message) -> None:
         "",
         "Команды, которые я знаю:",
         "/info - отображение общей информации",
-        "/rating - информация о текущем рейтинге Смузи",
         "/schedule - получение актуального расписания",
-        "",
-        "А ещё админы могут:",
-        "- создавать опросы про квизы, написав `@plush_anvil_bot poll` и выбрав нужный квиз",
-        "- создавать картинки с описанием для сториз, написав `@plush_anvil_bot story` и выбрав нужный квиз"
     ])
 
     await message.delete()
@@ -260,14 +234,6 @@ async def handle_info(message: types.Message) -> None:
 
     await message.delete()
     await message.answer("\n".join(lines), parse_mode="HTML", disable_web_page_preview=True)
-
-
-@dp.message(Command("rating"))
-async def handle_rating(message: types.Message) -> None:
-    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
-
-    await message.delete()
-    await message.answer(get_rating_text(get_smuzi_rating()), parse_mode="HTML", disable_web_page_preview=True)
 
 
 async def make_quiz_poll(quiz_id: str, message: types.Message) -> None:
@@ -403,29 +369,6 @@ async def handle_pred_poll(message: types.Message) -> None:
 
         poll = await message.answer_poll(question=question, options=options, is_anonymous=False, allows_multiple_answers=True)
         await poll.pin(disable_notification=True)
-
-
-@dp.inline_query(F.query == "info")
-async def handle_inline_info(query: InlineQuery) -> None:
-    logger.info(f"Inline command info from user {query.from_user.username} ({query.from_user.id})")
-
-    rating = get_smuzi_rating()
-
-    items = [
-        {"title": "Сайт", "description": "plush-anvil.ru", "text": "<b>Сайт</b>: plush-anvil.ru"},
-        {"title": "Рейтинг смузи", "description": f'{rating["score"]} ({rating["info"]["name"]})', "text": get_rating_text(rating)},
-        {"title": "УМ тренировки", "description": "music-quiz.plush-anvil.ru", "text": "<b>Сайт для УМ тренировок</b>: music-quiz.plush-anvil.ru"},
-        {"title": "КМС тренировки", "description": "movie-quiz.plush-anvil.ru", "text": "<b>Сайт для КМС тренировок</b>: movie-quiz.plush-anvil.ru"}
-    ]
-
-    results = []
-
-    for i, item in enumerate(items):
-        content = InputTextMessageContent(message_text=item["text"], parse_mode="HTML", disable_web_page_preview=True)
-        result = InlineQueryResultArticle(id=f"info_{i}", title=item["title"], description=item["description"], input_message_content=content)
-        results.append(result)
-
-    await query.answer(results, is_personal=False, cache_time=0)
 
 
 @dp.inline_query(F.query == "poll")
