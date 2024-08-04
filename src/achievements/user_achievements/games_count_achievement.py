@@ -11,6 +11,8 @@ class GamesCountAchievement(Achievement):
         self.target_count = target_count
 
     def analyze(self, quizzes: List[Quiz]) -> None:
-        if len(quizzes) >= self.target_count:
-            self.count = -1
-            self.first_date = quizzes[self.target_count - 1].date
+        if len(quizzes) < self.target_count:
+            return
+
+        self.count = len(quizzes) // self.target_count
+        self.first_date = quizzes[self.target_count - 1].date
