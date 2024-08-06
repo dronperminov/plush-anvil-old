@@ -368,6 +368,7 @@ def get_schedule(schedule_date: datetime) -> dict:
 
     date_quizzes = get_date2quizzes(quizzes)
     places = sorted({quiz["place"] for quizzes in date_quizzes.values() for quiz in quizzes})
+    user_images = {user["username"]: user["image_src"] for user in database.users.find({}, {"username": 1, "image_src": 1})}
 
     rows = (num_days + start_weekday + 6) // 7
     calendar_cells = []
@@ -398,6 +399,7 @@ def get_schedule(schedule_date: datetime) -> dict:
         "year": schedule_date.year,
         "calendar": calendar_cells,
         "places": places,
+        "user_images": user_images,
         "category2color": constants.CATEGORY2COLOR,
         "statistics": statistics
     }

@@ -647,6 +647,32 @@
     margin-top: 10px;
 }
 
+.quiz-details-participants {
+    display: inline-grid;
+    max-width: 100%;
+    grid-gap: 3px;
+    grid-auto-flow: column;
+    overflow-x: auto;
+    padding-left: 30px;
+    margin-top: 5px;
+}
+
+.quiz-details-participants a, .quiz-details-participants a:hover {
+    border: none;
+}
+
+.quiz-details-participants img {
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+    padding: 2px;
+}
+
+.quiz-details-participants a:hover img {
+    padding: 0;
+    border: 2px solid var(--main-color);
+}
+
 @media (max-width: 767px) {
     .schedule-month {
         padding: 5px;

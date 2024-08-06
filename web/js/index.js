@@ -217,8 +217,11 @@ function BuildScheduleDetails(schedule, places, isAdmin) {
                 if (quiz.position > 0)
                     MakeElement("quiz-details-addition", content, {innerHTML: `${POSITION_ICON} <div>${quiz.position} место из ${quiz.teams}</div>`})
 
-                if (quiz.players > 0)
+                if (quiz.players > 0) {
                     MakeElement("quiz-details-addition", content, {innerHTML: `${PLAYERS_ICON} <div>${quiz.players} ${GetWordForm(quiz.players, ['игроков', 'игрока', 'игрок'])}</div>`})
+                    let participants = quiz.participants.map(participant => `<a href="/profile?username=${participant.username}"><img src="${schedule.user_images[participant.username]}"></a>`).join("")
+                    MakeElement("quiz-details-participants", content, {innerHTML: participants})
+                }
             }
         }
     }
