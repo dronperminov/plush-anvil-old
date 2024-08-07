@@ -505,13 +505,28 @@
     margin-top: 15px;
 }
 
-.schedule-statistic-row {
-    font-size: 0.8em;
-    margin-top: 5px;
+.schedule-statistic-cells {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    grid-gap: 10px;
+    margin-top: 10px;
 }
 
-.schedule-statistic b {
-    font-size: 1.1em;
+.schedule-statistic-cell {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--main-color);
+    background: var(--content-light-background);
+}
+
+.schedule-statistic-cell-value {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.schedule-statistic-cell-label {
+    font-size: 0.7em;
 }
 
 .quiz-details {
@@ -693,5 +708,14 @@
 
     .schedule-cell {
         border-width: 1px;
+    }
+
+    .schedule-statistic-cells {
+        margin-top: 5px;
+        grid-gap: 7px;
+    }
+
+    .schedule-statistic-cell {
+        font-size: 0.8em;
     }
 }

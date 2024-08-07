@@ -232,21 +232,28 @@ function BuildScheduleStatistics(schedule) {
     let values = []
 
     if (statistics.games > 0)
-        values.push(`<b>${statistics.games}</b> ${GetWordForm(statistics.games, ['игр', 'игры', 'игру'])} сыграли`)
+        values.push(`<div class="schedule-statistic-cell-value">${statistics.games}</div><div class="schedule-statistic-cell-label">${GetWordForm(statistics.games, ['игр', 'игры', 'игру'])} сыграли</div>`)
 
     if (statistics.wins > 0)
-        values.push(`<b>${statistics.wins}</b> ${GetWordForm(statistics.wins, ['раз', 'раза', 'раз'])} победили`)
+        values.push(`<div class="schedule-statistic-cell-value">${statistics.wins}</div><div class="schedule-statistic-cell-label">${GetWordForm(statistics.wins, ['раз', 'раза', 'раз'])} победили</div>`)
 
     if (statistics.top3 > 0)
-        values.push(`<b>${statistics.top3}</b> ${GetWordForm(statistics.top3, ['раз', 'раза', 'раз'])} вошли в тройку`)
+        values.push(`<div class="schedule-statistic-cell-value">${statistics.top3}</div><div class="schedule-statistic-cell-label">${GetWordForm(statistics.top3, ['раз', 'раза', 'раз'])} вошли в тройку</div>`)
 
     if (statistics.games > 0)
-        values.push(`<b>${Math.round(statistics.mean_position * 10) / 10}</b> средняя занимаемая позиция`)
+        values.push(`<div class="schedule-statistic-cell-value">${statistics.mean_position.toFixed(1)}</div><div class="schedule-statistic-cell-label">средняя позиция</div>`)
 
-    let text = values.length > 0 ? `<div class="schedule-statistic-header">Статистика за месяц:</div>` : ""
 
     let block = document.getElementById("schedule-statistic")
-    block.innerHTML = text + values.map(v => `<div class="schedule-statistic-row">${v}</div>`).join("")
+
+    if (values.length == 0) {
+        block.innerHTML = ""
+        return
+    }
+
+    let header = `<div class="schedule-statistic-header">Статистика за месяц:</div>`
+    let cells = '<div class="schedule-statistic-cells">' + values.map(v => `<div class="schedule-statistic-cell">${v}</div>`).join("") + "</div>"
+    block.innerHTML = `${header}${cells}`
 }
 
 function BuildSchedule(schedule, places, isAdmin, withStatistic = true) {
