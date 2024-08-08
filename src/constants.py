@@ -16,6 +16,7 @@ SUCCESS = "success"
 
 CROP_IMAGE_SIZE = 200
 LAST_POLL_OPTION = 9
+ACTIVITY_SCORE_ALPHA = 0.98
 
 MONTH_TO_RUS = {
     1: "январь",

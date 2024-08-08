@@ -26,6 +26,7 @@ from src.achievements.user_achievements.players_count_achievement import Players
 from src.constants import SMUZI_POSITION_TO_SCORE, SMUZI_RATING_TO_NAME
 from src.database import database
 from src.dataclasses.quiz import Quiz
+from src.utils.users import get_activity_scores
 
 
 def get_hash(filename: str) -> str:
@@ -142,11 +143,13 @@ def quiz_to_datetime(quiz: dict) -> datetime:
 
 def get_date2quizzes(quizzes: List[dict]) -> Dict[datetime, List[dict]]:
     date2quizzes = defaultdict(list)
+    user2score = get_activity_scores()
 
     for quiz in quizzes:
         quiz_date = quiz["date"]
         quiz["date"] = {"year": quiz_date.year, "month": quiz_date.month, "day": quiz_date.day}
         quiz["_id"] = str(quiz["_id"])
+        quiz["participants"] = sorted(quiz["participants"], key=lambda participant: -user2score.get(participant["username"], 0))
         date2quizzes[quiz_date].append(quiz)
 
     for date, date_quizzes in date2quizzes.items():
@@ -243,11 +246,11 @@ def get_categories_count(quizzes: List[Quiz]) -> Dict[str, int]:
     return categories
 
 
-def get_activity_score(quizzes: List[Quiz], end_date: datetime, alpha: float) -> float:
-    return sum(alpha ** (end_date - quiz.date).days for quiz in quizzes)
+def get_activity_score(quizzes: List[Quiz], end_date: datetime) -> float:
+    return sum(constants.ACTIVITY_SCORE_ALPHA ** (end_date - quiz.date).days for quiz in quizzes)
 
 
-def get_top_players(quizzes: List[Quiz], alpha: float = 0.98) -> List[dict]:
+def get_top_players(quizzes: List[Quiz]) -> List[dict]:
     username2quizzes = defaultdict(list)
 
     for quiz in quizzes:
@@ -264,7 +267,7 @@ def get_top_players(quizzes: List[Quiz], alpha: float = 0.98) -> List[dict]:
 
         top_players.append({
             **users[username],
-            "score": get_activity_score(user_quizzes, end_date, alpha),
+            "score": get_activity_score(user_quizzes, end_date),
             "count": len(user_quizzes),
             "count_text": get_word_form(len(user_quizzes), ["игр", "игры", "игра"]),
             "categories": sorted(categories, key=lambda category: -category[1])
@@ -329,12 +332,14 @@ def get_analytics(start_date: Optional[datetime], end_date: Optional[datetime], 
     organizers = defaultdict(int)
     categories = defaultdict(int)
     places = defaultdict(int)
+    user2score = get_activity_scores()
 
     for quiz in quizzes:
         date2quizzes[(quiz.date.year, quiz.date.month)].append(quiz)
         categories[quiz.category] += 1
         organizers[quiz.organizer] += 1
         places[quiz.place] += 1
+        quiz.participants = sorted(quiz.participants, key=lambda participant: -user2score.get(participant["username"], 0))
 
     months_data = []
 
