@@ -119,5 +119,6 @@ HANDLE_ACHIEVEMENTS = [
     {"id": "time", "name": "Вне времени", "description": "перепутать время проведения квиза"},
     {"id": "forget", "name": "Забывчивый", "description": "забыть про квиз"},
     {"id": "appeal", "name": "Мастер апелляций", "description": "убедить организаторов в правильности своего не совсем верного ответа"},
-    {"id": "employee", "name": "Сотрудник", "description": "поработать на квизе"}
+    {"id": "employee", "name": "Сотрудник", "description": "поработать на квизе"},
+    {"id": "quiz-author", "name": "Автор вопросов", "description": "написать пакет вопросов для квиза"}
 ]
