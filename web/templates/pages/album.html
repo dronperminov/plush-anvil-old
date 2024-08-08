@@ -97,12 +97,19 @@
                 </div>
                 {% endfor %}
             </div>
+            <div class="only-checkbox">
+                <label><input id="only" type="checkbox" {% if only %}checked{% endif %}> Только выбранные пользователи</label>
+            </div>
             <div class="buttons">
                 <button class="basic-button default-button" onclick="UpdateUsersPhotos()">Применить</button>
                 {% if usernames %}
                 <button class="basic-button default-button" onclick="ResetUsersPhotos()">Сбросить</button>
                 {% endif %}
             </div>
+        </div>
+        {% elif page == "photos-with-me" %}
+        <div class="only-checkbox">
+            <label><input id="only" type="checkbox" {% if only %}checked{% endif %} onchange="location.href=`/photos-with-me${this.checked ? '?only=true' : ''}`"> Только со мной</label>
         </div>
         {% endif %}
 

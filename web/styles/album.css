@@ -152,6 +152,14 @@
     grid-gap: 0 10px;
 }
 
+.only-checkbox {
+    margin: 15px 0;
+}
+
+.only-checkbox label {
+    font-weight: bold;
+}
+
 @media (max-width: 1500px) {
     .photos {
         grid-template-columns: 1fr 1fr 1fr 1fr;

@@ -187,13 +187,14 @@ function SetPreview(icon, albumId, previewUrl) {
 
 function UpdateUsersPhotos() {
     let users = document.getElementById("users")
+    let only = document.getElementById("only").checked
     let usernames = []
 
     for (let checkbox of users.getElementsByTagName("input"))
         if (checkbox.checked)
             usernames.push(`usernames=${checkbox.getAttribute("data-username")}`)
 
-    location.href = `/photos-with-users?${usernames.join("&")}`
+    location.href = `/photos-with-users?${usernames.join("&")}` + (only ? "&only=true" : "")
 }
 
 function ResetUsersPhotos() {
