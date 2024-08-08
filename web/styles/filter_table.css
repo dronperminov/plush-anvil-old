@@ -47,6 +47,29 @@
     vertical-align: middle;
 }
 
+.filter-table-avatars {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-gap: 2px;
+    max-width: 158px;
+    overflow-x: auto;
+}
+
+.filter-table-avatars img {
+    width: 30px !important;
+    padding: 2px;
+    border-radius: 100%;
+}
+
+.filter-table-avatars a, .filter-table-avatars a:hover {
+    border: none;
+}
+
+.filter-table-avatars a:hover img {
+    padding: 0;
+    border: 2px solid var(--main-color);
+}
+
 .filter-table-no-rows {
     color: var(--text-color);
     font-size: 0.9em;

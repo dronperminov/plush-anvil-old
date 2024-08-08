@@ -41,9 +41,10 @@
             <th class="column-date order-desc" onclick="table.SortByColumn('date')">Дата</th>
             <th class="column-position" onclick="table.SortByColumn('position')">Место</th>
             <th class="column-category column-addition" onclick="table.SortByColumn('category')">Категория</th>
-            <th class="column-name" onclick="table.SortByColumn('name', false)">Название</th>
+            <th class="column-name" onclick="table.SortByColumn('name', false)" style="min-width: 200px;">Название</th>
             <th class="column-organizer column-addition" onclick="table.SortByColumn('organizer', false)">Организатор</th>
             <th class="column-players column-addition" onclick="table.SortByColumn('players')">Игроки</th>
+            <th class="column-participant column-addition">Состав</th>
             <th class="column-teams column-addition" onclick="table.SortByColumn('teams')">Команды</th>
             <th class="column-place column-addition" onclick="table.SortByColumn('place', false)">Место проведения</th>
         </tr>
@@ -55,6 +56,13 @@
             <td class="column-name column-left">{{quiz.name}}</td>
             <td class="column-organizer column-addition column-left column-no-wrap"><img src="/images/organizers/{{quiz.organizer}}.png" title="{{quiz.organizer}}"> {{quiz.organizer}}</td>
             <td class="column-players column-addition">{{quiz.players}}</td>
+            <td class="column-participant column-addition column-left">
+                <div class="filter-table-avatars">{% for participant in quiz.participants %}
+                    <a href="/profile?username={{participant.username}}">
+                        <img src="/images/profiles/{{participant.username}}.jpg?v={{version}}">{% endfor %}
+                    </a>
+                </div>
+            </td>
             <td class="column-teams column-addition">{{quiz.teams}}</td>
             <td class="column-place column-addition">{{quiz.place}}</td>
         </tr>
