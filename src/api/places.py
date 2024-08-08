@@ -10,6 +10,7 @@ from src.database import database
 from src.dataclasses.place import Place
 from src.utils.auth import get_current_user
 from src.utils.common import get_static_hash
+from src.utils.place_utils import get_places_list
 
 router = APIRouter()
 
@@ -33,10 +34,9 @@ def get_places(user: Optional[dict] = Depends(get_current_user)) -> Response:
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
     template = templates.get_template("admin_pages/places.html")
-    places = [Place.from_dict(place) for place in database.places.find({})]
     metro_stations = list({station["name"] for station in database.metro_stations.find({})})
 
-    content = template.render(user=user, page="places", version=get_static_hash(), places=places, metro_stations=metro_stations)
+    content = template.render(user=user, page="places", version=get_static_hash(), places=get_places_list(), metro_stations=metro_stations)
     return HTMLResponse(content=content)
 
 

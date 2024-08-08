@@ -9,7 +9,8 @@ from src.api import templates
 from src.database import database
 from src.utils.achievements import get_team_achievements
 from src.utils.auth import get_current_user
-from src.utils.common import get_analytics, get_places, get_schedule, get_smuzi_rating, get_static_hash, get_word_form, parse_date, quiz_to_datetime
+from src.utils.common import get_analytics, get_schedule, get_smuzi_rating, get_static_hash, get_word_form, parse_date, quiz_to_datetime
+from src.utils.place_utils import get_places_dict
 
 router = APIRouter()
 
@@ -30,7 +31,6 @@ def index(user: Optional[dict] = Depends(get_current_user), date: str = Query(""
 
     template = templates.get_template("pages/index.html")
     curr_schedule = get_schedule(parsed_date)
-    places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
     smuzi_rating = get_smuzi_rating()
     albums = list(database.photo_albums.find({"deactivated": {"$ne": True}, "quiz_id": {"$ne": ""}, "photos.2": {"$exists": True}}).sort("date", -1).limit(8))
 
@@ -45,7 +45,7 @@ def index(user: Optional[dict] = Depends(get_current_user), date: str = Query(""
         page="index",
         version=get_static_hash(),
         schedule=curr_schedule,
-        places=places,
+        places=get_places_dict(),
         smuzi_rating=smuzi_rating,
         next_quizzes1=next_quizzes1,
         next_quizzes2=next_quizzes2,
@@ -61,7 +61,7 @@ def schedule(date: str = Body(..., embed=True)) -> JSONResponse:
     return JSONResponse({
         "status": constants.SUCCESS,
         "schedule": get_schedule(parsed_date),
-        "places": get_places()
+        "places": get_places_dict()
     })
 
 
@@ -70,7 +70,7 @@ def schedule_get(date: str = Query("")) -> HTMLResponse:
     parsed_date = parse_date(date)
     template = templates.get_template("pages/schedule.html")
     curr_schedule = get_schedule(parsed_date)
-    places = {place["name"]: place for place in database.places.find({}, {"_id": 0})}
+    places = get_places_dict()
     content = template.render(user=None, version=get_static_hash(), schedule=curr_schedule, places=places)
     return HTMLResponse(content=content)
 

@@ -24,7 +24,8 @@ from src import constants
 from src.api import templates
 from src.database import database
 from src.dataclasses.quiz import Quiz
-from src.utils.common import get_month_dates, get_places, get_word_form
+from src.utils.common import get_month_dates, get_word_form
+from src.utils.place_utils import get_places_dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -116,7 +117,7 @@ async def send_remind(quizzes: List[dict]) -> None:
 
     messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
     final_line = 'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
-    places = get_places()
+    places = get_places_dict()
 
     if len(quizzes) == 1:
         quiz = quizzes[0]
@@ -160,7 +161,7 @@ async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: Li
     month = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"][date.month - 1]
 
     template = templates.get_template("pages/story.html")
-    html = template.render(weekday=weekday, date=f"{date.day} {month}", quizzes=quizzes, places=get_places())
+    html = template.render(weekday=weekday, date=f"{date.day} {month}", quizzes=quizzes, places=get_places_dict())
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         filename = f"story_{date.day}_{month}.png"
@@ -245,7 +246,7 @@ async def make_quiz_poll(quiz_id: str, message: types.Message) -> None:
     if tg_message := database.tg_quiz_messages.find_one({"quiz_id": ObjectId(quiz_id)}):
         return await send_error(message, "Опрос с этим квизом уже создан", delete_message=True, reply_to_message_id=tg_message["message_id"])
 
-    places = get_places()
+    places = get_places_dict()
     poll = await message.answer_poll(question=quiz.to_poll_title(places), options=["Пойду", "Не пойду"], is_anonymous=False, allows_multiple_answers=False)
     poll_url = poll.get_url()
 
@@ -358,7 +359,7 @@ async def handle_pred_poll(message: types.Message) -> None:
 
     await message.delete()
 
-    places = get_places()
+    places = get_places_dict()
     parts = (len(quizzes) + constants.LAST_POLL_OPTION - 1) // constants.LAST_POLL_OPTION
 
     for part in range(parts):

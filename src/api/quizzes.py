@@ -13,6 +13,7 @@ from src.database import database
 from src.dataclasses.quiz import Quiz
 from src.utils.auth import get_current_user
 from src.utils.common import get_static_hash, parse_date
+from src.utils.place_utils import get_place_names
 
 router = APIRouter()
 
@@ -51,7 +52,6 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
     weekday = constants.WEEKDAY_TO_RUS[date.weekday()]
 
     template = templates.get_template("admin_pages/quizzes.html")
-    places = [place["name"] for place in database.places.find({})]
     organizers = [organizer["name"] for organizer in database.organizers.find({})]
     quizzes = list(database.quizzes.find({"date": date}))
 
@@ -61,7 +61,7 @@ def get_quizzes(date: str, user: Optional[dict] = Depends(get_current_user)) -> 
         version=get_static_hash(),
         quizzes=quizzes,
         categories=constants.CATEGORIES,
-        places=places,
+        places=get_place_names(),
         organizers=organizers,
         date=date,
         weekday=weekday
@@ -78,7 +78,6 @@ def parse_quizzes(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if user["role"] != "owner":
         return make_error(message="Эта страница доступна только администраторам.", user=user)
 
-    places = [place["name"] for place in database.places.find({})]
     organizers = [organizer["name"] for organizer in database.organizers.find({})]
 
     template = templates.get_template("pages/parse_quizzes.html")
@@ -86,7 +85,7 @@ def parse_quizzes(user: Optional[dict] = Depends(get_current_user)) -> Response:
         user=user,
         page="parse_quizzes",
         version=get_static_hash(),
-        places=places,
+        places=get_place_names(),
         organizers=organizers,
         categories=constants.CATEGORIES,
         year=datetime.now().year
