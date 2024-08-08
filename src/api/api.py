@@ -7,8 +7,9 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 from src import constants
 from src.api import templates
 from src.database import database
+from src.utils.achievements import get_team_achievements
 from src.utils.auth import get_current_user
-from src.utils.common import get_analytics, get_places, get_schedule, get_smuzi_rating, get_static_hash, get_team_achievements, get_word_form, parse_date, quiz_to_datetime
+from src.utils.common import get_analytics, get_places, get_schedule, get_smuzi_rating, get_static_hash, get_word_form, parse_date, quiz_to_datetime
 
 router = APIRouter()
 

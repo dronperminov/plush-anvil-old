@@ -2,6 +2,7 @@ from typing import List
 
 from src.achievements.achievement import Achievement
 from src.dataclasses.quiz import Quiz
+from src.utils.common import get_word_form
 
 
 class PositionCountAchievement(Achievement):
@@ -23,3 +24,13 @@ class PositionCountAchievement(Achievement):
             if count == self.target_count:
                 self.increment(quiz.date)
                 count = 0
+
+        if self.count == 0 and count < self.target_count:
+            if self.position == 1:
+                words = ["побед", "победы", "победа"]
+            elif self.position == 3:
+                words = ["призовых игр", "призовых игры", "призовая игра"]
+            else:
+                words = ["игр", "игры", "игра"]
+
+            self.label_date = f"ещё {get_word_form(self.target_count - count, words)}"

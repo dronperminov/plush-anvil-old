@@ -6,5 +6,5 @@
     <div class="achievement-count">{{achievement.count}}</div>
     {% endif %}
 
-    <div class="achievement-date">{% if achievement.count != 0 %}получено {{achievement.label_date}}{% else %}пока не открыто{% endif %}</div>
+    <div class="achievement-date">{% if achievement.count != 0 %}получено {{achievement.label_date}}{% else %}пока не открыто{% if achievement.label_date %} ({{achievement.label_date}}){% endif %}{% endif %}</div>
 </div>

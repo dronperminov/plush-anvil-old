@@ -2,6 +2,7 @@ from typing import List
 
 from src.achievements.achievement import Achievement
 from src.dataclasses.quiz import Quiz
+from src.utils.common import get_word_form
 
 
 class GamesCountAchievement(Achievement):
@@ -12,6 +13,7 @@ class GamesCountAchievement(Achievement):
 
     def analyze(self, quizzes: List[Quiz]) -> None:
         if len(quizzes) < self.target_count:
+            self.label_date = f'ещё {get_word_form(self.target_count - len(quizzes), ["игр", "игры", "игра"])}'
             return
 
         self.count = len(quizzes) // self.target_count

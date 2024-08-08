@@ -1,8 +1,9 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import List
 
 from src.achievements.achievement import Achievement
 from src.dataclasses.quiz import Quiz
+from src.utils.common import get_word_form
 
 
 class PositionDaysAchievement(Achievement):
@@ -24,7 +25,13 @@ class PositionDaysAchievement(Achievement):
             if count == self.target_count:
                 self.increment(date)
 
+        if self.count == 0 and 0 < count < self.target_count and prev_date == quizzes[-1].date.date() and (datetime.now().date() - prev_date).days <= 1:
+            self.label_date = f'ещё {get_word_form(self.target_count - count, ["дней", "дня", "день"])}'
+
     def set_label_date(self) -> None:
+        if self.label_date is not None:
+            return
+
         if self.first_date is None:
             self.label_date = None
             return

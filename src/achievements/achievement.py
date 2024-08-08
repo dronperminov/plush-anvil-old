@@ -19,6 +19,9 @@ class Achievement:
         pass
 
     def set_label_date(self) -> None:
+        if self.label_date is not None:
+            return
+
         self.label_date = None if self.first_date is None else f"{self.first_date.day:02}.{self.first_date.month:02}.{self.first_date.year}"
 
     def increment(self, date: datetime) -> None:

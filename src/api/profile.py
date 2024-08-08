@@ -9,8 +9,9 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 from src import constants
 from src.api import templates
 from src.database import database
+from src.utils.achievements import get_user_achievements
 from src.utils.auth import get_current_user
-from src.utils.common import crop_image, get_hash, get_static_hash, get_user_achievements, save_image
+from src.utils.common import crop_image, get_hash, get_static_hash, save_image
 from src.utils.participants import get_user_participant_info
 from src.utils.users import get_activity_scores
 

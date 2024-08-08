@@ -8,8 +8,9 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 from src import constants
 from src.api import make_error, templates
 from src.database import database
+from src.utils.achievements import get_handle_user_achievements
 from src.utils.auth import get_current_user
-from src.utils.common import get_handle_user_achievements, get_static_hash
+from src.utils.common import get_static_hash
 from src.utils.users import get_participant_users
 
 router = APIRouter()
