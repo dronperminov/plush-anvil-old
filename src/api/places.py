@@ -21,6 +21,7 @@ class PlaceForm:
     address: str = Body(..., embed=True)
     color: str = Body(..., embed=True)
     photos: List[str] = Body(..., embed=True)
+    yandex_map_link: str = Body(..., embed=True)
 
 
 @router.get("/places")
@@ -55,7 +56,8 @@ def add_place(user: Optional[dict] = Depends(get_current_user), place_params: Pl
         "metro_station": place_params.metro_station,
         "address": place_params.address,
         "color": place_params.color,
-        "photos": place_params.photos
+        "photos": place_params.photos,
+        "yandex_map_link": place_params.yandex_map_link
     })
 
     database.places.insert_one(place.to_dict())

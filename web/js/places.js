@@ -16,6 +16,10 @@ function AddPlace() {
     if (placeData.address === null)
         return
 
+    placeData.yandex_map_link = GetFormatTextField("yandex-map-link", /^https:\/\/yandex\.ru\/maps\/org\/.+$/, "Ссылка на Яндекс.карты не указана", "Ссылка на Яндекс.карты введена некорректно (ожидается ссылка вида https://yandex.ru/maps/org/...)")
+    if (placeData.yandex_map_link === null)
+        return
+
     let error = document.getElementById("error")
     error.innerText = ""
 

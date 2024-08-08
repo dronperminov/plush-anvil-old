@@ -9,6 +9,7 @@ class Place:
     address: str
     color: str
     photos: List[str]
+    yandex_map_link: str
 
     @classmethod
     def from_dict(cls: "Place", data: dict) -> "Place":
@@ -17,8 +18,9 @@ class Place:
         address = data["address"]
         color = data["color"]
         photos = data.get("photos", [])
+        yandex_map_link = data["yandex_map_link"]
 
-        return cls(name, metro_station, address, color, photos)
+        return cls(name, metro_station, address, color, photos, yandex_map_link)
 
     def to_dict(self) -> dict:
         return {
@@ -26,5 +28,6 @@ class Place:
             "metro_station": self.metro_station,
             "address": self.address,
             "color": self.color,
-            "photos": self.photos
+            "photos": self.photos,
+            "yandex_map_link": self.yandex_map_link
         }
