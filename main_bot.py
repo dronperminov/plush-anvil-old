@@ -121,9 +121,11 @@ async def send_remind(quizzes: List[dict]) -> None:
 
     if len(quizzes) == 1:
         quiz = quizzes[0]
+        place = places[quiz["place"]]
         lines = [
             f'Напоминаю, что сегодня квиз "{quiz["name"]}" в <b>{quiz["time"]}</b>',
-            f'<b>Место проведения</b>: {quiz["place"]} (м. {places[quiz["place"]]["metro_station"]})',
+            f'<b>Место проведения</b>: <a href="{place["yandex_map_link"]}">{quiz["place"]}</a> (м. {place["metro_station"]})',
+            f'<b>Организатор</b>: {quiz["organizer"]}',
             f'<b>Стоимость</b>: {quiz["cost"]} руб\n',
             final_line
         ]
@@ -137,9 +139,11 @@ async def send_remind(quizzes: List[dict]) -> None:
     else:
         lines = ["Напоминаю, что сегодня проходят следующие квизы:\n"]
         for quiz in quizzes:
+            place = places[quiz["place"]]
             name = f'<a href="{messages[quiz["_id"]]["url"]}">{quiz["name"]}</a>' if quiz["_id"] in messages else quiz["name"]
             lines.append(f'- {name} в <b>{quiz["time"]}</b>')
-            lines.append(f'<b>Место проведения</b>: {quiz["place"]} (м. {places[quiz["place"]]["metro_station"]})')
+            lines.append(f'<b>Место проведения</b>: <a href="{place["yandex_map_link"]}">{quiz["place"]}</a> (м. {place["metro_station"]})')
+            lines.append(f'<b>Организатор</b>: {quiz["organizer"]}')
             lines.append(f'<b>Стоимость</b>: {quiz["cost"]} руб\n')
 
         lines.append(final_line)
