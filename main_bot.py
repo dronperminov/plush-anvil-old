@@ -384,7 +384,7 @@ async def handle_inline_poll(query: InlineQuery) -> None:
         return
 
     today = datetime.now()
-    delta = 13 - today.weekday() if today.weekday() >= 5 else 6 - today.weekday()
+    delta = 13 - today.weekday() if today.weekday() >= 2 else 6 - today.weekday()
     start_date = datetime(today.year, today.month, today.day, 0, 0, 0)
     end_date = datetime(today.year, today.month, today.day, 23, 59, 59) + timedelta(days=delta)
 
