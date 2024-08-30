@@ -266,13 +266,15 @@ def get_top_players(quizzes: List[Quiz]) -> List[dict]:
 
 
 def get_analytics_data(quizzes: List[Quiz], only_main: bool = False) -> dict:
+    position_quizzes = [quiz for quiz in quizzes if not quiz.ignore_rating]
+
     data = {
         "games": len(quizzes),
         "wins": len([quiz for quiz in quizzes if quiz.is_win()]),
         "prizes": len([quiz for quiz in quizzes if quiz.is_prize()]),
         "top10": len([quiz for quiz in quizzes if quiz.is_top10()]),
         "rating": sum(quiz.smuzi_rating() for quiz in quizzes),
-        "mean_position": sum(quiz.position for quiz in quizzes) / max(1, len(quizzes)),
+        "mean_position": sum(quiz.position for quiz in position_quizzes) / max(1, len(position_quizzes)),
         "mean_players": sum(quiz.players for quiz in quizzes) / max(1, len(quizzes))
     }
 

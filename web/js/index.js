@@ -240,9 +240,8 @@ function BuildScheduleStatistics(schedule) {
     if (statistics.top3 > 0)
         values.push(`<div class="schedule-statistic-cell-value">${statistics.top3}</div><div class="schedule-statistic-cell-label">${GetWordForm(statistics.top3, ['раз', 'раза', 'раз'])} вошли в тройку</div>`)
 
-    if (statistics.games > 0)
+    if (statistics.games > 0 && statistics.mean_position > 0)
         values.push(`<div class="schedule-statistic-cell-value">${statistics.mean_position.toFixed(1)}</div><div class="schedule-statistic-cell-label">средняя позиция</div>`)
-
 
     let block = document.getElementById("schedule-statistic")
 

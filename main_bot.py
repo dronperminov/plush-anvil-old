@@ -178,7 +178,7 @@ async def send_story(quizzes: List[Quiz], quiz_ids: List[ObjectId], chat_ids: Li
 
 
 def make_schedule_picture(output_path: str, date: str = "") -> str:
-    hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1280, 1020), output_path=output_path)
+    hti = Html2Image(custom_flags=["--headless", "--no-sandbox"], size=(1280, 1210), output_path=output_path)
     hti.screenshot(url=f"https://plush-anvil.ru/schedule?date={date}", save_as="schedule.png")
     hti.screenshot(url=f"https://plush-anvil.ru/schedule?date={date}", save_as="schedule.png")
 
@@ -192,7 +192,7 @@ def make_schedule_picture(output_path: str, date: str = "") -> str:
 
         img1 = cv2.imread(os.path.join(output_path, "schedule.png"))
         img2 = cv2.imread(os.path.join(output_path, "schedule_next.png"))
-        divider = np.ones((1020, 80, 3), dtype=np.uint8) * 255
+        divider = np.ones((img1.shape[0], 80, 3), dtype=np.uint8) * 255
         cv2.imwrite(os.path.join(output_path, "schedule.png"), np.concatenate((img1, divider, img2), axis=1))
 
     return os.path.join(output_path, "schedule.png")
