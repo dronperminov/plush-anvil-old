@@ -66,7 +66,7 @@
                 <div class="photo-album-main">
                     <div class="photo-album-preview">
                         {% if album.preview_url %}
-                        <a href="{{album.url}}">
+                        <a href="{{quote(album.url, safe='/')}}">
                             <img src="{{album.preview_url}}?v={{version}}" alt="Превью к фотоальбому {{album.title}}" loading="lazy">
                         </a>
                         {% endif %}
@@ -78,7 +78,7 @@
                         </svg>
                     </div>
                     {% endif %}
-                    <a href="{{album.url}}">
+                    <a href="{{quote(album.url, safe='/')}}">
                         <div class="photo-album-caption">
                             <div class="photo-album-title">{{album.title}}</div>
                             <div class="photo-album-count">{{album.photos|length}}</div>

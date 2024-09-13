@@ -1,5 +1,6 @@
 import os
 import re
+import urllib.parse
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -43,7 +44,7 @@ router = APIRouter()
 def get_albums(user: Optional[dict] = Depends(get_current_user)) -> HTMLResponse:
     albums = list(database.photo_albums.find({"deactivated": {"$ne": True}}).sort("date", -1))
     template = templates.get_template("pages/photos.html")
-    content = template.render(user=user, page="albums", version=get_static_hash(), albums=albums)
+    content = template.render(user=user, page="albums", version=get_static_hash(), albums=albums, quote=urllib.parse.quote)
     return HTMLResponse(content=content)
 
 
@@ -74,7 +75,7 @@ def get_album(album_id: int, user: Optional[dict] = Depends(get_current_user)) -
         return make_error(message="Запрашиваемый альбом не найден.", user=user)
 
     album = Album.from_dict(album)
-    return RedirectResponse(album.url)
+    return RedirectResponse(urllib.parse.quote(album.url, safe="/"))
 
 
 def render_album(user: Optional[dict], title: str, page_name: str, photos: List[dict], is_owner: bool, usernames: Optional[List[str]], only: bool) -> HTMLResponse:
@@ -152,7 +153,7 @@ def add_album(user: Optional[dict] = Depends(get_current_user), title: str = Bod
     album = Album.from_dict({"title": title, "album_id": album_id, "date": datetime.now()})
 
     database.photo_albums.insert_one(album.to_dict())
-    return JSONResponse({"status": constants.SUCCESS, "url": album.url})
+    return JSONResponse({"status": constants.SUCCESS, "url": urllib.parse.quote(album.url, safe="/")})
 
 
 @router.get("/quiz-album/{quiz_id}")
@@ -173,7 +174,7 @@ def add_quiz_album(quiz_id: str, user: Optional[dict] = Depends(get_current_user
     if album:
         if album.get("deactivated"):
             database.photo_albums.update_one({"album_id": album["album_id"]}, {"$set": {"deactivated": False}})
-        return RedirectResponse(album["url"])
+        return RedirectResponse(urllib.parse.quote(album["url"], safe="/"))
 
     album_id = database.photo_albums.count_documents({}) + 1
     title = f'{quiz["name"]} ({quiz["date"].day:02}.{quiz["date"].month:02}.{quiz["date"].year}) {quiz["time"]} {quiz["place"]}'
@@ -182,7 +183,7 @@ def add_quiz_album(quiz_id: str, user: Optional[dict] = Depends(get_current_user
 
     album = Album.from_dict({"title": title, "album_id": album_id, "date": quiz_date, "quiz_id": quiz["_id"]})
     database.photo_albums.insert_one(album.to_dict())
-    return RedirectResponse(album.url)
+    return RedirectResponse(urllib.parse.quote(album.url, safe="/"))
 
 
 @router.post("/remove-album")

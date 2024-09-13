@@ -1,8 +1,6 @@
-import os
 from contextlib import asynccontextmanager
 from typing import AsyncContextManager
 
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -20,7 +18,7 @@ from src.api.quizzes import router as quizzes_router
 from src.database import database
 
 
-def init_routers():
+def init_routers() -> None:
     app.include_router(api_router)
     app.include_router(auth_router)
     app.include_router(profile_router)
@@ -32,7 +30,7 @@ def init_routers():
     app.include_router(photos_router)
 
 
-def init_static_files():
+def init_static_files() -> None:
     app.mount("/styles", StaticFiles(directory="web/styles"))
     app.mount("/js", StaticFiles(directory="web/js"))
     app.mount("/fonts", StaticFiles(directory="web/fonts"))
@@ -40,7 +38,7 @@ def init_static_files():
     app.mount("/profile-images", StaticFiles(directory="web/images/profiles"))
 
 
-def init_logging_config():
+def init_logging_config() -> None:
     LOGGING_CONFIG["formatters"]["default"]["fmt"] = "%(asctime)s %(levelprefix)s %(message)s"
     LOGGING_CONFIG["formatters"]["access"]["fmt"] = '%(asctime)s %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
     LOGGING_CONFIG["formatters"]["default"]["datefmt"] = "%Y-%m-%d %H:%M:%S"
