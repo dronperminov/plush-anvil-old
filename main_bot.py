@@ -24,7 +24,7 @@ from src import constants
 from src.api import templates
 from src.database import database
 from src.dataclasses.quiz import Quiz
-from src.utils.common import get_month_dates, get_word_form
+from src.utils.common import get_month_dates, get_smuzi_rating, get_word_form
 from src.utils.place_utils import get_places_dict
 
 logging.basicConfig(level=logging.INFO)
@@ -473,6 +473,34 @@ async def handle_inline_list(query: InlineQuery) -> None:
         results.append(InlineQueryResultArticle(id=f"list_{month}_{start_date.year}", title=title, description=description, input_message_content=input_content))
 
     await query.answer(results, is_personal=False, cache_time=0)
+
+
+def get_rating_text(rating: dict) -> str:
+    history = []
+
+    for i, info in enumerate(rating["history"]):
+        level = constants.SMUZI_RATING_TO_NAME[i]["name"]
+        date = f'{info["date"].day:02d}.{info["date"].month:02d}.{info["date"].year}'
+        games = get_word_form(len(info["players"]), ["игр", "игры", "игру"])
+        history.append(f'- <b>{level}</b>: достигли {date} с рейтингом {info["score"]} за {games}, игроков в среднем: {info["mean_players"]:.1f}')
+
+    lines = [f'<b>Рейтинг смузи</b>: {rating["score"]} ({rating["info"]["level"]} уровень, {rating["info"]["name"]})']
+
+    if rating["players"]:
+        lines.append(f'<b>Среднее количество игроков</b>: {rating["mean_players"]:.1f} ({get_word_form(len(rating["players"]), ["игр", "игры", "игра"])})')
+
+    lines.append("\n<b>История получения уровней</b>:")
+    lines.extend(history)
+    lines.append("\nПост с информацией про рейтинг: https://vk.com/smuzi_msk?w=wall-164592450_73696")
+    return "\n".join(lines)
+
+
+@dp.message(Command("rating"))
+async def handle_rating(message: types.Message) -> None:
+    logger.info(f"Command {message.text} from user {message.from_user.username} ({message.from_user.id}) in chat {message.chat.title} ({message.chat.id})")
+
+    await message.delete()
+    await message.answer(get_rating_text(get_smuzi_rating()), parse_mode="HTML", disable_web_page_preview=True)
 
 
 async def scheduled_send_remind() -> None:
