@@ -5,7 +5,7 @@ from fastapi import APIRouter, Body, Depends, Query
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from src import constants
-from src.api import templates
+from src.api import make_error, templates
 from src.database import database
 from src.utils.achievements import get_team_achievements
 from src.utils.auth import get_current_user
@@ -112,4 +112,31 @@ def analytics(user: Optional[dict] = Depends(get_current_user), start_date: str 
 def achievements(user: Optional[dict] = Depends(get_current_user)) -> Response:
     template = templates.get_template("pages/achievements.html")
     content = template.render(user=user, version=get_static_hash(), achievements=get_team_achievements())
+    return HTMLResponse(content=content)
+
+
+@router.get("/birthdays")
+def get_birthdays(user: Optional[dict] = Depends(get_current_user)) -> Response:
+    if not user:
+        return RedirectResponse(url="/login?back_url=/birthdays")
+
+    if user["role"] != "owner":
+        return make_error(message="Эта страница доступна только администраторам.", user=user)
+
+    birthday_users = database.get_birthday_users()
+
+    month2rus = {
+        1: "января", 2: "февраля", 3: "марта", 4: "апреля", 5: "мая", 6: "июня",
+        7: "июля", 8: "августа", 9: "сентября", 10: "октября", 11: "ноября", 12: "декабря"
+    }
+
+    template = templates.get_template("admin_pages/birthdays.html")
+    content = template.render(
+        user=user,
+        version=get_static_hash(),
+        birthday_users=birthday_users,
+        month2rus=month2rus,
+        days_to_birthday=database.get_days_to_birthday,
+        get_word_form=get_word_form
+    )
     return HTMLResponse(content=content)

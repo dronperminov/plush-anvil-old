@@ -1,6 +1,10 @@
+from datetime import datetime
+from typing import List
+
 from pymongo import ASCENDING, DESCENDING, MongoClient
 
 from src import constants
+from src.dataclasses.user import User
 
 
 class MongoManager:
@@ -40,6 +44,16 @@ class MongoManager:
         self.metro_stations.create_index([("name", ASCENDING)])
         self.tg_quiz_messages.create_index([("quiz_id", ASCENDING)], unique=True)
         self.tg_messages.create_index([("name", ASCENDING)], unique=True)
+
+    def get_birthday_users(self) -> List[User]:
+        users = [User.from_dict(user) for user in self.users.find({"birthdate": {"$ne": None}})]
+        return sorted(users, key=lambda user: self.get_days_to_birthday(birthdate=user.birthdate))
+
+    def get_days_to_birthday(self, birthdate: dict) -> int:
+        today = datetime.now()
+        month, day = birthdate["month"], birthdate["day"]
+        year = today.year + 1 if (month, day) < (today.month, today.day) else today.year
+        return (datetime(year, month, day) - today).days
 
     def close(self) -> None:
         self.client.close()

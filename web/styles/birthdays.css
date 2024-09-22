@@ -1,0 +1,39 @@
+.birthday-users {
+    display: grid;
+    grid-gap: 0.5em;
+    grid-auto-flow: row;
+}
+
+.user {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    grid-gap: 10px;
+    align-items: center;
+    background: var(--content-background);
+    padding: 8px;
+    border-radius: 0.7em;
+    border: 1px solid var(--border-color);
+}
+
+.user-avatar img {
+    border: 2px solid var(--text-color);
+    border-radius: 100%;
+    width: 100%;
+}
+
+.user-avatar a, .user-avatar a:hover {
+    border: none;
+}
+
+.user-avatar a:hover img {
+    border-color: var(--main-color);
+}
+
+.user-name {
+    margin-bottom: 5px;
+    font-size: 0.95em;
+}
+
+.user-birthday {
+    font-size: 0.9em;
+}

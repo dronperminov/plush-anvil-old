@@ -1,0 +1,28 @@
+{% set title = "Дни рождения | Плюшевая наковальня" %}
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/birthdays.css?v={{version}}">
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <h1 class="page">Дни рождения</h1>
+
+    <div class="content">
+        <div class="birthday-users">
+            {% for user in birthday_users %}
+            <div class="user">
+                <div class="user-avatar"><a href="/profile?username={{user.username}}"><img src="{{user.image_src}}"></a></div>
+                <div class="user-info">
+                    <div class="user-name"><a href="/profile?username={{user.username}}">{{user.fullname}}</a></div>
+                    <div class="user-birthday">{{user.birthdate.day}} {{month2rus[user.birthdate.month]}} (через {{get_word_form(days_to_birthday(user.birthdate), ["дней", "дня", "день"])}})</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="/js/fetch.js?v={{version}}"></script>
+    <script src="/js/utils.js?v={{version}}"></script>
+    {% include "footer.html" %}
+</body>
+</html>
