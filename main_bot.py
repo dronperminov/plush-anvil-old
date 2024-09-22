@@ -514,6 +514,23 @@ async def scheduled_send_story() -> None:
     await unpin_old_polls()
 
 
+async def scheduled_send_birthday() -> None:
+    users = database.get_birthday_users()
+    if not users or database.get_days_to_birthday(users[0].birthdate) != 7:
+        return
+
+    lines = [
+        f'Напоминаю, что у пользователя <a href="https://plush-anvil.ru/profile?username={users[0].username}">{users[0].fullname}</a> день рождения через 7 дней.',
+        "А ещё напоминаю, что ты супер умничка!"
+    ]
+
+    try:
+        for chat_id in config.get("birthday_user_ids", []):
+            await bot.send_message(chat_id=chat_id, text="\n".join(lines), parse_mode="HTML")
+    except Exception as error:
+        logger.info(f"Unable send birthday for {users[0].fullname}: {error}")
+
+
 async def scheduled_update_schedule() -> None:
     today = datetime.now()
     caption = f"Расписание (обновлено {today.day:02}.{today.month:02d}.{today.year} в {today.hour:02d}:{today.minute:02d})"
@@ -539,6 +556,7 @@ async def scheduled_update_schedule() -> None:
 async def scheduler() -> None:
     scheduled_time = config["schedule_time"]
     aioschedule.every().day.at(scheduled_time["remind"]).do(scheduled_send_remind)
+    aioschedule.every().day.at(scheduled_time["birthday"]).do(scheduled_send_birthday)
     aioschedule.every().day.at(scheduled_time["story"]).do(scheduled_send_story)
     aioschedule.every().day.at(scheduled_time["schedule"]).do(scheduled_update_schedule)
 
