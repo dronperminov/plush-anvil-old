@@ -519,8 +519,9 @@ async def scheduled_send_birthday() -> None:
     if not users or database.get_days_to_birthday(users[0].birthdate) != 7:
         return
 
+    user_links = ", ".join([f'<a href="https://plush-anvil.ru/profile?username={user.username}">{user.fullname}</a>' for user in users])
     lines = [
-        f'Напоминаю, что у пользователя <a href="https://plush-anvil.ru/profile?username={users[0].username}">{users[0].fullname}</a> день рождения через 7 дней.',
+        f'Напоминаю, что у пользовател{"я" if len(users) == 1 else "ей"} {user_links} день рождения через 7 дней.',
         "А ещё напоминаю, что ты супер умничка!"
     ]
 
