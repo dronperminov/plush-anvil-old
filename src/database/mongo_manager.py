@@ -53,7 +53,7 @@ class MongoManager:
         today = datetime.now()
         month, day = birthdate["month"], birthdate["day"]
         year = today.year + 1 if (month, day) < (today.month, today.day) else today.year
-        return (datetime(year, month, day) - today).days
+        return (datetime(year, month, day) - datetime(today.year, today.month, today.day)).days
 
     def close(self) -> None:
         self.client.close()
