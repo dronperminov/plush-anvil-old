@@ -70,7 +70,10 @@ class Quiz:
     def to_poll_title(self, places: Dict[str, dict]) -> str:
         header_date = self.__get_header_date()
         header_place = f'{self.place} (м. {places[self.place]["metro_station"]}) {self.cost} руб.'
-        poll_title = f"{header_date} {self.name}. {header_place}"
+        poll_title = f"{header_date} {self.name}. {header_place} {self.organizer}"
+
+        if len(poll_title) >= 240:
+            poll_title = f"{header_date} {self.__clear_short_name()}. {header_place} {self.organizer}"
 
         if len(poll_title) >= 240:
             poll_title = f"{header_date} {self.__clear_short_name()}. {header_place}"
