@@ -442,6 +442,27 @@
     color: #fff;
 }
 
+.schedule-quiz-icon {
+    position: absolute;
+    width: 12%;
+    border-radius: 100%;
+}
+
+.schedule-quiz-icon-center {
+    top: 3%;
+    left: 42%;
+}
+
+.schedule-quiz-icon-left {
+    top: 3%;
+    left: 27%;
+}
+
+.schedule-quiz-icon-right {
+    bottom: 3%;
+    left: 45%;
+}
+
 .schedule-quiz-name-grid {
     display: grid;
     align-items: center;
