@@ -147,14 +147,15 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
             MakeElement("", svg, {tag: "path", d: `M0 ${y} L100 ${y} L100 ${y + h} L0 ${y + h} Z`, fill: places[cell.quizzes[i].place].color})
             MakeElement("schedule-quiz-time", svg, {tag: "text", x: "96", y: `${y + 2}`, "dominant-baseline": "text-before-edge", "text-anchor": "end", innerHTML: cell.quizzes[i].time})
 
+            let icon = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y + 3}`, width: "96", height: `${h - 2}`})
+            MakeElement("schedule-quiz-icon schedule-quiz-icon-center", icon, {"src": `/images/organizers/${cell.quizzes[i].organizer}.png`, tag: "img"})
+
             let dy = cell.quizzes.length > 2 ? h / 2 : 0
             let foreign = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y + dy}`, width: "96", height: `${h - dy}`})
             let name = MakeElement("schedule-quiz-name schedule-quiz-name-grid", foreign)
             let nameSpan = MakeElement("", name, {tag: "span", innerHTML: QuizToName(cell.quizzes[i], cell.quizzes.length)})
             nameSpan.addEventListener("click", () => ShowDetails(`${cell.day}-${i + 1}`))
 
-            let icon = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y + 3}`, width: "96", height: `${h - 2}`})
-            MakeElement("schedule-quiz-icon schedule-quiz-icon-center", icon, {"src": `/images/organizers/${cell.quizzes[i].organizer}.png`, tag: "img"})
             resizebleBlocks.push({foreign: foreign, nameSpan: nameSpan})
         }
     }
