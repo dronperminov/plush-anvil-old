@@ -97,7 +97,7 @@ function QuizToName(quiz, count = 1) {
 
 let resizebleBlocks = []
 
-function FillQuizSVG(svg, cell, places, isAdmin) {
+function FillQuizSVG(svg, quizzes, cell, places, isAdmin) {
     if (cell.quizzes.length == 2) {
         MakeElement("", svg, {tag: "path", d: "M0 0 L100 0 L0 100 Z", fill: places[cell.quizzes[0].place].color})
         MakeElement("", svg, {tag: "path", d: "M0 100 L100 100 L100 0 Z", fill: places[cell.quizzes[1].place].color})
@@ -114,11 +114,8 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
         let name2 = MakeElement("schedule-quiz-name schedule-quiz-name-right", foreign2)
         let name2Span = MakeElement("schedule-quiz-name-span", name2, {tag: "span", innerHTML: QuizToName(cell.quizzes[1])})
 
-        let icon1 = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `2`, width: "96", height: `96`})
-        MakeElement("schedule-quiz-icon schedule-quiz-icon-left", icon1, {"src": `/images/organizers/${cell.quizzes[0].organizer}.png`, tag: "img"})
-
-        let icon2 = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `2`, width: "96", height: `96`})
-        MakeElement("schedule-quiz-icon schedule-quiz-icon-right", icon2, {"src": `/images/organizers/${cell.quizzes[1].organizer}.png`, tag: "img"})
+        MakeElement("schedule-quiz-icon schedule-quiz-icon-left", quizzes, {"src": `/images/organizers/${cell.quizzes[0].organizer}.png`, tag: "img"})
+        MakeElement("schedule-quiz-icon schedule-quiz-icon-right", quizzes, {"src": `/images/organizers/${cell.quizzes[1].organizer}.png`, tag: "img"})
 
         svg.addEventListener("click", (e) => {
             e.preventDefault()
@@ -147,8 +144,7 @@ function FillQuizSVG(svg, cell, places, isAdmin) {
             MakeElement("", svg, {tag: "path", d: `M0 ${y} L100 ${y} L100 ${y + h} L0 ${y + h} Z`, fill: places[cell.quizzes[i].place].color})
             MakeElement("schedule-quiz-time", svg, {tag: "text", x: "96", y: `${y + 2}`, "dominant-baseline": "text-before-edge", "text-anchor": "end", innerHTML: cell.quizzes[i].time})
 
-            let icon = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y + 3}`, width: "96", height: `${h - 2}`})
-            MakeElement("schedule-quiz-icon schedule-quiz-icon-center", icon, {"src": `/images/organizers/${cell.quizzes[i].organizer}.png`, tag: "img"})
+            MakeElement("schedule-quiz-icon schedule-quiz-icon-center", quizzes, {"src": `/images/organizers/${cell.quizzes[i].organizer}.png`, tag: "img", style: `top: ${y + 4}%;`})
 
             let dy = cell.quizzes.length > 2 ? h / 2 : 0
             let foreign = MakeElement("", svg, {tag: "foreignObject", x: "2", y: `${y + dy}`, width: "96", height: `${h - dy}`})
@@ -189,7 +185,7 @@ function BuildScheduleCells(schedule, places, isAdmin) {
 
             let quizzes = MakeElement("schedule-quizzes", cellBlock)
             let svg = MakeElement("schedule-quiz", quizzes, {viewBox: "0 0 100 100", preserveAspectRatio: "none", tag: "svg"})
-            FillQuizSVG(svg, cell, places, isAdmin)
+            FillQuizSVG(svg, quizzes, cell, places, isAdmin)
         }
     }
 }
