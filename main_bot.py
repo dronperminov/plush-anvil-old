@@ -116,7 +116,12 @@ async def send_remind(quizzes: List[dict]) -> None:
         return
 
     messages = {tg_message["quiz_id"]: tg_message for tg_message in database.tg_quiz_messages.find({"quiz_id": {"$in": [quiz["_id"] for quiz in quizzes]}})}
-    final_line = 'Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом <a href="https://t.me/Sobolyulia">Юле</a>'
+    if datetime(2024, 10, 12, 0, 0, 0) <= datetime.now() <= datetime(2024, 10, 21, 23, 59, 59):
+        name = '<a href="https://t.me/dronperminov">Андрею</a>'
+    else:
+        name = '<a href="https://t.me/Sobolyulia">Юле</a>'
+
+    final_line = f"Если ваши планы изменились, переголосуйте, пожалуйста, и напишите об этом {name}"
     places = get_places_dict()
 
     if len(quizzes) == 1:
@@ -515,8 +520,8 @@ async def scheduled_send_story() -> None:
 
 
 async def scheduled_send_birthday() -> None:
-    users = database.get_birthday_users()
-    if not users or database.get_days_to_birthday(users[0].birthdate) != 7:
+    users = [user for user in database.get_birthday_users() if database.get_days_to_birthday(user.birthdate) == 7]
+    if not users:
         return
 
     user_links = ", ".join([f'<a href="https://plush-anvil.ru/profile?username={user.username}">{user.fullname}</a>' for user in users])
