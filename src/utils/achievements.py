@@ -82,6 +82,7 @@ def get_user_achievements(username: str) -> List[Achievement]:
         HardyAchievement(name="Выносливый", description="участвовать в двух играх в один день", min_count=2, max_count=2),
         HardyAchievement(name="Очень выносливый", description="участвовать в трёх и более играх в один день", min_count=3, max_count=100),
         PositionDaysAchievement(name="7 дней игр", description="участвовать в играх 7 дней подряд", target_count=7, position=100),
+        PositionDaysAchievement(name="14 дней игр", description="участвовать в играх 14 дней подряд", target_count=14, position=100),
 
         PositionCountAchievement(name="Призёр", description="посетить игру и войти в тройку", target_count=1, position=3),
         PositionCountAchievement(name="Призёр-50", description="посетить 50 игр и войти в тройку", target_count=50, position=3),
