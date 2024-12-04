@@ -115,6 +115,13 @@ def achievements(user: Optional[dict] = Depends(get_current_user)) -> Response:
     return HTMLResponse(content=content)
 
 
+@router.get("/brand")
+def brand(user: Optional[dict] = Depends(get_current_user)) -> Response:
+    template = templates.get_template("pages/brand.html")
+    content = template.render(user=user, version=get_static_hash())
+    return HTMLResponse(content=content)
+
+
 @router.get("/birthdays")
 def get_birthdays(user: Optional[dict] = Depends(get_current_user)) -> Response:
     if not user:

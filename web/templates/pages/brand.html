@@ -1,0 +1,36 @@
+{% set title = "Брендинг | Плюшевая наковальня" %}
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/styles/brand.css?v={{version}}">
+</head>
+<body>
+    {% include "components/menu.html" %}
+
+    <h1 class="page">Брендинг</h1>
+
+    <div class="content">
+        <p>На данной странице можно найти файлы с нашими логотипами, иконками и аватарками.</p>
+
+        <h2>Логотип</h2>
+        <ul class="brand">
+            <li><a href="/images/brand/logo.svg"><img class="brand-img" src="/images/brand/logo.svg" alt="logo.svg"></a> - <a href="/images/brand/logo.svg">logo.svg</a></li>
+            <li><a href="/images/brand/logo.png"><img class="brand-img" src="/images/brand/logo.png" alt="logo.png"></a> - <a href="/images/brand/logo.png">logo.png</a></li>
+            <li><a href="/images/brand/logo.eps"><img class="brand-img" src="/images/brand/logo.png" alt="logo.eps"></a> - <a href="/images/brand/logo.eps">logo.eps</a></li>
+            <li><a href="/images/brand/logo.pdf">logo.pdf</a></li>
+        </ul>
+
+        <h2>Аватарки</h2>
+        <ul class="brand">
+            <li><a href="/images/brand/avatar1.jpg"><img class="brand-img-big" src="/images/brand/avatar1.jpg" alt="avatar1.jpg"></a> - <a href="/images/brand/avatar1.jpg">avatar1.jpg</a></li>
+            <li><a href="/images/brand/avatar2.jpg"><img class="brand-img-big" src="/images/brand/avatar2.jpg" alt="avatar2.jpg"></a> - <a href="/images/brand/avatar2.jpg">avatar2.jpg</a></li>
+        </ul>
+
+        <h2>Иконки и шрифты</h2>
+        <ul class="brand">
+            <li><a href="/images/brand/favicon.svg">favicon.svg</a></li>
+            <li>шрифт <a href="/images/brand/font.ttf">Montserrat Bold</a></li>
+        </ul>
+    </div>
+
+    {% include "footer.html" %}
+</body>
+</html>

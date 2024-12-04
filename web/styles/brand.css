@@ -1,0 +1,13 @@
+.brand li {
+    margin-bottom: 1em;
+}
+
+.brand-img {
+    max-width: 60px;
+    vertical-align: middle;
+}
+
+.brand-img-big {
+    max-width: 120px;
+    vertical-align: middle;
+}

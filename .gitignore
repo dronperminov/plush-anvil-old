@@ -3,6 +3,7 @@ __pycache__
 web/images/profiles
 web/images/albums
 web/images/organizers
+web/images/brand
 scripts
 vk_tokens.txt
 bot_config.json
