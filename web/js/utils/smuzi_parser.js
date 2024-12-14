@@ -17,7 +17,8 @@ SmuziParser.prototype.GetRegexp = function() {
     let description = "(?<description>.+?)"
     let questions = "(?<questions>\\d+ вопро[а-я]+)"
     let cost = "((?<cost>\\d+) рублей с (чел|человека|игрока)\\s*)?\\)\\s*.?\\s*"
-    return new RegExp(`^${start}${day}\\s*${month}\\s+\\(?${weekday}\\)\\s+${time}\\s+[/(]${place}[\\)]\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?${repeat}$`, "gim")
+    let author = "\\s*(Автор вопросов: (?<author>.+?))?"
+    return new RegExp(`^${start}${day}\\s*${month}\\s+\\(?${weekday}\\)\\s+${time}\\s+[/(]${place}[\\)]\\s*${name}\\s*${description}\\s*(\\(\\s*(${questions}.*[\\s\\/])?${cost})?${repeat}${author}$`, "gim")
 }
 
 SmuziParser.prototype.MatchToQuiz = function(match) {
@@ -150,5 +151,6 @@ SmuziParser.prototype.GetShortName = function(name) {
     name = name.replace(/только хиты/gi, "хиты")
     name = name.replace(/кино,\s*мультфильмы,\s*сериалы/gi, "КМС")
     name = name.replace(/гарри поттер[аеу]?/gi, "ГП")
-    return name.trim()
+    name = name.trim()
+    return name[0].toUpperCase() + name.substr(1)
 }
