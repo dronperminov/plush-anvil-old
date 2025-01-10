@@ -72,32 +72,6 @@
         {% endif %}
 
         {% if games %}
-        {% if participant_info.stickers %}
-        <h2>Наклейки ({{participant_info.paid_games}})</h2>
-
-        <div class="scrollable">
-            <div class="stickers">
-                {% for sticker in participant_info.stickers %}
-                <div class="sticker {% if sticker.used %}sticker-used{% endif %}">
-                    <div class="sticker-use">{% if sticker.used %}Использована {% if sticker.dates|length < 10 %}в долг{% endif %} {{"%02d.%02d.%d" % (sticker.used.day, sticker.used.month, sticker.used.year)}}{% endif %}</div>
-                    <div class="sticker-cells">
-                        {% for i in range(10) %}
-                        <div class="sticker-cell">
-                            {% if i < (sticker.dates|length) %}
-                            <img src="/images/smuzi-sticker-fill.png">
-                            <div class="sticker-cell-date">{{"%02d.%02d.%d" % (sticker.dates[i].date.day, sticker.dates[i].date.month, sticker.dates[i].date.year)}}{% if sticker.dates[i].time == '' %}*{% endif %}</div>
-                            {% else %}
-                            <img src="/images/smuzi-sticker-empty.png">
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
         <h2>Количество посещённых квизов по месяцам</h2>
         <div class="quizzes-chart">
             <svg id="quizzes-chart"></svg>

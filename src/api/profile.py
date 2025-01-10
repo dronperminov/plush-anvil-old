@@ -12,7 +12,6 @@ from src.database import database
 from src.utils.achievements import get_user_achievements
 from src.utils.auth import get_current_user
 from src.utils.common import crop_image, get_hash, get_static_hash, save_image
-from src.utils.participants import get_user_participant_info
 from src.utils.users import get_activity_scores
 
 router = APIRouter()
@@ -67,7 +66,6 @@ def profile(user: Optional[dict] = Depends(get_current_user), username: str = Qu
         games_categories=sorted([(count, name) for name, count in categories.items()], reverse=True),
         games_organizers=sorted([(count, name) for name, count in organizers.items()], reverse=True),
         games_places=sorted([(count, name) for name, count in places.items()], reverse=True),
-        participant_info=get_user_participant_info(show_user["username"]),
         achievements=get_user_achievements(show_user["username"]),
         month2games=month2games,
         month2rus=constants.MONTH_TO_RUS,
